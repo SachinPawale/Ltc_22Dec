@@ -1,0 +1,57 @@
+<html>
+    <body>
+        <p>Asset Details</p>
+        
+        <p style="margin-left:70px">Asset are as follows :</p>
+
+        <table style="width: 100%;border: 1px solid black;border-collapse: collapse;">
+            <tr style="border: 1px solid black;border-collapse: collapse;">
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    Asset Number
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    Asset Desc
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    Cost
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    LTD DEP
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    NBV
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    Asset Quantity
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    Item
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    Unit Of Measure
+                </th>
+                <th style="border: 1px solid black;border-collapse: collapse;">
+                    Location
+                </th>
+            </tr>
+            
+            <% for(var i=0; i < data.length; i++) { %>
+               <tr style="border: 1px solid black;border-collapse: collapse;">
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].AssetNumber %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].AssetDesc %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].Cost %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].LTD_DEP %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].NBV %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].AssertQuantity %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].Item %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].UnitOfMeasure %></td>
+                <td style="text-align: center;border: 1px solid black;border-collapse: collapse;"><%= data[i].Location %></td>
+               </tr>
+            <% } %>
+        </table>
+
+        <p>Remarks : <%= Remarks %></p>
+
+        <p>Regards,<br>LTC</p>
+    </body>
+</html>

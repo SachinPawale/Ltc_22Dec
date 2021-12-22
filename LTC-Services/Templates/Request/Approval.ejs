@@ -1,0 +1,64 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <div style="width: 20%; margin-left: 0px;">
+            <table style="margin-left: 5px;">
+                <tr>
+                    <td style="margin-left: 0px;">
+                        <p style="font-family: Calibri; color: #0b3263;;">
+                            Dear User,
+                        </p> 
+                        <p style="font-family: Calibri; color: #0b3263;">
+                            Following requests are pending for your approval.
+                        </p>
+                        <table style="font-family: Calibri; border: 1px solid; border-color: #5bc0de; width: 80%; padding: 4px; margin: 1px;
+                        border-collapse: collapse; margin: 0;"> 
+                        <thead style="font-weight: bold; border: 1px solid hidden; background-color: #4882c5; border-collapse: collapse; color: white; font-size: 14px;">
+                        <tr style="border: 1px solid;">
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 10%">Code </th>
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 10%">Lob </th>
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 10%">Sublob </th>
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 10%">Inventory Type </th>
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 15%">Inventory Name </th>
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 10%">Validity </th>
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 15%">Raised By </th>
+                            <th style="border: 1px solid; white-space:nowrap; padding: 10px; width: 10%">Raised Date </th>
+                         </tr>
+                        </thead>
+                        <tbody>
+                            <% for(var i=0; i< data.length; i++ ){ %>
+                                <tr style="border: 1px solid; font-size: 14px; border-collapse: collapse; background-color: white; color: black;">
+                                    <td style="border:1px solid; padding: 10px; width: 5%"><%= data[i].Code %> </td>
+                                    <td style="border:1px solid; padding: 10px; width: 10%"><%= data[i].Lob %> </td>
+                                    <td style="border:1px solid; padding: 10px; width: 10%"><%= data[i].Sublob %> </td>
+                                    <td style="border:1px solid; padding: 10px; width: 10%"><%= data[i].InventoryType %> </td>
+                                    <td style="border:1px solid; padding: 10px; width: 10%"><%= data[i].InventoryName %> </td>
+                                    <td style="border:1px solid; padding: 10px; width: 10%"><%= data[i].Validity %> </td>
+                                    <td style="border:1px solid; padding: 10px; width: 15%"><%= data[i].RaisedBy %> </td>
+                                    <td style="border:1px solid; padding: 10px; width: 10%"><%= data[i].CreatedDate %> </td>
+                                   
+                                </tr>
+                            <% } %>
+                        </tbody>
+                        </table>
+                        <p style="font-family: Calibri; color: #0b3263;">
+                            For further information, please log into <%= ui_url %>
+                        </p>
+                        <span style="font-family: Calibri; color: #0b3263;">
+                            Regards,
+                        </span><br />
+                        <span style="font-family: Calibri; color: #0b3263;">
+                            EGIA Repository Administrator,
+                        </span><br /><br />
+                        <span style="font-family: Calibri; color: #0b3263;">
+                           This is a system generated mail, please do not reply to this email id
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </body>
+</html>
