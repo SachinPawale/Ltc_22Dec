@@ -1,17 +1,17 @@
 var environmentConfig = {
     local: {
-        service_port: 1339,
-        ui_url: 'http://10.3.0.71/',
+        service_port: 1330,
+        ui_url: 'http://10.3.0.71:4200/',
         group_mail: '',
         emailConfig: {
             email_host: '',
             from_email: 'sachin.pawale@neweltechnologies.com',
         },
         dbConn: {
-            dbServer: '10.3.0.71',
+            dbServer: 'localhost',
             dbName: 'ltcportal',
-            dbUser: 'ltcportal',
-            dbPassword: 'Itcportal@2021'
+            dbUser: 'root',
+            dbPassword: 'india@123'
         }
     },
     sit: {

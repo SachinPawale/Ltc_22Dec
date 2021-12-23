@@ -216,7 +216,7 @@ var routes = function () {
 
     router.route('/GetAllMuptipleASSET_Details')
         .get(function (req, res) {
-
+	    dataconn.errorlogger('transaction', 'Get All Muptiple ASSET Details', 'Check');
             const Asset = datamodel.Asset();
             var param = {
                 include: { all: true, nested: true },
@@ -239,6 +239,8 @@ var routes = function () {
 
     router.route('/CreateMultipleAsset')
         .post(function (req, res) {
+
+	        dataconn.errorlogger('transaction', 'Get All Muptiple ASSET Details', req.body);
 
             connect.sequelize.transaction().then(trans => {
 
