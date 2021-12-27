@@ -10,7 +10,8 @@ var sequelize = new Sequelize(config.dbConn.dbName, config.dbConn.dbUser, config
     define: {
         timestamps: false,
     },
-    timezone: "Asia/Kolkata"
+    timezone: "+05:30"
+    //timezone: "Asia/Kolkata"
 });
 
 var Op = Sequelize.Op;

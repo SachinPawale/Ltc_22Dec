@@ -10,8 +10,8 @@ var environmentConfig = {
         dbConn: {
             dbServer: 'localhost',
             dbName: 'ltcportal',
-            dbUser: 'root',
-            dbPassword: 'india@123'
+            dbUser: 'ltcportal',
+            dbPassword: 'Itcportal@2021'
         }
     },
     sit: {
@@ -133,7 +133,7 @@ const OrganizationData = {
 const LocationData = {
     configData : {
         method: 'get',
-        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/locationsV2/',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/locationsV2?limit=2000',
         headers: {
             'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
         }

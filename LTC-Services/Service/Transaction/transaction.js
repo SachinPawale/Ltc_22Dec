@@ -12,6 +12,7 @@ var moment = require('moment');
 const configuration = require('../../Config');
 const emailService = require('../../Common/EmailService');
 const path = require('path');
+const excelService = require('../../Common/ExcelFile');
 
 var routes = function () {
     router.route('/GetAssertDetailsByASSET_NUMBER')
@@ -216,7 +217,7 @@ var routes = function () {
 
     router.route('/GetAllMuptipleASSET_Details')
         .get(function (req, res) {
-	    dataconn.errorlogger('transaction', 'Get All Muptiple ASSET Details', 'Check');
+
             const Asset = datamodel.Asset();
             var param = {
                 include: { all: true, nested: true },
@@ -240,8 +241,6 @@ var routes = function () {
     router.route('/CreateMultipleAsset')
         .post(function (req, res) {
 
-	        dataconn.errorlogger('transaction', 'Get All Muptiple ASSET Details', req.body);
-
             connect.sequelize.transaction().then(trans => {
 
                 const Asset = datamodel.Asset();
@@ -257,7 +256,7 @@ var routes = function () {
                     DesORGCode: req.body.DesORGCode.OrganizationCode,
                     DesTypeCode: req.body.DesTypeCode,
                     Locator: req.body.Locator,
-                    DesSubInventoryCode: req.body.DesSubInventoryCode,
+                    DesSubInventoryCode: req.body.AssetType == 'CAM'? 'CAM' : req.body.DesSubInventoryCode,
                     DFFS: req.body.DFFS,
                     StatusId: req.body.StatusId,
                     CreatedBy: 1
@@ -944,51 +943,58 @@ var routes = function () {
                 MiscRecieptAPI(request,sequencedata)
                 .then(async(result)=>{
 
-                    const AssetDetails = datamodel.AssetDetails();
-                    var param = {
-                        attributes: [ ['miscResponseStatus',"mis"] ] ,
-                        where: { AssetId : req.body.Id }           
-                    };
-        
-                    let miscResponseStatusdata = await dataaccess.FindAll(AssetDetails, param);
-                    let misAPIStatus = true;
-                    miscResponseStatusdata.forEach((element) => {
-                        if(element.dataValues.mis != 201){
-                            misAPIStatus = false;
-                        }
-                    });
-                    console.log("Check misAPIStatus",misAPIStatus);
-                    if(misAPIStatus == true){
-                        TransferMethodAPI(request,sequencedata)
-                        .then((finalresult)=>{
-                            console.log("ApproveRejectAsset API Ended")
+                    console.log("misc resolved")
 
-                            let pdftemplateData = {
-                                Remarks: "Approved successfully" ,
-                                data: req.body.AssetRequestBody.AssetDetails
-                            };
-                            let mailtemplateData = {
-                                Status: 'Approved'
-                            };
-                            let mailData = {
-                                fromEmail : "Notification.Centre@Lightstorm.in",
-                                toEmail : "rahul.g@neweltechnologies.com" ,
-                                subjectEmail : "Asset Status"
-                            };
-                            const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
-                            const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
-                            sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
-
-                            res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
-                        })
-                        .catch((error)=>{
-                            res.status(200).json({ success: false, message: "Transfer Method API Error", Data: error });
+                    setTimeout(async function () {
+                        console.log("wait")
+                        const AssetDetails = datamodel.AssetDetails();
+                        var param = {
+                            attributes: [ ['miscResponseStatus',"mis"] ] ,
+                            where: { AssetId : req.body.Id }           
+                        };
+            
+                        let miscResponseStatusdata = await dataaccess.FindAll(AssetDetails, param);
+                        let misAPIStatus = true;
+                        miscResponseStatusdata.forEach((element) => {
+                            if(element.dataValues.mis != 201){
+                                misAPIStatus = false;
+                            }
                         });
-                    }  
-                    else{
-                        console.log("misAPIStatus false , ApproveRejectAsset API Ended");
-                        res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
-                    }
+                        console.log("Check misAPIStatus",misAPIStatus);
+                        if(misAPIStatus == true){
+                            TransferMethodAPI(request,sequencedata)
+                            .then((finalresult)=>{
+                                console.log("ApproveRejectAsset API Ended")
+
+                                let pdftemplateData = {
+                                    Remarks: "Approved successfully" ,
+                                    data: req.body.AssetRequestBody.AssetDetails
+                                };
+                                let mailtemplateData = {
+                                    Status: 'Approved'
+                                };
+                                let mailData = {
+                                    fromEmail : "Notification.Centre@Lightstorm.in",
+                                    toEmail : "rahul.g@neweltechnologies.com" ,
+                                    subjectEmail : "Asset Status"
+                                };
+                                const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
+                                const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
+                                sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+
+                                res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
+                            })
+                            .catch((error)=>{
+                                res.status(200).json({ success: false, message: "Transfer Method API Error", Data: error });
+                            });
+                        }  
+                        else{
+                            console.log("misAPIStatus false , ApproveRejectAsset API Ended");
+                            res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
+                        }
+                    }, 1000)
+
+                    
                 })
                 .catch((error)=>{
                     res.status(200).json({ success: false, message: "Misc Method API Error", Data: error });
@@ -1070,6 +1076,8 @@ var routes = function () {
                 let UseCurrentCostFlag = configuration.miscRecieptData.HardCodedData.UseCurrentCostFlag;
                 let CostComponentCode = configuration.miscRecieptData.HardCodedData.CostComponentCode;
 
+                let promises = [];
+                
                 asset.forEach(async(element,index, array) => {
                     if(element.miscResponseStatus != 201){
                         Seqeuence1 = Seqeuence1 + 1;
@@ -1107,7 +1115,7 @@ var routes = function () {
                             ],
                             "costs": [
                             {
-                                "Cost": element.Cost,
+                                "Cost": element.NBV,
                                 "CostComponentCode": CostComponentCode //Hardcoded
                             }
                             ]
@@ -1120,10 +1128,64 @@ var routes = function () {
                             data : data
                         };
 
-                        axios(config)
-                        .then(async function (response) {
-                                console.log("AssetNumber response status:",response.status)
+                        promises.push(axios(config));
 
+                        // axios(config)
+                        // .then(async function (response) {
+                        //         console.log("AssetNumber response status:",response.status)
+
+                        //         const AssetDetails = datamodel.AssetDetails();
+                        //         var values = {
+                        //             TransactionTypeName : TransactionTypeName,
+                        //             TransactionMode : TransactionMode,
+                        //             UseCurrentCostFlag : UseCurrentCostFlag,
+                        //             CostComponentCode : CostComponentCode,
+                        //             miscResponseStatus: response.status,
+                        //             TransactionHeaderId: response.data.TransactionHeaderId,
+                        //             TransactionInterfaceId : response.data.TransactionInterfaceId,
+                        //             ModifiedDate: connect.sequelize.fn("NOW"),
+                        //         };
+                        //         var param = { Id: element.Id };
+                        //         dataaccess.Update(AssetDetails, values, param)
+                        //         .then(()=>{
+                        //             console.log("Misc Loop index",index);
+                        //             if (index === array.length -1){
+                        //                 console.log('Misc Method For each Ended');
+                        //                 resolve();
+                        //             } 
+                        //         })
+                        //         .catch((error)=>{
+                        //             console.log(error);
+                        //             //reject();
+                        //         });
+                        // })
+                        // .catch(function (error) {
+                        //     //console.log("catch error",error);
+                        //     // console.log("error response status",error.response.status);
+                        //     //  console.log("error response data",error.response.data);
+                        //      if(error.response.status == 400){
+                        //         dataconn.apiResponselogger('Misc Reciept API',requestBody.AssetRequestBody.Id,0,error.response.status,error.response.data,1);
+                        //      }
+                        //     //reject();
+                        // });
+                    }
+                });
+
+                Promise.all(promises).then(function (results) {
+                    results.forEach(function (response,index,array) {
+
+                        console.log("AssetNumber response status:",response.status);
+                        let responseSeq1 = response.data.SourceLineId;
+                        let responseSeq2 = response.data.SourceHeaderId;
+                        let responseSeq3 = response.data.TransactionCostIdentifier;
+
+                        console.log("Seq1",responseSeq1);
+                        console.log("Seq2",responseSeq2);
+                        console.log("Seq3",responseSeq3);
+                        console.log("TransactionHeaderId",response.data.TransactionHeaderId);
+                        console.log("TransactionInterfaceId",response.data.TransactionInterfaceId);
+
+                        
                                 const AssetDetails = datamodel.AssetDetails();
                                 var values = {
                                     TransactionTypeName : TransactionTypeName,
@@ -1135,10 +1197,13 @@ var routes = function () {
                                     TransactionInterfaceId : response.data.TransactionInterfaceId,
                                     ModifiedDate: connect.sequelize.fn("NOW"),
                                 };
-                                var param = { Id: element.Id };
+                                var param = { 
+                                    Seq1: responseSeq1 ,
+                                    Seq2: responseSeq2 ,
+                                    Seq3: responseSeq3 
+                                };
                                 dataaccess.Update(AssetDetails, values, param)
                                 .then(()=>{
-                                    console.log("Misc Loop index",index);
                                     if (index === array.length -1){
                                         console.log('Misc Method For each Ended');
                                         resolve();
@@ -1146,20 +1211,21 @@ var routes = function () {
                                 })
                                 .catch((error)=>{
                                     console.log(error);
-                                    //reject();
                                 });
-                        })
-                        .catch(function (error) {
-                            //console.log("catch error",error);
-                            // console.log("error response status",error.response.status);
-                            //  console.log("error response data",error.response.data);
-                             if(error.response.status == 400){
-                                dataconn.apiResponselogger('Misc Reciept API',requestBody.AssetRequestBody.Id,0,error.response.status,error.response.data,1);
-                             }
-                            //reject();
-                        });
-                    }
-                });
+
+                        if(response.status != 201){
+                            dataconn.apiResponselogger('Misc Reciept API',requestBody.AssetRequestBody.Id,0,response.status,response.data,1);
+                        }
+                    });
+                })
+                .catch(function (error) {
+                        dataconn.errorlogger('TransactionService', 'Misc Function Promise.all Error', error);
+                         if(error.response.status == 400){
+                            dataconn.apiResponselogger('Misc Reciept API',requestBody.AssetRequestBody.Id,0,error.response.status,error.response.data,1);
+                         }
+                        //reject();
+                    });
+
             }
         });
     }
@@ -1517,6 +1583,39 @@ var routes = function () {
             console.log('Error : ', error)
         });  
     }
+
+    router.route('/dumpExcel')
+    .get(function (req, res) {
+        excelService.ExportExcelFile()
+        .then((results)=>{
+                const famiscmaster1 = datamodel.famiscmaster1();
+                famiscmaster1.destroy({
+                        where: {},
+                        truncate: true
+                })
+                .then(() => {
+                    var bulkdata = results.workSheetsFromFile;
+                    famiscmaster1.bulkCreate(bulkdata).then(() => {
+                        return famiscmaster1.findAll();
+                    })
+                    .then((result) => {
+                        res.status(200).json({ Success: true, Message: "All records saved successfully", Data: null });
+                    })
+                    .catch(function (error) {
+                        dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+                        res.status(200).json({ Success: false, Message: "Error while saving details", Data: error });
+                    });
+                })
+                .catch(function (error) {
+                    dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+                    res.status(200).json({ Success: true, Message: "Error while truncate", Data: error });
+                });
+        })
+        .catch((error)=>{
+            dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+            res.status(200).json({ Success: false, Message: 'Error', Data: error });
+        });
+    });
 
     return router;
 

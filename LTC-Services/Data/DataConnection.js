@@ -30,6 +30,7 @@ module.exports.CreateTable = function (res) {
     datamodel.UIRoleMap();
 
     datamodel.famiscmaster();
+    datamodel.famiscmaster1();
     datamodel.OrganizationDetails();
     datamodel.LocationDetails();
     datamodel.AssetDetails();

@@ -23,6 +23,7 @@ class UIMst extends Model { }
 // class BranchMst extends Model { }
 
 class famiscmaster extends Model { }
+class famiscmaster1 extends Model { }
 class Asset extends Model { }
 class AssetDetails extends Model { }
 class OrganizationDetails extends Model { }
@@ -649,6 +650,30 @@ module.exports.famiscmaster = function () {
         tableName: "famiscmaster",
     });
     return famiscmaster;
+};
+
+module.exports.famiscmaster1 = function () {
+    famiscmaster1.init({
+        Id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+        ASSET_ID: { type: Sequelize.INTEGER, allowNull: true },
+        ASSET_NUMBER: { type: Sequelize.INTEGER, allowNull: true },
+        ASSET_DESC: { type: Sequelize.STRING(500), allowNull: true },
+        CURRENT_UNITS: { type: Sequelize.INTEGER, allowNull: true },
+        COST: { type: Sequelize.DOUBLE, allowNull: true },
+        DEPRN_RESERVE: { type: Sequelize.DOUBLE, allowNull: true },
+        NBV: { type: Sequelize.DOUBLE, allowNull: true },
+        LOCATION: { type: Sequelize.STRING(100), allowNull: true },
+        ITEM_NUMBER: { type: Sequelize.STRING(100), allowNull: true },
+        ITEM_DESC: { type: Sequelize.STRING(500), allowNull: true },
+        ATTRIBUTE1: { type: Sequelize.STRING(200), allowNull: true },
+        PRIMARY_UOM_CODEA: { type: Sequelize.STRING(100), allowNull: true },
+        INVENTORY_ITEM_ID: { type: Sequelize.DOUBLE, allowNull: true }
+    }, {
+        sequelize,
+        modelName: "famiscmaster1",
+        tableName: "famiscmaster1",
+    });
+    return famiscmaster1;
 };
 
 module.exports.MailLog = function () {
