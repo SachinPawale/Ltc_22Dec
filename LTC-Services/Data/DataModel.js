@@ -28,6 +28,7 @@ class Asset extends Model { }
 class AssetDetails extends Model { }
 class OrganizationDetails extends Model { }
 class LocationDetails extends Model { }
+class SubInventoryDetails extends Model { }
 //class EntityMaster extends Model { }
 //class CurrencyMaster extends Model { }
 class ApiResponseDetail extends Model { }
@@ -160,6 +161,7 @@ module.exports.Asset = function () {
         DesTypeCode: { type: Sequelize.STRING(200), allowNull: true },
         Locator: { type: Sequelize.STRING(200), allowNull: true },
         DesSubInventoryCode: { type: Sequelize.STRING(200), allowNull: true },
+        DesSubInventoryName: { type: Sequelize.STRING(200), allowNull: true },
         DFFS: { type: Sequelize.STRING(200), allowNull: true },
         EntityCode:{type:Sequelize.STRING(100),allowNull:true},
         CurrencyCode:{type:Sequelize.STRING(100),allowNull:true},
@@ -695,5 +697,26 @@ module.exports.MailLog = function () {
     return MailLog;
 };
 
+module.exports.SubInventoryDetails = function () {
+    SubInventoryDetails.init({
+        Id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
+        Description: { type: Sequelize.STRING(200), allowNull: true },
+        OrganizationId: { type: Sequelize.STRING(200), allowNull: true },
+        SecondaryInventoryName: { type: Sequelize.STRING(200), allowNull: true },
+        OrganizationCode: { type: Sequelize.STRING(200), allowNull: true },
+        IsActive: { type: Sequelize.BOOLEAN, allowNull: true , defaultValue:true },
+        CreatedBy: { type: Sequelize.BIGINT, allowNull: true },
+        CreatedDate: { type: Sequelize.DATE,allowNull: true,defaultValue: Sequelize.NOW},
+        ModifiedBy: { type: Sequelize.BIGINT, allowNull: true },
+        ModifiedDate: { type: Sequelize.DATE,allowNull: true }
+    }, {
+        sequelize,
+        modelName: 'SubInventoryDetails',
+        tableName: 'SubInventoryDetails',
+    });
+
+    return SubInventoryDetails;
+
+}
 
 ////#endregion

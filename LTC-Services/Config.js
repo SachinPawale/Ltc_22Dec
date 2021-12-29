@@ -140,6 +140,17 @@ const LocationData = {
     }
 }
 
+const SubinventoryData = {
+    configData : {
+        method: 'get',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/subinventories?limit=2000',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            //'Cookie': 'ak_bmsc=B9244C35BF30314DA14FEF96BAC9F1F5~000000000000000000000000000000~YAAQXDZ8aBkKneV9AQAACesK/A7VBMHwoU7xE/eSLP2pwHWXYJVEqfMHDDYW0cz3ewtuQuYvzp/zsLdYpAEOQY10tFfSWyd6zM9bKOdk4BNPcnxl/vVdbowV7blvvxK9q8fRbHQplU4TOK/kv5usLJ48XeO4U+ynN3IO/ZYY78YhQ2MPB2dtVbbVVg8+3dIYSD74NV186qVPLDLABbiht9eWzB3Re69ACIIPGLBfTeAQuXQbVcPCxXSoPVGrBBfhSpIxsprwzKPaBo9IOf6iUf6JyecDlwdZHGZ5xJ6D9Dus0gNaLN/O32SVPYj4f7/uTrFhlheHgK6yU1Ghrwv2BTRoCmPcr7n8Q9sK6SOoBmH+SWJ5y5KYXmh6TonFsqW0ipkQ7BoeBY0=; bm_sv=8807AB44B2F685F1D8F918BA0150D946~58zY590GBW+mMbQyc11qG7RDj5ciHI6tZcaGMOPwha/YEej86DvT8/oFWZULKj+BgB9tbwqZ8u9dHEe2661v4pEhaujCjFapm+dpJ9COSJ83h2Gr7Dx7Lr5dYifFdnEJq5UMQm+64V0uA9FyzcfYeoChRaTms0KNxAMTV/jA4iI='
+        }
+    }
+}
+
 const EmailSMTPConfig = {
     host: "smtp.office365.com",   //SMTP Host Address
     port: 587,                 //SMTP PORT
@@ -157,6 +168,7 @@ module.exports.dbConn = finalConfig.dbConn;
 
 module.exports.OrganizationData = OrganizationData;
 module.exports.LocationData = LocationData;
+module.exports.SubinventoryData = SubinventoryData;
 
 module.exports.miscRecieptData = miscRecieptData;
 module.exports.transferMoveOrderData = transferMoveOrderData;

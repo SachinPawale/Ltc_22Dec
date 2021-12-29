@@ -36,6 +36,7 @@ module.exports.CreateTable = function (res) {
     datamodel.AssetDetails();
     datamodel.Asset();
     datamodel.ApiResponseDetail();
+    datamodel.SubInventoryDetails();
     //datamodel.EntityMaster();
     //datamodel.CurrencyMaster();
 

@@ -13,6 +13,7 @@ const configuration = require('../../Config');
 const emailService = require('../../Common/EmailService');
 const path = require('path');
 const excelService = require('../../Common/ExcelFile');
+const sequelize = connect.sequelize;
 
 var routes = function () {
     router.route('/GetAssertDetailsByASSET_NUMBER')
@@ -65,11 +66,15 @@ var routes = function () {
                     })
         });
 
-    router.route('/GetAllASSET_NUMBER')
+    router.route('/GetAllASSET_NUMBER/:LOCATION')
         .get(function (req, res) {
 
             const famiscmaster = datamodel.famiscmaster();
-            var param = { attributes: ['Id', 'ASSET_NUMBER'], order: [['ASSET_NUMBER']] };
+            var param = { 
+                    attributes: ['Id', 'ASSET_NUMBER'],
+                    where: { LOCATION: req.params.LOCATION },
+                    order: [['ASSET_NUMBER']]
+                };
 
             dataaccess.FindAll(famiscmaster, param)
                 .then(function (result) {
@@ -256,10 +261,12 @@ var routes = function () {
                     DesORGCode: req.body.DesORGCode.OrganizationCode,
                     DesTypeCode: req.body.DesTypeCode,
                     Locator: req.body.Locator,
-                    DesSubInventoryCode: req.body.AssetType == 'CAM'? 'CAM' : req.body.DesSubInventoryCode,
+                    //DesSubInventoryCode: req.body.AssetType == 'CAM'? 'CAM' : req.body.DesSubInventoryCode,
+                    DesSubInventoryCode: req.body.DesSubInventoryCode,
+                    DesSubInventoryName: req.body.DesSubInventoryName,
                     DFFS: req.body.DFFS,
                     StatusId: req.body.StatusId,
-                    CreatedBy: 1
+                    CreatedBy: req.body.userId
                 };
                 dataaccess.CreateWithTransaction(Asset, values, trans)
                     .then(function (result) {
@@ -280,7 +287,7 @@ var routes = function () {
                                     ItemDesc: mapitem.ITEM_DESC,
                                     UnitOfMeasure: mapitem.PRIMARY_UOM_CODEA,
                                     Location: mapitem.LOCATION,
-                                    CreatedBy: 1
+                                    CreatedBy: req.body.userId
                                 });
                             });
 
@@ -1274,7 +1281,7 @@ var routes = function () {
                     "SupplyOrderReferenceLineId": Seqeuence6, //HardCoded
                     "DestinationOrganizationCode": requestBody.AssetRequestBody.DesORGCode,
                     "SourceOrganizationCode": requestBody.AssetRequestBody.OrganizationDetail.OrganizationCode,
-                    "DestinationSubinventoryCode": requestBody.AssetRequestBody.DesSubInventoryCode,
+                    "DestinationSubinventoryCode": requestBody.AssetRequestBody.DesSubInventoryName,
                     "SourceSubinventoryCode": requestBody.AssetRequestBody.AssetType,
                     "ItemNumber": element.Item,
                     "InterfaceSourceCode": InterfaceSourceCode, //HardCoded
@@ -1358,7 +1365,7 @@ var routes = function () {
                                 const Asset = datamodel.Asset();
                                 var values = {
                                         StatusId: 1,
-                                        ModifiedBy: 1,
+                                        //ModifiedBy: 1,
                                         ModifiedDate: connect.sequelize.fn('NOW'),
                                     };
                                 var param = { Id: requestBody.AssetRequestBody.Id };
@@ -1616,6 +1623,91 @@ var routes = function () {
             res.status(200).json({ Success: false, Message: 'Error', Data: error });
         });
     });
+
+    router.route('/CreateSubInventoryDetails')
+    .post(function (req, res) {
+            var config = {
+                method : configuration.SubinventoryData.configData.method,
+                url : configuration.SubinventoryData.configData.url,
+                headers : configuration.SubinventoryData.configData.headers
+            };
+            axios(config)
+                .then(function (response) {
+                    const SubInventoryDetails = datamodel.SubInventoryDetails();
+                    SubInventoryDetails.destroy({
+                        where: {},
+                        truncate: true
+                    })
+                        .then(() => {
+                            var bulkdata = response.data.items;
+                            SubInventoryDetails.bulkCreate(bulkdata).then(() => {
+                                return SubInventoryDetails.findAll();
+                            })
+                                .then(result => {
+                                    res.status(200).json({ Success: true, Message: "All SubInventoryDetails saved successfully", Data: result });
+                                })
+                                .catch(function (error) {
+                                    dataconn.errorlogger('TransactionService', 'CreateSubInventoryDetails', error);
+                                    res.status(200).json({ Success: false, Message: "Error while saving SubInventoryDetails", Data: error });
+                                });
+                        })
+                        .catch(function (error) {
+                            dataconn.errorlogger('TransactionService', 'CreateSubInventoryDetails', error);
+                            res.status(200).json({ Success: true, Message: "Error while saving SubInventoryDetails", Data: error });
+                        });
+                })
+                .catch(function (error) {
+                    dataconn.errorlogger('TransactionService', 'CreateSubInventoryDetails', error);
+                    res.status(200).json({ Success: true, Message: "Error while saving SubInventoryDetails", Data: error });
+                });
+        });
+
+    router.route('/GetSubInventoryDetails')
+    .post(function (req, res) {
+            const SubInventoryDetails = datamodel.SubInventoryDetails();
+            var param = {
+                where: { 
+                    Description: req.body.Description,
+                    OrganizationId: req.body.OrganizationId,
+                    IsActive: true
+                }
+            };
+            dataaccess.FindAll(SubInventoryDetails, param)
+                .then(function (result) {
+                    if (result.length != 0) {
+                        res.status(200).json({ success: true, message: "SubInventoryDetails access", Data: result })
+                    }
+                    else {
+                        res.status(200).json({ success: false, message: "No such SubInventoryDetails data found",Data: null });
+                    }
+                },
+                    function (err) {
+                        dataconn.errorlogger('transaction', 'GetSubInventoryDetails', err);
+                        res.status(200).json({ success: false, message: "User has no access of SubInventoryDetails", Data: null });
+                    })
+        });
+
+    router.route('/GetDistinctAssetLocation')
+    .get(function (req, res) {
+
+            const famiscmaster = datamodel.famiscmaster();
+            var param = {
+                attributes: [[sequelize.fn('DISTINCT', sequelize.col('LOCATION')), 'Asset_Location']],
+            };
+
+            dataaccess.FindAll(famiscmaster, param)
+                .then(function (result) {
+                    if (result != null) {
+                        res.status(200).json({ Success: true, Message: 'Famiscmaster Access', Data: result });
+                    }
+                    else {
+                        res.status(200).json({ Success: false, Message: 'User has no access of Famiscmaster', Data: null });
+                    }
+                }, function (err) {
+                    dataconn.errorlogger('transaction', 'GetDistinctAssetLocation', err);
+                    res.status(200).json({ Success: false, Message: 'User has no access of Famiscmaster', Data: null });
+                });
+        });
 
     return router;
 
