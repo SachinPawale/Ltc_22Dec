@@ -71,7 +71,7 @@ var routes = function () {
 
             const famiscmaster = datamodel.famiscmaster();
             var param = { 
-                    attributes: ['Id', 'ASSET_NUMBER'],
+                    attributes: ['Id', 'ASSET_NUMBER', 'ITEM_DESC','SUPPLIER_CODE'],
                     where: { LOCATION: req.params.LOCATION },
                     order: [['ASSET_NUMBER']]
                 };

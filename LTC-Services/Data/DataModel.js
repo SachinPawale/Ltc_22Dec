@@ -645,7 +645,8 @@ module.exports.famiscmaster = function () {
         ITEM_DESC: { type: Sequelize.STRING(500), allowNull: true },
         ATTRIBUTE1: { type: Sequelize.STRING(200), allowNull: true },
         PRIMARY_UOM_CODEA: { type: Sequelize.STRING(100), allowNull: true },
-        INVENTORY_ITEM_ID: { type: Sequelize.DOUBLE, allowNull: true }
+        INVENTORY_ITEM_ID: { type: Sequelize.DOUBLE, allowNull: true },
+        SUPPLIER_CODE: { type: Sequelize.STRING(200), allowNull: true }
     }, {
         sequelize,
         modelName: "famiscmaster",
