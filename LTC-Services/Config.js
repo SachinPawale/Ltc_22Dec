@@ -1,7 +1,7 @@
 var environmentConfig = {
     local: {
-        service_port: 1330,
-        ui_url: 'http://10.3.0.71:4200/',
+        service_port: 1339,
+        ui_url: 'http://localhost:4200/',
         group_mail: '',
         emailConfig: {
             email_host: '',
@@ -10,8 +10,8 @@ var environmentConfig = {
         dbConn: {
             dbServer: 'localhost',
             dbName: 'ltcportal',
-            dbUser: 'ltcportal',
-            dbPassword: 'Itcportal@2021'
+            dbUser: 'root',
+            dbPassword: 'india@123'
         }
     },
     sit: {
@@ -30,18 +30,18 @@ var environmentConfig = {
         }
     },
     uat: {
-        service_port: 1338,
-        ui_url: 'http://192.168.1.103:1338/',
+        service_port: 1330,
+        ui_url: 'http://10.3.0.71:4200/',
         group_mail: '',
         emailConfig: {
-            email_host: '10.250.6.63',
+            email_host: '',
             from_email: 'sachin.pawale@neweltechnologies.com',
         },
         dbConn: {
             dbServer: 'localhost',
-            dbName: 'BFSL',
-            dbUser: 'postgres',
-            dbPassword: '1234',
+            dbName: 'ltcportal',
+            dbUser: 'ltcportal',
+            dbPassword: 'Itcportal@2021'
         }
     },
     live: {
@@ -61,7 +61,7 @@ var environmentConfig = {
     }
 }
 
-var environment = 'local';
+var environment = 'uat';
 
 const finalConfig = environmentConfig[environment];
 

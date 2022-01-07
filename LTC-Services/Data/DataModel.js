@@ -33,6 +33,7 @@ class SubInventoryDetails extends Model { }
 //class CurrencyMaster extends Model { }
 class ApiResponseDetail extends Model { }
 
+class rmomaster extends Model { }
 ////#region Tables
 // module.exports.CurrencyMaster = function () {
 //     CurrencyMaster.init({
@@ -203,6 +204,9 @@ module.exports.AssetDetails = function () {
         ItemDesc: { type: Sequelize.STRING(500), allowNull: true },
         UnitOfMeasure: { type: Sequelize.STRING(100), allowNull: true },
         Location: { type: Sequelize.STRING(100), allowNull: true },
+
+        LotNumber:{ type: Sequelize.TEXT, allowNull: true },
+        SupplierCode:{ type: Sequelize.STRING(200), allowNull: true },
 
         Seq1 : { type: Sequelize.BIGINT, allowNull: true },
         Seq2 : { type: Sequelize.BIGINT, allowNull: true },
@@ -719,5 +723,29 @@ module.exports.SubInventoryDetails = function () {
     return SubInventoryDetails;
 
 }
+
+module.exports.rmomaster = function () {
+    rmomaster.init({
+        Id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+        LINE_NUMBER: { type: Sequelize.INTEGER, allowNull: true },
+        LOCATION_NAME: { type: Sequelize.TEXT, allowNull: true },
+        INTERNAL_LOCATION_CODE: { type: Sequelize.TEXT, allowNull: true },
+        ITEM_NUMBER: { type: Sequelize.TEXT, allowNull: true },
+        PRIMARY_UOM_CODE: { type: Sequelize.TEXT, allowNull: true },
+        INVT_ITEM_ID: { type: Sequelize.DOUBLE, allowNull: true },
+        ITEM_DESC: { type: Sequelize.TEXT, allowNull: true },
+        SUPPLIER_ITEM_DESC: { type: Sequelize.TEXT, allowNull: true },
+        SUPPLIER_ITEM_CODE: { type: Sequelize.TEXT, allowNull: true },
+        RECEIPT_NUM: { type: Sequelize.INTEGER, allowNull: true },
+        TRN_QTY: { type: Sequelize.INTEGER, allowNull: true },
+        LOT_NUMBER: { type: Sequelize.TEXT, allowNull: true },
+        COST: { type: Sequelize.INTEGER, allowNull: true }
+    }, {
+        sequelize,
+        modelName: "rmomaster",
+        tableName: "rmomaster",
+    });
+    return rmomaster;
+};
 
 ////#endregion

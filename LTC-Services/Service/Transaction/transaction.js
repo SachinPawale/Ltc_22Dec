@@ -272,23 +272,46 @@ var routes = function () {
                     .then(function (result) {
                         if (result != null) {
 
+                            let AssetType = req.body.AssetType;
+
                             const AssetDetails = datamodel.AssetDetails();
                             var mapDetails = [];
                             var promiseDetails = req.body.AssetDetails.map(function (mapitem) {
-                                mapDetails.push({
-                                    AssetId: result.Id,
-                                    AssetNumber: mapitem.ASSET_NUMBER,
-                                    AssetDesc: mapitem.ASSET_DESC,
-                                    Cost: mapitem.COST,
-                                    LTD_DEP: mapitem.DEPRN_RESERVE,
-                                    NBV: mapitem.NBV,
-                                    AssertQuantity: mapitem.CURRENT_UNITS,
-                                    Item: mapitem.ITEM_NUMBER,
-                                    ItemDesc: mapitem.ITEM_DESC,
-                                    UnitOfMeasure: mapitem.PRIMARY_UOM_CODEA,
-                                    Location: mapitem.LOCATION,
-                                    CreatedBy: req.body.userId
-                                });
+                                if(AssetType == 'CAM' || AssetType == 'SRN'){
+                                    mapDetails.push({
+                                        AssetId: result.Id,
+                                        AssetNumber: mapitem.ASSET_NUMBER,
+                                        AssetDesc: mapitem.ASSET_DESC,
+                                        Cost: mapitem.COST,
+                                        LTD_DEP: mapitem.DEPRN_RESERVE,
+                                        NBV: mapitem.NBV,
+                                        AssertQuantity: mapitem.CURRENT_UNITS,
+                                        Item: mapitem.ITEM_NUMBER,
+                                        ItemDesc: mapitem.ITEM_DESC,
+                                        UnitOfMeasure: mapitem.PRIMARY_UOM_CODEA,
+                                        Location: mapitem.LOCATION,
+                                        SupplierCode:mapitem.SUPPLIER_CODE,
+                                        CreatedBy: req.body.userId
+                                    });
+                                }
+                                else{
+                                    mapDetails.push({
+                                        AssetId: result.Id,
+                                        //AssetNumber: mapitem.ASSET_NUMBER,
+                                        //AssetDesc: mapitem.ASSET_DESC,
+                                        Cost: mapitem.COST,
+                                        //LTD_DEP: mapitem.DEPRN_RESERVE,
+                                        //NBV: mapitem.NBV,
+                                        AssertQuantity: mapitem.ITEM_QUANTITY,
+                                        LotNumber:mapitem.LOT_NUMBER,
+                                        Item: mapitem.ITEM_NUMBER,
+                                        ItemDesc: mapitem.ITEM_DESC,
+                                        UnitOfMeasure: mapitem.PRIMARY_UOM_CODE,
+                                        Location: mapitem.INTERNAL_LOCATION_CODE,
+                                        SupplierCode:mapitem.SUPPLIER_ITEM_CODE,
+                                        CreatedBy: req.body.userId
+                                    });
+                                }
                             });
 
                             Promise.all(promiseDetails).then(function () {
@@ -309,7 +332,7 @@ var routes = function () {
                                         };
                                         const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/createAssetPDF.ejs');
                                         const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/createAssetResponse.ejs');
-                                        sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+                                        //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
 
                                         res.status(200).json({ Success: true, Message: 'Asset saved successfully', Data: result });
                                     },
@@ -367,6 +390,13 @@ var routes = function () {
                 };
             }
             else if (TYPE == 'SRN') {
+                var param = {
+                    where: {
+                        InventoryOrganizationId: { [Op.ne]: null }
+                    }
+                };
+            }
+            else if (TYPE == 'RMO') {
                 var param = {
                     where: {
                         InventoryOrganizationId: { [Op.ne]: null }
@@ -987,7 +1017,7 @@ var routes = function () {
                                 };
                                 const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
                                 const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
-                                sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+                                //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
 
                                 res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
                             })
@@ -1034,7 +1064,7 @@ var routes = function () {
                             };
                             const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
                             const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
-                            sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+                            //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
                             res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: result });
                         }
                         else {
@@ -1072,6 +1102,8 @@ var routes = function () {
             else{
                 console.log("MiscRecieptAPI Started")
                 let requestBody = request;
+                //console.log("Asset Type",requestBody.AssetRequestBody.AssetType)
+                let requestAssetType = requestBody.AssetRequestBody.AssetType;
                 let sequencedata = sequence;
                 let Seqeuence1 = (sequencedata.Seq1 != null)?(sequencedata.Seq1) : configuration.miscRecieptData.SequenceData.Seqeuence1;
                 let Seqeuence2 = (sequencedata.Seq2 != null)?(sequencedata.Seq2) : configuration.miscRecieptData.SequenceData.Seqeuence2;
@@ -1116,13 +1148,13 @@ var routes = function () {
                             "TransactionCostIdentifier": Seqeuence3,
                             "lots": [
                             {
-                                "LotNumber": element.AssetNumber + "-" + moment(requestBody.AssetRequestBody.TransactionDate).format('YYYYMMDD'),
+                                "LotNumber": requestAssetType == 'RMO'? element.LotNumber : element.AssetNumber + "-" + moment(requestBody.AssetRequestBody.TransactionDate).format('YYYYMMDD'),
                                 "TransactionQuantity": element.AssertQuantity
                             }
                             ],
                             "costs": [
                             {
-                                "Cost": element.NBV,
+                                "Cost": requestAssetType == 'RMO'? element.Cost : element.NBV,
                                 "CostComponentCode": CostComponentCode //Hardcoded
                             }
                             ]
@@ -1708,6 +1740,86 @@ var routes = function () {
                     res.status(200).json({ Success: false, Message: 'User has no access of Famiscmaster', Data: null });
                 });
         });
+
+    
+    //RMO Start
+
+    router.route('/GetDistinctItemLocation')
+    .get(function (req, res) {
+
+            const rmomaster = datamodel.rmomaster();
+            var param = {
+                attributes: [
+                    [ sequelize.fn('DISTINCT', sequelize.col('INTERNAL_LOCATION_CODE')), 'INTERNAL_LOCATION_CODE'],
+                    'LOCATION_NAME'  
+                ],
+            };
+
+            dataaccess.FindAll(rmomaster, param)
+                .then(function (result) {
+                    if (result != null) {
+                        res.status(200).json({ Success: true, Message: 'rmomaster Access', Data: result });
+                    }
+                    else {
+                        res.status(200).json({ Success: false, Message: 'User has no access of rmomaster', Data: null });
+                    }
+                }, function (err) {
+                    dataconn.errorlogger('transaction', 'GetDistinctItemLocation', err);
+                    res.status(200).json({ Success: false, Message: 'User has no access of rmomaster', Data: null });
+                });
+        });
+
+    router.route('/GetItemDetailsByITEM_NUMBER')
+        .post(function (req, res) {
+            let ITEM_NUMBER_Obj = req.body.ITEM_NUMBER;
+            let INTERNAL_LOCATION_CODE_Obj = req.body.INTERNAL_LOCATION_CODE;
+            const rmomaster = datamodel.rmomaster();
+            var param = {
+                where: { 
+                    INTERNAL_LOCATION_CODE:INTERNAL_LOCATION_CODE_Obj,
+                    ITEM_NUMBER: ITEM_NUMBER_Obj },
+            };
+            dataaccess.FindAll(rmomaster, param)
+                .then(function (result) {
+                    if (result != null) {
+                        res.status(200).json({ success: true, message: "rmomaster access", Data: result })
+                    }
+                    else {
+                        res.status(200).json({ success: false, message: "User has no access of rmomaster",Data: null });
+                    }
+                },
+                    function (err) {
+                        dataconn.errorlogger('transaction', 'GetAssertDetailsByITEM_NUMBER', err);
+                        res.status(200).json({ success: false, message: "User has no access of rmomaster", Data: null });
+                    })
+        });
+
+        router.route('/GetAllITEM_NUMBER/:INTERNAL_LOCATION_CODE')
+        .get(function (req, res) {
+
+            const rmomaster = datamodel.rmomaster();
+            var param = { 
+                    attributes: ['Id', 'ITEM_NUMBER', 'INTERNAL_LOCATION_CODE' ,'ITEM_DESC','SUPPLIER_ITEM_CODE','SUPPLIER_ITEM_DESC','LOT_NUMBER'],
+                    where: { INTERNAL_LOCATION_CODE: req.params.INTERNAL_LOCATION_CODE },
+                    order: [['ITEM_NUMBER']]
+                };
+
+            dataaccess.FindAll(rmomaster, param)
+                .then(function (result) {
+                    if (result != null) {
+                        res.status(200).json({ Success: true, Message: 'rmomaster Access', Data: result });
+                    }
+                    else {
+                        res.status(200).json({ Success: false, Message: 'User has no access of rmomaster', Data: null });
+                    }
+                }, function (err) {
+                    dataconn.errorlogger('transaction', 'GetAllITEM_NUMBER', err);
+                    res.status(200).json({ Success: false, Message: 'user has no access of rmomaster', Data: null });
+                });
+        });
+
+
+    //RMO End
 
     return router;
 
