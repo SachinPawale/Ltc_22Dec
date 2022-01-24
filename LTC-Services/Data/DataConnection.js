@@ -38,6 +38,17 @@ module.exports.CreateTable = function (res) {
     datamodel.ApiResponseDetail();
     datamodel.SubInventoryDetails();
     datamodel.rmomaster();
+
+    datamodel.AssetHistory();
+    datamodel.AssetDetailsHistory();
+
+    datamodel.BoEEntry();
+    datamodel.BoEMasterDetails();
+    datamodel.PortMaster();
+    // datamodel.UserJourney();
+
+    datamodel.BoEDetails();
+    datamodel.BoEDetailsMap();
     //datamodel.EntityMaster();
     //datamodel.CurrencyMaster();
 
@@ -46,7 +57,7 @@ module.exports.CreateTable = function (res) {
     // datamodel.PincodeMst();
     // datamodel.BankMst();
     // datamodel.BranchMst();
-    
+
     connect.sequelize.sync()
         .then(() => {
             res.status(200).json({ Success: true, Message: 'Tables updated', Data: null });
@@ -78,7 +89,7 @@ module.exports.maillogger = function (mailobj) {
     const MailLog = datamodel.MailLog();
 
     var values = {
-        assetId : mailobj.assetId,
+        assetId: mailobj.assetId,
         mailTo: mailobj.mailTo,
         mailFrom: mailobj.mailFrom,
         mailSubject: mailobj.mailSubject,
@@ -97,16 +108,16 @@ module.exports.maillogger = function (mailobj) {
 }
 
 //
-module.exports.apiResponselogger = function (ApiName, AsssetId, AssetNumber ,
-    API_ResponseStatusCode,API_ResponseData, CreatedBy) {
+module.exports.apiResponselogger = function (ApiName, AsssetId, AssetNumber,
+    API_ResponseStatusCode, API_ResponseData, CreatedBy) {
 
     var values = {
         ApiName: ApiName,
         AsssetId: AsssetId,
         AssetNumber: AssetNumber,
-        API_ResponseStatusCode:API_ResponseStatusCode,
+        API_ResponseStatusCode: API_ResponseStatusCode,
         API_ResponseData: API_ResponseData,
-        CreatedBy:CreatedBy
+        CreatedBy: CreatedBy
     };
 
     dataaccess.Create(datamodel.ApiResponseDetail(), values)

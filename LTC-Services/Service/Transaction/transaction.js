@@ -36,7 +36,7 @@ var routes = function () {
                     }
                 },
                     function (err) {
-                        dataconn.errorlogger('transaction', 'GetAssertDetailsByASSET_NUMBER', err);
+                        dataconn.errorlogger('TransactionService', 'GetAssertDetailsByASSET_NUMBER', err);
                         res.status(200).json({ success: false, message: "User has no access of famiscmaster", Data: null });
                     })
         });
@@ -61,7 +61,7 @@ var routes = function () {
                     }
                 },
                     function (err) {
-                        dataconn.errorlogger('transaction', 'GetAssertDetailsByASSET_Id', err);
+                        dataconn.errorlogger('TransactionService', 'GetAssertDetailsByASSET_Id', err);
                         res.status(200).json({ success: false, message: "User has no access of AssetDetails", Data: null });
                     })
         });
@@ -70,11 +70,11 @@ var routes = function () {
         .get(function (req, res) {
 
             const famiscmaster = datamodel.famiscmaster();
-            var param = { 
-                    attributes: ['Id', 'ASSET_NUMBER', 'ITEM_DESC','SUPPLIER_CODE'],
-                    where: { LOCATION: req.params.LOCATION },
-                    order: [['ASSET_NUMBER']]
-                };
+            var param = {
+                attributes: ['Id', 'ASSET_NUMBER', 'ITEM_DESC', 'SUPPLIER_CODE'],
+                where: { LOCATION: req.params.LOCATION },
+                order: [['ASSET_NUMBER']]
+            };
 
             dataaccess.FindAll(famiscmaster, param)
                 .then(function (result) {
@@ -85,7 +85,7 @@ var routes = function () {
                         res.status(200).json({ Success: false, Message: 'User has no access of famiscmaster', Data: null });
                     }
                 }, function (err) {
-                    dataconn.errorlogger('transaction', 'GetAllASSET_NUMBER', err);
+                    dataconn.errorlogger('TransactionService', 'GetAllASSET_NUMBER', err);
                     res.status(200).json({ Success: false, Message: 'user has no access of famiscmaster', Data: null });
                 });
         });
@@ -149,7 +149,7 @@ var routes = function () {
                         res.status(200).json({ Success: false, Message: 'User has no access of AssetDetails', Data: null });
                     }
                 }, function (err) {
-                    dataconn.errorlogger('transaction', 'GetAllASSET_Details', err);
+                    dataconn.errorlogger('TransactionService', 'GetAllASSET_Details', err);
                     res.status(200).json({ Success: false, Message: 'user has no access of AssetDetails', Data: null });
                 });
         });
@@ -164,8 +164,8 @@ var routes = function () {
                 //     'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
                 //     'Cookie': 'ak_bmsc=D9EB9F9CB408E75F55D392946AB7130A~000000000000000000000000000000~YAAQBl8sMdx7+Ah9AQAAt2W2cA3lv2apxvi/XpT3UD0ErCIWsRhegqAG+ig0JkkXodB6+GPuQdRWD9O/jWIdA+0fYu2PkPXDeZbyUMxXCzq79HMCYqudTrLdvJtwiMMApUFmOuA74kpWw8xIiBFEDQirPLms8fVwP2RFXqFPCJZwpTCsItwjM67iWBjujJBFQpS7NftX95lfjMXQORHnuaRixSJKVm5VAeD3F8tiVwHlfhREzyujqqhf7+ykAq8E2kUfm8TUer/8EJJS5+jGt6pFB1ufp7FBCs8gTs94Uoc97WOOlFSNr9+dvOswfn/JXAgFgBGTJB7unSBp0bx7M5gRzFzl/gfgaKqNzi5LQvXuEzHNePwf7ED49qXf4DTty/ZHtN2qTOw='
                 // }
-                method : configuration.OrganizationData.configData.method,
-                url : configuration.OrganizationData.configData.url,
+                method: configuration.OrganizationData.configData.method,
+                url: configuration.OrganizationData.configData.url,
                 headers: configuration.OrganizationData.configData.headers
             };
 
@@ -215,7 +215,7 @@ var routes = function () {
                         res.status(200).json({ Success: false, Message: 'User has no access of OrganizationDetails', Data: null });
                     }
                 }, function (err) {
-                    dataconn.errorlogger('transaction', 'GetAllOrganization', err);
+                    dataconn.errorlogger('TransactionService', 'GetAllOrganization', err);
                     res.status(200).json({ Success: false, Message: 'user has no access of OrganizationDetails', Data: null });
                 });
         });
@@ -226,7 +226,7 @@ var routes = function () {
             const Asset = datamodel.Asset();
             var param = {
                 include: { all: true, nested: true },
-                order: [['Id','DESC']]
+                order: [['Id', 'DESC']]
             };
 
             dataaccess.FindAll(Asset, param)
@@ -249,16 +249,17 @@ var routes = function () {
             connect.sequelize.transaction().then(trans => {
 
                 const Asset = datamodel.Asset();
+                // console.log("orginzation", req.body.Organization);
                 var values = {
                     SerialNumber: req.body.SerialNumber,
                     ReceiptNumber: req.body.ReceiptNumber,
                     AssetNumber: req.body.AssetNumber,
-                    OrganizationId: req.body.Organization.OrganizationId,
-                    LocationCode: req.body.ToLocation.LocationCode,
+                    OrganizationId: req.body.Organization == null ? null : req.body.Organization.OrganizationId,
+                    LocationCode: req.body.ToLocation == null ? null : req.body.ToLocation.LocationCode,
                     AssetType: req.body.AssetType,
                     InterfaceBatchNumber: req.body.InterfaceBatchNumber,
                     TransactionDate: req.body.TransactionDate,
-                    DesORGCode: req.body.DesORGCode.OrganizationCode,
+                    DesORGCode: req.body.DesORGCode == null ? null : req.body.DesORGCode.OrganizationCode,
                     DesTypeCode: req.body.DesTypeCode,
                     Locator: req.body.Locator,
                     //DesSubInventoryCode: req.body.AssetType == 'CAM'? 'CAM' : req.body.DesSubInventoryCode,
@@ -277,7 +278,7 @@ var routes = function () {
                             const AssetDetails = datamodel.AssetDetails();
                             var mapDetails = [];
                             var promiseDetails = req.body.AssetDetails.map(function (mapitem) {
-                                if(AssetType == 'CAM' || AssetType == 'SRN'){
+                                if (AssetType == 'CAM' || AssetType == 'SRN') {
                                     mapDetails.push({
                                         AssetId: result.Id,
                                         AssetNumber: mapitem.ASSET_NUMBER,
@@ -290,11 +291,13 @@ var routes = function () {
                                         ItemDesc: mapitem.ITEM_DESC,
                                         UnitOfMeasure: mapitem.PRIMARY_UOM_CODEA,
                                         Location: mapitem.LOCATION,
-                                        SupplierCode:mapitem.SUPPLIER_CODE,
+                                        SupplierCode: mapitem.SUPPLIER_CODE,
+                                        LocationCode: mapitem.LOCATION_CODE,
+                                        DepartmentCode: mapitem.DEPTARTMENT_CODE,
                                         CreatedBy: req.body.userId
                                     });
                                 }
-                                else{
+                                else {
                                     mapDetails.push({
                                         AssetId: result.Id,
                                         //AssetNumber: mapitem.ASSET_NUMBER,
@@ -303,12 +306,14 @@ var routes = function () {
                                         //LTD_DEP: mapitem.DEPRN_RESERVE,
                                         //NBV: mapitem.NBV,
                                         AssertQuantity: mapitem.ITEM_QUANTITY,
-                                        LotNumber:mapitem.LOT_NUMBER,
+                                        LotNumber: mapitem.LOT_NUMBER,
                                         Item: mapitem.ITEM_NUMBER,
                                         ItemDesc: mapitem.ITEM_DESC,
                                         UnitOfMeasure: mapitem.PRIMARY_UOM_CODE,
                                         Location: mapitem.INTERNAL_LOCATION_CODE,
-                                        SupplierCode:mapitem.SUPPLIER_ITEM_CODE,
+                                        SupplierCode: mapitem.SUPPLIER_ITEM_CODE,
+                                        LocationCode: mapitem.LOCATION_CODE,
+                                        DepartmentCode: mapitem.DEPTARTMENT_CODE,
                                         CreatedBy: req.body.userId
                                     });
                                 }
@@ -319,26 +324,26 @@ var routes = function () {
                                     .then((assetresult) => {
                                         trans.commit();
 
-                                        
+
                                         let pdftemplateData = {
-                                            URL:req.protocol + '://' + req.get('host'),
+                                            URL: req.protocol + '://' + req.get('host'),
                                             Remarks: "Pending For Approval"
                                         };
                                         let mailtemplateData = {};
                                         let mailData = {
-                                            fromEmail : "Notification.Centre@Lightstorm.in",
-                                            toEmail : "rahul.g@neweltechnologies.com" ,
-                                            subjectEmail : "New Asset Request"
+                                            fromEmail: "Notification.Centre@Lightstorm.in",
+                                            toEmail: "rahul.g@neweltechnologies.com",
+                                            subjectEmail: "New Asset Request"
                                         };
-                                        const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/createAssetPDF.ejs');
-                                        const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/createAssetResponse.ejs');
+                                        const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetPDF.ejs');
+                                        const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetResponse.ejs');
                                         //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
 
                                         res.status(200).json({ Success: true, Message: 'Asset saved successfully', Data: result });
                                     },
                                         function (err) {
                                             trans.rollback();
-                                            dataconn.errorlogger('transaction', 'CreateMultipleAsset', err);
+                                            dataconn.errorlogger('TransactionService', 'CreateMultipleAsset', err);
                                             res.status(200).json({ Success: false, Message: 'Error occurred while saving record', Data: null });
                                         });
                             });
@@ -346,7 +351,7 @@ var routes = function () {
 
                     }, function (err) {
                         trans.rollback();
-                        dataconn.errorlogger('transaction', 'CreateMultipleAsset', err);
+                        dataconn.errorlogger('TransactionService', 'CreateMultipleAsset', err);
                         res.status(200).json({ Success: false, Message: 'Error occurred while saving record', Data: null });
                     });
             });
@@ -417,7 +422,7 @@ var routes = function () {
                     }
                 },
                     function (err) {
-                        dataconn.errorlogger('transaction', 'GetAllLocation', err);
+                        dataconn.errorlogger('TransactionService', 'GetAllLocation', err);
                         res.status(200).json({ success: false, message: "User has no access of LocationDetails", Data: null });
                     })
         });
@@ -430,9 +435,9 @@ var routes = function () {
                 // headers: {
                 //     'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
                 // }
-                method : configuration.LocationData.configData.method,
-                url : configuration.LocationData.configData.url,
-                headers : configuration.LocationData.configData.headers
+                method: configuration.LocationData.configData.method,
+                url: configuration.LocationData.configData.url,
+                headers: configuration.LocationData.configData.headers
             };
             axios(config)
                 .then(function (response) {
@@ -450,12 +455,12 @@ var routes = function () {
                                     res.status(200).json({ Success: true, Message: "All LocationDetails saved successfully", Data: result });
                                 })
                                 .catch(function (error) {
-                                    dataconn.errorlogger('LocationDetails', 'LocationDetails', error);
+                                    dataconn.errorlogger('TransactionService', 'CreateLocationDetails', error);
                                     res.status(200).json({ Success: false, Message: "Error while saving LocationDetails", Data: error });
                                 });
                         })
                         .catch(function (error) {
-                            dataconn.errorlogger('TransactionService', 'LocationDetails', error);
+                            dataconn.errorlogger('TransactionService', 'CreateLocationDetails', error);
                             res.status(200).json({ Success: true, Message: "Error while saving LocationDetails", Data: error });
                         });
                 })
@@ -531,86 +536,86 @@ var routes = function () {
     //             });
     //     });
 
-        // router.route('/transferMoveOrder')
-        // .post(function (req, res) {
+    // router.route('/transferMoveOrder')
+    // .post(function (req, res) {
 
 
-        //     let AssetType = req.body.AssetRequestBody.AssetType;
-        //     let InterfaceSourceCode = "EXT";
-        //     let SupplyRequestStatus = "NEW";
-        //     let SupplyOrderSource = "EXT";
-        //     let SupplyOrderReferenceId = 1;
-        //     let TransferCostCurrencyCode = "INR";
-        //     let ProcessRequestFlag = "Y";
-        //     let SupplyOrderReferenceLineId = 1;
-        //     let BackToBackFlag = "N";
-        //     let PreparerEmail = "akshay.arora@depthconsulting.in";
-        //     let DeliverToRequesterEmail = "akshay.arora@depthconsulting.in";
-        //     let SupplyType = "TRANSFER";
-        //     let DestinationTypeCode;
-        //     if(AssetType == "CAM"){
-        //         DestinationTypeCode = "EXPENSE"
-        //     }
-        //     else if(AssetType == "SRN"){
-        //         DestinationTypeCode = "INVENTORY"
-        //     }
-        //     else{
-        //         DestinationTypeCode = "INVENTORY"
-        //     }
+    //     let AssetType = req.body.AssetRequestBody.AssetType;
+    //     let InterfaceSourceCode = "EXT";
+    //     let SupplyRequestStatus = "NEW";
+    //     let SupplyOrderSource = "EXT";
+    //     let SupplyOrderReferenceId = 1;
+    //     let TransferCostCurrencyCode = "INR";
+    //     let ProcessRequestFlag = "Y";
+    //     let SupplyOrderReferenceLineId = 1;
+    //     let BackToBackFlag = "N";
+    //     let PreparerEmail = "akshay.arora@depthconsulting.in";
+    //     let DeliverToRequesterEmail = "akshay.arora@depthconsulting.in";
+    //     let SupplyType = "TRANSFER";
+    //     let DestinationTypeCode;
+    //     if(AssetType == "CAM"){
+    //         DestinationTypeCode = "EXPENSE"
+    //     }
+    //     else if(AssetType == "SRN"){
+    //         DestinationTypeCode = "INVENTORY"
+    //     }
+    //     else{
+    //         DestinationTypeCode = "INVENTORY"
+    //     }
 
-        //     var data = JSON.stringify({
-        //         "InterfaceSourceCode": InterfaceSourceCode, //HardCoded
-        //         "InterfaceBatchNumber": "batch100001", //Seq4
-        //         "SupplyRequestStatus": SupplyRequestStatus, //HardCoded
-        //         "SupplyRequestDate": "2021-12-03T11:00:03.503-08:00",
-        //         "SupplyOrderSource": SupplyOrderSource, //HardCoded
-        //         "SupplyOrderReferenceNumber": "200001", //Seq5
-        //         "SupplyOrderReferenceId": SupplyOrderReferenceId, //HardCoded
-        //         "TransferCostCurrencyCode": TransferCostCurrencyCode , //HardCoded
-        //         "ProcessRequestFlag": ProcessRequestFlag, //HardCoded
-        //         "supplyRequestLines": [
-        //           {
-        //             "InterfaceBatchNumber": "batch100001", //Seq4
-        //             "SupplyOrderReferenceLineNumber": "300001", //Seq6
-        //             "SupplyOrderReferenceLineId": SupplyOrderReferenceLineId, //HardCoded
-        //             "DestinationOrganizationCode": "LTC_GUJARAT",
-        //             "SourceOrganizationCode": "LTC_DELHI",
-        //             "DestinationSubinventoryCode": "Stores GJ",
-        //             "SourceSubinventoryCode": "Stores DL",
-        //             "ItemNumber": "LTC-10000253",
-        //             "InterfaceSourceCode": InterfaceSourceCode, //HardCoded
-        //             "SupplyOrderSource": SupplyOrderSource, //HardCoded
-        //             "BackToBackFlag": BackToBackFlag, //HardCoded
-        //             "NeedByDate": "2021-12-04T01:01:12.123-08:00",
-        //             "Quantity": 10,
-        //             "UOMCode": "EA",
-        //             "PreparerEmail": PreparerEmail, //HardCoded
-        //             "DeliverToRequesterEmail": DeliverToRequesterEmail, //HardCoded
-        //             "DestinationTypeCode": DestinationTypeCode,
-        //             "SupplyType": SupplyType //HardCoded
-        //           }
-        //         ]
-        //       });
-              
-        //       var config = {
-        //         method: 'post',
-        //         url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/supplyRequests',
-        //         headers: { 
-        //           'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
-        //           'Content-Type': 'application/json'
-        //         },
-        //         data : data
-        //       };
-              
-        //       axios(config)
-        //       .then(function (response) {
-        //         console.log(JSON.stringify(response.data));
-        //       })
-        //       .catch(function (error) {
-        //         console.log(error);
-        //       });
-            
-        // });
+    //     var data = JSON.stringify({
+    //         "InterfaceSourceCode": InterfaceSourceCode, //HardCoded
+    //         "InterfaceBatchNumber": "batch100001", //Seq4
+    //         "SupplyRequestStatus": SupplyRequestStatus, //HardCoded
+    //         "SupplyRequestDate": "2021-12-03T11:00:03.503-08:00",
+    //         "SupplyOrderSource": SupplyOrderSource, //HardCoded
+    //         "SupplyOrderReferenceNumber": "200001", //Seq5
+    //         "SupplyOrderReferenceId": SupplyOrderReferenceId, //HardCoded
+    //         "TransferCostCurrencyCode": TransferCostCurrencyCode , //HardCoded
+    //         "ProcessRequestFlag": ProcessRequestFlag, //HardCoded
+    //         "supplyRequestLines": [
+    //           {
+    //             "InterfaceBatchNumber": "batch100001", //Seq4
+    //             "SupplyOrderReferenceLineNumber": "300001", //Seq6
+    //             "SupplyOrderReferenceLineId": SupplyOrderReferenceLineId, //HardCoded
+    //             "DestinationOrganizationCode": "LTC_GUJARAT",
+    //             "SourceOrganizationCode": "LTC_DELHI",
+    //             "DestinationSubinventoryCode": "Stores GJ",
+    //             "SourceSubinventoryCode": "Stores DL",
+    //             "ItemNumber": "LTC-10000253",
+    //             "InterfaceSourceCode": InterfaceSourceCode, //HardCoded
+    //             "SupplyOrderSource": SupplyOrderSource, //HardCoded
+    //             "BackToBackFlag": BackToBackFlag, //HardCoded
+    //             "NeedByDate": "2021-12-04T01:01:12.123-08:00",
+    //             "Quantity": 10,
+    //             "UOMCode": "EA",
+    //             "PreparerEmail": PreparerEmail, //HardCoded
+    //             "DeliverToRequesterEmail": DeliverToRequesterEmail, //HardCoded
+    //             "DestinationTypeCode": DestinationTypeCode,
+    //             "SupplyType": SupplyType //HardCoded
+    //           }
+    //         ]
+    //       });
+
+    //       var config = {
+    //         method: 'post',
+    //         url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/supplyRequests',
+    //         headers: { 
+    //           'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+    //           'Content-Type': 'application/json'
+    //         },
+    //         data : data
+    //       };
+
+    //       axios(config)
+    //       .then(function (response) {
+    //         console.log(JSON.stringify(response.data));
+    //       })
+    //       .catch(function (error) {
+    //         console.log(error);
+    //       });
+
+    // });
 
 
     //     router.route('/UpdateAsset')
@@ -624,7 +629,7 @@ var routes = function () {
     //         let status = req.body.StatusId;
 
     //         if(status == 1 || status == 2){
-                
+
     //             if(status == 1){
     //                 const Asset = datamodel.Asset();
     //                 var values = {
@@ -653,7 +658,7 @@ var routes = function () {
     //                         Seqeuence1 = Seqeuence1 + 1;
     //                         Seqeuence2 = Seqeuence2 + 1;
     //                         Seqeuence3 = Seqeuence3 + 1;
-    
+
     //                         const AssetDetails = datamodel.AssetDetails();
     //                                 var values = {
     //                                     Seq1: Seqeuence1,
@@ -662,7 +667,7 @@ var routes = function () {
     //                                 };
     //                                 var param = { Id: element.Id };
     //                              dataaccess.Update(AssetDetails, values, param);
-    
+
     //                         var data = JSON.stringify({
     //                             "OrganizationName": req.body.AssetRequestBody.OrganizationDetail.OrganizationName,
     //                             "ItemNumber": element.Item,
@@ -690,7 +695,7 @@ var routes = function () {
     //                               }
     //                             ]
     //                           });
-                              
+
     //                           var config = {
     //                             method: 'post',
     //                             url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/inventoryStagedTransactions',
@@ -700,15 +705,15 @@ var routes = function () {
     //                             },
     //                             data : data
     //                           };
-    
+
     //                           //console.log("Body data:", data)
-                              
+
     //                              axios(config)
     //                                 .then(async function (response) {
     //                                 console.log("AssetNumber response status:",response.status)
     //                                 //console.log("AssetNumber response TransactionHeaderId:",response.data.TransactionHeaderId)
     //                                 //console.log("AssetNumber response TransactionInterfaceId:",response.data.TransactionInterfaceId)
-    
+
     //                                 const AssetDetails = datamodel.AssetDetails();
     //                                 var values = {
     //                                     TransactionTypeName : TransactionTypeName,
@@ -741,7 +746,7 @@ var routes = function () {
     //                     attributes: [ ['miscResponseStatus',"mis"] ] ,
     //                     where: { AssetId : req.body.Id }           
     //                 };
-        
+
     //                 let miscResponseStatusdata = await dataaccess.FindAll(AssetDetails, param);
     //                 let misAPIStatus = true;
     //                 miscResponseStatusdata.forEach((element) => {
@@ -749,7 +754,7 @@ var routes = function () {
     //                         misAPIStatus = false;
     //                     }
     //                     //console.log("miscResponseStatusdata",element.dataValues.mis)
-                        
+
     //                 });
 
     //                     console.log("misAPIStatus",misAPIStatus)
@@ -858,7 +863,7 @@ var routes = function () {
     //             "ProcessRequestFlag": ProcessRequestFlag, //HardCoded
     //             "supplyRequestLines": list
     //           });
-              
+
     //           var config = {
     //             method: 'post',
     //             url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/supplyRequests',
@@ -868,7 +873,7 @@ var routes = function () {
     //             },
     //             data : data
     //           };
-              
+
     //           axios(config)
     //           .then(function (response) {
     //               console.log("transfer Response")
@@ -879,7 +884,7 @@ var routes = function () {
     //                 let supplyRequestLines = response.data.supplyRequestLines;
     //                 console.log("Sequence 5",Seqeuence5);
     //                 console.log("Sequence 6",Seqeuence6);
-    
+
     //                 supplyRequestLines.forEach((element) => {
     //                     const AssetDetails = datamodel.AssetDetails();
     //                     var values = {   
@@ -908,7 +913,7 @@ var routes = function () {
     //                 dataaccess.Update(Asset, values, param)
 
     //             }
-                
+
     //           })
     //           .catch(function (error) {
     //             console.log("error response status",error.response.status);
@@ -919,40 +924,40 @@ var routes = function () {
 
     //API Sync Start
 
-    async function getMaxSeqId(){
+    async function getMaxSeqId() {
         const AssetDetails = datamodel.AssetDetails();
         var param = {
-                        attributes: [ 
-                            [Sequelize.fn('MAX', Sequelize.col('Seq1')),"Seq1"],
-                            [Sequelize.fn('MAX', Sequelize.col('Seq2')),"Seq2"],
-                            [Sequelize.fn('MAX', Sequelize.col('Seq3')),"Seq3"], 
-                            [Sequelize.fn('MAX', Sequelize.col('Seq4')),"Seq4"],
-                            [Sequelize.fn('MAX', Sequelize.col('Seq5')),"Seq5"],
-                            [Sequelize.fn('MAX', Sequelize.col('Seq6')),"Seq6"], 
-                        ],
-                        raw:true            
-                    };
+            attributes: [
+                [Sequelize.fn('MAX', Sequelize.col('Seq1')), "Seq1"],
+                [Sequelize.fn('MAX', Sequelize.col('Seq2')), "Seq2"],
+                [Sequelize.fn('MAX', Sequelize.col('Seq3')), "Seq3"],
+                [Sequelize.fn('MAX', Sequelize.col('Seq4')), "Seq4"],
+                [Sequelize.fn('MAX', Sequelize.col('Seq5')), "Seq5"],
+                [Sequelize.fn('MAX', Sequelize.col('Seq6')), "Seq6"],
+            ],
+            raw: true
+        };
         try {
-                let data = await dataaccess.FindOne(AssetDetails, param);
-                return data;
-            } 
-        catch (error) {
-            return error;    
+            let data = await dataaccess.FindOne(AssetDetails, param);
+            return data;
         }
-         
-        
+        catch (error) {
+            return error;
+        }
+
+
     }
 
     router.route('/Getmaxseq')
-    .get(async function (req, res) {
-        try {
-            let data = await getMaxSeqId();
-            res.status(200).json({ success: true, message: "", Data: data })
-        } 
-        catch (error) {
-            res.status(500).json({ success: false, message: "", Data: null })
-        }           
-    });
+        .get(async function (req, res) {
+            try {
+                let data = await getMaxSeqId();
+                res.status(200).json({ success: true, message: "", Data: data })
+            }
+            catch (error) {
+                res.status(500).json({ success: false, message: "", Data: null })
+            }
+        });
 
     router.route('/ApproveRejectAsset')
         .post(async function (req, res) {
@@ -960,12 +965,12 @@ var routes = function () {
             console.log("ApproveRejectAsset API Started")
 
             let request = req.body;
-            let sequencedata =  await getMaxSeqId();
+            let sequencedata = await getMaxSeqId();
             let status = req.body.StatusId;
 
-            if(status == 1 || status == 2){
-                
-                if(status == 1){
+            if (status == 1 || status == 2) {
+
+                if (status == 1) {
                     const Asset = datamodel.Asset();
                     var values = {
                         Remarks: req.body.Remarks,
@@ -977,93 +982,109 @@ var routes = function () {
                     await dataaccess.Update(Asset, values, param)
                 }
 
-                MiscRecieptAPI(request,sequencedata)
-                .then(async(result)=>{
+                MiscRecieptAPI(request, sequencedata)
+                    .then(async (result) => {
 
-                    console.log("misc resolved")
+                        console.log("misc resolved")
 
-                    setTimeout(async function () {
-                        console.log("wait")
-                        const AssetDetails = datamodel.AssetDetails();
-                        var param = {
-                            attributes: [ ['miscResponseStatus',"mis"] ] ,
-                            where: { AssetId : req.body.Id }           
-                        };
-            
-                        let miscResponseStatusdata = await dataaccess.FindAll(AssetDetails, param);
-                        let misAPIStatus = true;
-                        miscResponseStatusdata.forEach((element) => {
-                            if(element.dataValues.mis != 201){
-                                misAPIStatus = false;
-                            }
-                        });
-                        console.log("Check misAPIStatus",misAPIStatus);
-                        if(misAPIStatus == true){
-                            TransferMethodAPI(request,sequencedata)
-                            .then((finalresult)=>{
-                                console.log("ApproveRejectAsset API Ended")
+                        setTimeout(async function () {
+                            console.log("wait")
+                            const AssetDetails = datamodel.AssetDetails();
+                            var param = {
+                                attributes: [['miscResponseStatus', "mis"], "Id", "ModifiedDate"],
+                                where: { AssetId: req.body.Id }
+                            };
 
-                                let pdftemplateData = {
-                                    Remarks: "Approved successfully" ,
-                                    data: req.body.AssetRequestBody.AssetDetails
-                                };
-                                let mailtemplateData = {
-                                    Status: 'Approved'
-                                };
-                                let mailData = {
-                                    fromEmail : "Notification.Centre@Lightstorm.in",
-                                    toEmail : "rahul.g@neweltechnologies.com" ,
-                                    subjectEmail : "Asset Status"
-                                };
-                                const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
-                                const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
-                                //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+                            let miscResponseStatusdata = await dataaccess.FindAll(AssetDetails, param);
+                            let misAPIStatus = true;
+                            let AssetModifiedDate = '';
+                            // console.log("miscResponseStatusdata", miscResponseStatusdata);
+                            miscResponseStatusdata.forEach((element) => {
+                                AssetModifiedDate = element.dataValues.ModifiedDate;
+                                // AssetModifiedDate.push({
 
-                                res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
-                            })
-                            .catch((error)=>{
-                                res.status(200).json({ success: false, message: "Transfer Method API Error", Data: error });
+                                //     Id: element.dataValues.Id,
+                                //     ModifiedDate: element.dataValues.ModifiedDate,
+                                // })
+                                if (element.dataValues.mis != 201) {
+                                    misAPIStatus = false;
+                                }
                             });
-                        }  
-                        else{
-                            console.log("misAPIStatus false , ApproveRejectAsset API Ended");
-                            res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
-                        }
-                    }, 1000)
+                            console.log("AssetModifiedDate", AssetModifiedDate);
 
-                    
-                })
-                .catch((error)=>{
-                    res.status(200).json({ success: false, message: "Misc Method API Error", Data: error });
-                });
+                            console.log("Check misAPIStatus", misAPIStatus);
+                            if (misAPIStatus == true) {
+                                TransferMethodAPI(request, sequencedata, AssetModifiedDate)
+                                    .then((finalresult) => {
+                                        console.log("ApproveRejectAsset API Ended")
+
+                                        let pdftemplateData = {
+                                            Remarks: "Approved successfully",
+                                            data: req.body.AssetRequestBody.AssetDetails
+                                        };
+                                        let mailtemplateData = {
+                                            Status: 'Approved'
+                                        };
+                                        let mailData = {
+                                            fromEmail: "Notification.Centre@Lightstorm.in",
+                                            toEmail: "rahul.g@neweltechnologies.com",
+                                            subjectEmail: "Asset Status"
+                                        };
+                                        const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/pdfTemplate.ejs');
+                                        const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/response.ejs');
+                                        //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+
+                                        res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
+                                    })
+                                    .catch((error) => {
+                                        dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
+                                        res.status(200).json({ success: false, message: "Transfer Method API Error", Data: error });
+                                    });
+                            }
+                            else {
+                                console.log("misAPIStatus false , ApproveRejectAsset API Ended");
+                                dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
+                                res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
+                            }
+                        }, 1000)
+
+
+                    })
+                    .catch((error) => {
+                        dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
+                        res.status(200).json({ success: false, message: "Misc Method API Error", Data: error });
+                    });
 
             }
-            else{
+            else {
                 const Asset = datamodel.Asset();
                 var values = {
                     Remarks: req.body.Remarks,
                     StatusId: req.body.StatusId,
                     ModifiedBy: req.body.ModifiedBy,
                     ModifiedDate: connect.sequelize.fn('NOW'),
+
                 };
+
+
                 var param = { Id: req.body.Id };
                 dataaccess.Update(Asset, values, param)
                     .then(function (result) {
                         if (result != null) {
                             let pdftemplateData = {
-                                Remarks:req.body.Remarks,
+                                Remarks: req.body.Remarks,
                                 data: req.body.AssetRequestBody.AssetDetails
                             };
                             let mailtemplateData = {
                                 Status: 'Rejected'
                             };
                             let mailData = {
-                                fromEmail : "Notification.Centre@Lightstorm.in",
-                                toEmail : "rahul.g@neweltechnologies.com" ,
-                                subjectEmail : "Asset Status"
+                                fromEmail: "Notification.Centre@Lightstorm.in",
+                                toEmail: "rahul.g@neweltechnologies.com",
+                                subjectEmail: "Asset Status"
                             };
-                            const pdfTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
-                            const emailTemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
+                            const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/pdfTemplate.ejs');
+                            const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/response.ejs');
                             //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
                             res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: result });
                         }
@@ -1078,36 +1099,36 @@ var routes = function () {
             }
         });
 
-    async function MiscRecieptAPI(request,sequence){
+    async function MiscRecieptAPI(request, sequence) {
 
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
 
             const AssetDetails = datamodel.AssetDetails();
             var param = {
-                        attributes: [ ['miscResponseStatus',"mis"] ] ,
-                        where: { AssetId : request.Id }           
+                attributes: [['miscResponseStatus', "mis"]],
+                where: { AssetId: request.Id }
             };
-        
+
             let miscResponseStatusdata = await dataaccess.FindAll(AssetDetails, param);
             let misAPIStatus = true;
             miscResponseStatusdata.forEach((element) => {
-                if(element.dataValues.mis != 201){
+                if (element.dataValues.mis != 201) {
                     misAPIStatus = false;
                 }
             });
 
-            if(misAPIStatus == true){
+            if (misAPIStatus == true) {
                 resolve();
             }
-            else{
+            else {
                 console.log("MiscRecieptAPI Started")
                 let requestBody = request;
                 //console.log("Asset Type",requestBody.AssetRequestBody.AssetType)
                 let requestAssetType = requestBody.AssetRequestBody.AssetType;
                 let sequencedata = sequence;
-                let Seqeuence1 = (sequencedata.Seq1 != null)?(sequencedata.Seq1) : configuration.miscRecieptData.SequenceData.Seqeuence1;
-                let Seqeuence2 = (sequencedata.Seq2 != null)?(sequencedata.Seq2) : configuration.miscRecieptData.SequenceData.Seqeuence2;
-                let Seqeuence3 = (sequencedata.Seq3 != null)?(sequencedata.Seq3) : configuration.miscRecieptData.SequenceData.Seqeuence3;
+                let Seqeuence1 = (sequencedata.Seq1 != null) ? (sequencedata.Seq1) : configuration.miscRecieptData.SequenceData.Seqeuence1;
+                let Seqeuence2 = (sequencedata.Seq2 != null) ? (sequencedata.Seq2) : configuration.miscRecieptData.SequenceData.Seqeuence2;
+                let Seqeuence3 = (sequencedata.Seq3 != null) ? (sequencedata.Seq3) : configuration.miscRecieptData.SequenceData.Seqeuence3;
                 let asset = requestBody.AssetRequestBody.AssetDetails;
 
                 let TransactionTypeName = configuration.miscRecieptData.HardCodedData.TransactionTypeName;
@@ -1116,18 +1137,18 @@ var routes = function () {
                 let CostComponentCode = configuration.miscRecieptData.HardCodedData.CostComponentCode;
 
                 let promises = [];
-                
-                asset.forEach(async(element,index, array) => {
-                    if(element.miscResponseStatus != 201){
+
+                asset.forEach(async (element, index, array) => {
+                    if (element.miscResponseStatus != 201) {
                         Seqeuence1 = Seqeuence1 + 1;
                         Seqeuence2 = Seqeuence2 + 1;
                         Seqeuence3 = Seqeuence3 + 1;
 
                         const AssetDetails = datamodel.AssetDetails();
                         var values = {
-                                    Seq1: Seqeuence1,
-                                    Seq2: Seqeuence2,
-                                    Seq3: Seqeuence3
+                            Seq1: Seqeuence1,
+                            Seq2: Seqeuence2,
+                            Seq3: Seqeuence3
                         };
                         var param = { Id: element.Id };
                         dataaccess.Update(AssetDetails, values, param);
@@ -1147,24 +1168,25 @@ var routes = function () {
                             "UseCurrentCostFlag": UseCurrentCostFlag, //Hardcoded
                             "TransactionCostIdentifier": Seqeuence3,
                             "lots": [
-                            {
-                                "LotNumber": requestAssetType == 'RMO'? element.LotNumber : element.AssetNumber + "-" + moment(requestBody.AssetRequestBody.TransactionDate).format('YYYYMMDD'),
-                                "TransactionQuantity": element.AssertQuantity
-                            }
+                                {
+                                    "LotNumber": requestAssetType == 'RMO' ? element.LotNumber : element.AssetNumber + "-" + moment(requestBody.AssetRequestBody.TransactionDate).format('YYYYMMDD'),
+                                    "TransactionQuantity": element.AssertQuantity
+                                }
                             ],
                             "costs": [
-                            {
-                                "Cost": requestAssetType == 'RMO'? element.Cost : element.NBV,
-                                "CostComponentCode": CostComponentCode //Hardcoded
-                            }
+                                {
+                                    "Cost": requestAssetType == 'RMO' ? element.Cost : element.NBV,
+                                    "CostComponentCode": CostComponentCode //Hardcoded
+                                }
                             ]
                         });
-                        
+
+                        // console.log("data", data)
                         var config = {
                             method: configuration.miscRecieptData.configData.method,
-                            url: configuration.miscRecieptData.configData.url ,
+                            url: configuration.miscRecieptData.configData.url,
                             headers: configuration.miscRecieptData.configData.headers,
-                            data : data
+                            data: data
                         };
 
                         promises.push(axios(config));
@@ -1211,75 +1233,82 @@ var routes = function () {
                 });
 
                 Promise.all(promises).then(function (results) {
-                    results.forEach(function (response,index,array) {
+                    results.forEach(function (response, index, array) {
 
-                        console.log("AssetNumber response status:",response.status);
+                        // console.log("AssetNumber response status:", response.status);
+                        // console.log("AssetNumber response:", response);
                         let responseSeq1 = response.data.SourceLineId;
                         let responseSeq2 = response.data.SourceHeaderId;
                         let responseSeq3 = response.data.TransactionCostIdentifier;
 
-                        console.log("Seq1",responseSeq1);
-                        console.log("Seq2",responseSeq2);
-                        console.log("Seq3",responseSeq3);
-                        console.log("TransactionHeaderId",response.data.TransactionHeaderId);
-                        console.log("TransactionInterfaceId",response.data.TransactionInterfaceId);
+                        console.log("Seq1", responseSeq1);
+                        console.log("Seq2", responseSeq2);
+                        console.log("Seq3", responseSeq3);
+                        console.log("TransactionHeaderId", response.data.TransactionHeaderId);
+                        console.log("TransactionInterfaceId", response.data.TransactionInterfaceId);
 
-                        
-                                const AssetDetails = datamodel.AssetDetails();
-                                var values = {
-                                    TransactionTypeName : TransactionTypeName,
-                                    TransactionMode : TransactionMode,
-                                    UseCurrentCostFlag : UseCurrentCostFlag,
-                                    CostComponentCode : CostComponentCode,
-                                    miscResponseStatus: response.status,
-                                    TransactionHeaderId: response.data.TransactionHeaderId,
-                                    TransactionInterfaceId : response.data.TransactionInterfaceId,
-                                    ModifiedDate: connect.sequelize.fn("NOW"),
-                                };
-                                var param = { 
-                                    Seq1: responseSeq1 ,
-                                    Seq2: responseSeq2 ,
-                                    Seq3: responseSeq3 
-                                };
-                                dataaccess.Update(AssetDetails, values, param)
-                                .then(()=>{
-                                    if (index === array.length -1){
-                                        console.log('Misc Method For each Ended');
-                                        resolve();
-                                    } 
-                                })
-                                .catch((error)=>{
-                                    console.log(error);
-                                });
 
-                        if(response.status != 201){
-                            dataconn.apiResponselogger('Misc Reciept API',requestBody.AssetRequestBody.Id,0,response.status,response.data,1);
+                        const AssetDetails = datamodel.AssetDetails();
+                        var values = {
+                            TransactionTypeName: TransactionTypeName,
+                            TransactionMode: TransactionMode,
+                            UseCurrentCostFlag: UseCurrentCostFlag,
+                            CostComponentCode: CostComponentCode,
+                            miscResponseStatus: response.status,
+                            TransactionHeaderId: response.data.TransactionHeaderId,
+                            TransactionInterfaceId: response.data.TransactionInterfaceId,
+                            ModifiedDate: connect.sequelize.fn("NOW"),
+                        };
+                        var param = {
+                            Seq1: responseSeq1,
+                            Seq2: responseSeq2,
+                            Seq3: responseSeq3
+                        };
+                        dataaccess.Update(AssetDetails, values, param)
+                            .then(() => {
+                                if (index === array.length - 1) {
+                                    console.log('Misc Method For each Ended');
+                                    resolve();
+                                }
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                            });
+
+                        if (response.status != 201) {
+                            dataconn.apiResponselogger('Misc Reciept API', requestBody.AssetRequestBody.Id, 0, response.status, response.data, 1);
                         }
                     });
                 })
-                .catch(function (error) {
+                    .catch(function (error) {
+                        console.log("error response", error);
                         dataconn.errorlogger('TransactionService', 'Misc Function Promise.all Error', error);
-                         if(error.response.status == 400){
-                            dataconn.apiResponselogger('Misc Reciept API',requestBody.AssetRequestBody.Id,0,error.response.status,error.response.data,1);
-                         }
-                        //reject();
+
+                        if (error.response) {
+                            if (error.response.status == 400) {
+                                dataconn.apiResponselogger('Misc Reciept API', requestBody.AssetRequestBody.Id, 0, error.response.status, error.response.data, 1);
+                            }
+                        }
+                        reject();
                     });
 
             }
         });
     }
 
-    async function TransferMethodAPI(request,sequence){
+    async function TransferMethodAPI(request, sequence, ModifiedDate) {
         return new Promise((resolve, reject) => {
             console.log("TransferMethodAPI Started")
-            
+
             let requestBody = request;
             let sequencedata = sequence;
             let Seqeuence4 = requestBody.AssetRequestBody.InterfaceBatchNumber;
             //let Seqeuence4 = (sequencedata.Seq4 != null)?(sequencedata.Seq4) : 40000001;
-            let Seqeuence5 = (sequencedata.Seq5 != null)?(sequencedata.Seq5 + 1) : configuration.transferMoveOrderData.SequenceData.Seqeuence5;
-            let Seqeuence6 = (sequencedata.Seq6 != null)?(sequencedata.Seq6) : configuration.transferMoveOrderData.SequenceData.Seqeuence6;
+            let Seqeuence5 = (sequencedata.Seq5 != null) ? (sequencedata.Seq5 + 1) : configuration.transferMoveOrderData.SequenceData.Seqeuence5;
+
+            let Seqeuence6 = (sequencedata.Seq6 != null) ? (sequencedata.Seq6) : configuration.transferMoveOrderData.SequenceData.Seqeuence6;
             let AssetType = requestBody.AssetRequestBody.AssetType;
+            // let ApiSeqeuence5 = AssetType + '-' + Seqeuence5;
             let InterfaceSourceCode = configuration.transferMoveOrderData.HardCodedData.InterfaceSourceCode;
             let SupplyRequestStatus = configuration.transferMoveOrderData.HardCodedData.SupplyRequestStatus;
             let SupplyOrderSource = configuration.transferMoveOrderData.HardCodedData.SupplyOrderSource;
@@ -1292,22 +1321,42 @@ var routes = function () {
             let DeliverToRequesterEmail = configuration.transferMoveOrderData.HardCodedData.DeliverToRequesterEmail;
             let SupplyType = configuration.transferMoveOrderData.HardCodedData.SupplyType;
             let DestinationTypeCode;
-            if(AssetType == "CAM"){
+            if (AssetType == "CAM") {
                 DestinationTypeCode = configuration.transferMoveOrderData.HardCodedData.DestinationTypeCode.CAM
             }
-            else if(AssetType == "SRN"){
+            else if (AssetType == "SRN") {
                 DestinationTypeCode = configuration.transferMoveOrderData.HardCodedData.DestinationTypeCode.SRN
             }
-            else{
+            else {
                 DestinationTypeCode = configuration.transferMoveOrderData.HardCodedData.DestinationTypeCode.RMO
             }
 
             let asset = requestBody.AssetRequestBody.AssetDetails;
             let list = [];
+            console.log("AssetData", asset);
+            asset.forEach(async (element) => {
+                // let AssetModifiedDate = "";
+                // ModifiedDateArray.forEach((element2) => {
+                //     if (element.Id == element2.Id) {
+                //         AssetModifiedDate = element2.ModifiedDate
+                //     }
+                // });
+                // console.log("AssetModifiedDate", AssetModifiedDate);
+                console.log("ModifiedDate", moment(ModifiedDate).format('YYYY-MM-DD'));
 
-            asset.forEach(async(element) => {
                 Seqeuence6 = Seqeuence6 + 1;
                 list.push({
+                    "supplyRequestLinesXferDFF":
+                        [{
+                            "locationCode": element.LocationCode.toString(),
+                            "departmentCode": element.DepartmentCode.toString(),
+                            "camDate": moment(element.CreatedDate).format('YYYY-MM-DD'),
+                            "camApprovalDate": moment(ModifiedDate).format('YYYY-MM-DD'),
+                            "assetNumber": AssetType == 'RMO' ? "" : element.AssetNumber,
+                            "remarks": requestBody.AssetRequestBody.DFFS,
+                            "source": AssetType
+                        }
+                        ],
                     "InterfaceBatchNumber": Seqeuence4, //Seq4
                     "SupplyOrderReferenceLineNumber": Seqeuence6, //Seq6
                     "SupplyOrderReferenceLineId": Seqeuence6, //HardCoded
@@ -1326,17 +1375,19 @@ var routes = function () {
                     "DeliverToRequesterEmail": DeliverToRequesterEmail, //HardCoded
                     "DestinationTypeCode": DestinationTypeCode, //HardCoded
                     "SupplyType": SupplyType, //HardCoded
-                    "DestinationLocation": requestBody.AssetRequestBody.LocationCode 
+                    "DestinationLocation": requestBody.AssetRequestBody.LocationCode
                 });
 
                 const AssetDetails = datamodel.AssetDetails();
-                var values = {   
-                            Seq4: Seqeuence4,
-                            Seq5: Seqeuence5,
-                            Seq6: Seqeuence6,
+                var values = {
+                    Seq4: Seqeuence4,
+                    Seq5: Seqeuence5,
+                    // ApiSeq5: ApiSeqeuence5,
+                    Seq6: Seqeuence6,
+
                 };
-                var param = { 
-                    Id: element.Id 
+                var param = {
+                    Id: element.Id
                 };
                 await dataaccess.Update(AssetDetails, values, param)
 
@@ -1350,11 +1401,11 @@ var routes = function () {
                 "SupplyOrderSource": SupplyOrderSource, //HardCoded
                 "SupplyOrderReferenceNumber": Seqeuence5, //Seq5
                 "SupplyOrderReferenceId": Seqeuence5, //HardCoded
-                "TransferCostCurrencyCode": TransferCostCurrencyCode , //HardCoded
+                "TransferCostCurrencyCode": TransferCostCurrencyCode, //HardCoded
                 "ProcessRequestFlag": ProcessRequestFlag, //HardCoded
                 "supplyRequestLines": list
-              });
-              
+            });
+
             var config = {
                 // method: 'post',
                 // url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/supplyRequests',
@@ -1363,70 +1414,74 @@ var routes = function () {
                 //   'Content-Type': 'application/json'
                 // },
                 method: configuration.transferMoveOrderData.configData.method,
-                url: configuration.transferMoveOrderData.configData.url ,
+                url: configuration.transferMoveOrderData.configData.url,
                 headers: configuration.transferMoveOrderData.configData.headers,
-                data : data
+                data: data
             };
-            
-            //console.log("Transfer data Sent - ",data)
+
+            console.log("Transfer data Sent - ", data)
 
             axios(config)
-            .then(function (response) {
+                .then(function (response) {
 
-                if(response.status == 201){
-                    //console.log("Transfer response.data.supplyRequestLines - ",response.data.supplyRequestLines)
+                    if (response.status == 201) {
+                        //console.log("Transfer response.data.supplyRequestLines - ",response.data.supplyRequestLines)
 
-                    let supplyRequestLines = response.data.supplyRequestLines;
-    
-                    supplyRequestLines.forEach(async(element,index,array) => {
-                        const AssetDetails = datamodel.AssetDetails();
-                        var values = {   
-                            // Seq4: response.data.InterfaceBatchNumber,
-                            // Seq5: response.data.SupplyOrderReferenceNumber,
-                            // Seq6: element.SupplyOrderReferenceLineNumber,
-                            transferResponseStatus: response.status,
-                            ModifiedDate: connect.sequelize.fn("NOW"),
-                        };
-                        var param = { 
-                            AssetId: requestBody.AssetRequestBody.Id ,
-                            Seq6 : element.SupplyOrderReferenceLineNumber
-                        };
-                        await dataaccess.Update(AssetDetails, values, param)
-                        .then(async()=>{
-                            if (index === array.length -1){
-                                const Asset = datamodel.Asset();
-                                var values = {
-                                        StatusId: 1,
-                                        //ModifiedBy: 1,
-                                        ModifiedDate: connect.sequelize.fn('NOW'),
-                                    };
-                                var param = { Id: requestBody.AssetRequestBody.Id };
-                                await dataaccess.Update(Asset, values, param).then(()=>{
-                                    console.log("TransferMethodAPI Ended");
-                                    resolve();
+                        let supplyRequestLines = response.data.supplyRequestLines;
+
+                        supplyRequestLines.forEach(async (element, index, array) => {
+                            const AssetDetails = datamodel.AssetDetails();
+                            var values = {
+                                // Seq4: response.data.InterfaceBatchNumber,
+                                // Seq5: response.data.SupplyOrderReferenceNumber,
+                                // Seq6: element.SupplyOrderReferenceLineNumber,
+                                transferResponseStatus: response.status,
+                                ModifiedDate: connect.sequelize.fn("NOW"),
+                            };
+                            var param = {
+                                AssetId: requestBody.AssetRequestBody.Id,
+                                Seq6: element.SupplyOrderReferenceLineNumber
+                            };
+                            await dataaccess.Update(AssetDetails, values, param)
+                                .then(async () => {
+                                    if (index === array.length - 1) {
+                                        const Asset = datamodel.Asset();
+                                        var values = {
+                                            StatusId: 1,
+                                            //ModifiedBy: 1,
+                                            ModifiedDate: connect.sequelize.fn('NOW'),
+                                        };
+                                        var param = { Id: requestBody.AssetRequestBody.Id };
+                                        await dataaccess.Update(Asset, values, param).then(() => {
+                                            console.log("TransferMethodAPI Ended");
+                                            resolve();
+                                        })
+                                            .catch((error) => {
+                                                dataconn.errorlogger('TransactionService', 'Transfer Move Order Promise.all Error ', err);
+                                                res.status(400).json({ Success: false, Message: 'TransferMethodAPI Error', Data: null });
+                                                //reject();
+                                            });
+                                    }
                                 })
-                                .catch((error)=>{
-                                    console.log(error);
+                                .catch((error) => {
+                                    dataconn.errorlogger('TransactionService', 'Transfer Move Order Promise.all Error ', err);
+                                    res.status(400).json({ Success: false, Message: 'TransferMethodAPI Error', Data: null });
                                     //reject();
-                                });
-                            }
-                        })
-                        .catch((error)=>{
-                            console.log(error);
-                            //reject();
-                        })
-                    });
-                }
-                
-            })
-            .catch(function (error) {
-                // console.log("error response status",error.response.status);
-                // console.log("error response data",error.response.data);
-                if(error.response.status == 400){
-                    dataconn.apiResponselogger('Transfer Move Order',requestBody.AssetRequestBody.Id,0,error.response.status,error.response.data,1);
-                }
-                reject();
-            });
+                                })
+                        });
+                    }
+                })
+                .catch(function (error) {
+                    console.log("error response", error);
+                    dataconn.errorlogger('TransactionService', 'Transfer Move Order Promise.all Error', error);
+                    // console.log("error response data",error.response.data);
+                    if (error.response) {
+                        if (error.response.status == 400) {
+                            dataconn.apiResponselogger('Transfer Move Order', requestBody.AssetRequestBody.Id, 0, error.response.status, error.response.data, 1);
+                        }
+                    }
+                    reject();
+                });
         });
     }
 
@@ -1512,156 +1567,158 @@ var routes = function () {
     // });
 
     router.route('/convertPDF')
-    .get(function (req, res) {
+        .get(function (req, res) {
 
-        const templateData = {
-            Remarks: "No reason",
-            data:[
-                { AssetNumber:1001 , AssetDesc:"A", Cost :10, Item:101 },
-                { AssetNumber:1002 , AssetDesc:"B", Cost :20, Item:102 },
-                { AssetNumber:1003 , AssetDesc:"C", Cost :30, Item:103 },
-                { AssetNumber:1004 , AssetDesc:"D", Cost :40, Item:104 },
-                { AssetNumber:1005 , AssetDesc:"E", Cost :50, Item:105 },
-            ]
-        }
-        const templatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
-        emailService.htmlToPdf(templatePath,templateData)
-        .then((results)=>{
-            console.log('File Path : ', results);
-            let attachmentFilePath = results.fileSavePath;
-            let attachmentFileName = results.fileName;
-            let templateLocation = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
-            let templatedata = {
-                   Status : 'Approved Successfully'
+            const templateData = {
+                Remarks: "No reason",
+                data: [
+                    { AssetNumber: 1001, AssetDesc: "A", Cost: 10, Item: 101 },
+                    { AssetNumber: 1002, AssetDesc: "B", Cost: 20, Item: 102 },
+                    { AssetNumber: 1003, AssetDesc: "C", Cost: 30, Item: 103 },
+                    { AssetNumber: 1004, AssetDesc: "D", Cost: 40, Item: 104 },
+                    { AssetNumber: 1005, AssetDesc: "E", Cost: 50, Item: 105 },
+                ]
             }
-            emailService.notifyMail("Notification.Centre@Lightstorm.in","sachin.pawale@neweltechnologies.com","Asset Status",templateLocation,templatedata,attachmentFilePath,attachmentFileName)
-            .then((results)=>{
+            const templatePath = path.join(__dirname + '/../../Templates/LTC_Response/pdfTemplate.ejs');
+            emailService.htmlToPdf(templatePath, templateData)
+                .then((results) => {
+                    console.log('File Path : ', results);
+                    let attachmentFilePath = results.fileSavePath;
+                    let attachmentFileName = results.fileName;
+                    let templateLocation = path.join(__dirname + '/../../Templates/LTC_Response/response.ejs');
+                    let templatedata = {
+                        Status: 'Approved Successfully'
+                    }
+                    emailService.notifyMail("Notification.Centre@Lightstorm.in", "sachin.pawale@neweltechnologies.com", "Asset Status", templateLocation, templatedata, attachmentFilePath, attachmentFileName)
+                        .then((results) => {
 
-                let mailObj = {
-                    assetId : 121,
-                    mailTo: results.messageData.to,
-                    mailFrom: results.messageData.from,
-                    mailSubject: results.messageData.subject,
-                    mailBody: results.messageData.html,
-                    messageId: results.info.messageId,
-                    mailStatus: true,
-                }
-                dataconn.maillogger(mailObj);
-                res.status(200).json({ success: true, message: "Success", Data: null })
-            })
-            .catch((err)=>{
-                console.log(err)
-                let mailObj = {
-                    assetId : 121,
-                    mailTo: err.messageData.to,
-                    mailFrom: err.messageData.from,
-                    mailSubject: err.messageData.subject,
-                    mailBody: err.messageData.html,
-                    messageId: null,
-                    mailStatus: false,
-                }
-                dataconn.maillogger(mailObj);
-                res.status(200).json({ success: false, message: "Error", Data: null })
-            });  
-        })
-        .catch((error)=>{
-            console.log('Error : ', error)
-        });        
-    
-    });
+                            let mailObj = {
+                                assetId: 121,
+                                mailTo: results.messageData.to,
+                                mailFrom: results.messageData.from,
+                                mailSubject: results.messageData.subject,
+                                mailBody: results.messageData.html,
+                                messageId: results.info.messageId,
+                                mailStatus: true,
+                            }
+                            dataconn.maillogger(mailObj);
+                            res.status(200).json({ success: true, message: "Success", Data: null })
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                            let mailObj = {
+                                assetId: 121,
+                                mailTo: err.messageData.to,
+                                mailFrom: err.messageData.from,
+                                mailSubject: err.messageData.subject,
+                                mailBody: err.messageData.html,
+                                messageId: null,
+                                mailStatus: false,
+                            }
+                            dataconn.maillogger(mailObj);
+                            res.status(200).json({ success: false, message: "Error", Data: null })
+                        });
+                })
+                .catch((error) => {
+                    dataconn.errorlogger('TransactionService', 'convertPDF', error);
+                    console.log('Error : ', error)
+                });
 
-    function sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfHTMLPath,emailHTMLPath){
+        });
+
+    function sentAssetDetailsMail(pdftemplateData, mailtemplateData, mailData, pdfHTMLPath, emailHTMLPath) {
         const templateData = pdftemplateData;
         const pdftemplatePath = pdfHTMLPath;
         //const pdftemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
-        emailService.htmlToPdf(pdftemplatePath,templateData)
-        .then((results)=>{
-            console.log('File Path : ', results);
-            let attachmentFilePath = results.fileSavePath;
-            let attachmentFileName = results.fileName;
-            let templateLocation = emailHTMLPath;
-            //let templateLocation = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
-            let templateData = mailtemplateData;
-            let fromEmail = mailData.fromEmail;
-            let toEmail = mailData.toEmail;
-            let subjectEmail = mailData.subjectEmail;
+        emailService.htmlToPdf(pdftemplatePath, templateData)
+            .then((results) => {
+                console.log('File Path : ', results);
+                let attachmentFilePath = results.fileSavePath;
+                let attachmentFileName = results.fileName;
+                let templateLocation = emailHTMLPath;
+                //let templateLocation = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
+                let templateData = mailtemplateData;
+                let fromEmail = mailData.fromEmail;
+                let toEmail = mailData.toEmail;
+                let subjectEmail = mailData.subjectEmail;
 
-            emailService.notifyMail(fromEmail,toEmail,subjectEmail,templateLocation,templateData,attachmentFilePath,attachmentFileName)
-            .then((results)=>{
+                emailService.notifyMail(fromEmail, toEmail, subjectEmail, templateLocation, templateData, attachmentFilePath, attachmentFileName)
+                    .then((results) => {
 
-                let mailObj = {
-                    assetId : 121,
-                    mailTo: results.messageData.to,
-                    mailFrom: results.messageData.from,
-                    mailSubject: results.messageData.subject,
-                    mailBody: results.messageData.html,
-                    messageId: results.info.messageId,
-                    mailStatus: true,
-                }
-                dataconn.maillogger(mailObj);
-                console.log('Email Sent');
-                //res.status(200).json({ success: true, message: "Success", Data: null })
+                        let mailObj = {
+                            assetId: 121,
+                            mailTo: results.messageData.to,
+                            mailFrom: results.messageData.from,
+                            mailSubject: results.messageData.subject,
+                            mailBody: results.messageData.html,
+                            messageId: results.info.messageId,
+                            mailStatus: true,
+                        }
+                        dataconn.maillogger(mailObj);
+                        console.log('Email Sent');
+                        //res.status(200).json({ success: true, message: "Success", Data: null })
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        let mailObj = {
+                            assetId: 121,
+                            mailTo: err.messageData.to,
+                            mailFrom: err.messageData.from,
+                            mailSubject: err.messageData.subject,
+                            mailBody: err.messageData.html,
+                            messageId: null,
+                            mailStatus: false,
+                        }
+                        dataconn.maillogger(mailObj);
+                        console.log('Email Not Sent');
+                        //res.status(200).json({ success: false, message: "Error", Data: null })
+                    });
             })
-            .catch((err)=>{
-                console.log(err)
-                let mailObj = {
-                    assetId : 121,
-                    mailTo: err.messageData.to,
-                    mailFrom: err.messageData.from,
-                    mailSubject: err.messageData.subject,
-                    mailBody: err.messageData.html,
-                    messageId: null,
-                    mailStatus: false,
-                }
-                dataconn.maillogger(mailObj);
-                console.log('Email Not Sent');
-                //res.status(200).json({ success: false, message: "Error", Data: null })
-            });  
-        })
-        .catch((error)=>{
-            console.log('Error : ', error)
-        });  
+            .catch((error) => {
+                dataconn.errorlogger('TransactionService', 'convertPDF', error);
+                console.log('Error : ', error)
+            });
     }
 
     router.route('/dumpExcel')
-    .get(function (req, res) {
-        excelService.ExportExcelFile()
-        .then((results)=>{
-                const famiscmaster1 = datamodel.famiscmaster1();
-                famiscmaster1.destroy({
+        .get(function (req, res) {
+            excelService.ExportExcelFile()
+                .then((results) => {
+                    const famiscmaster1 = datamodel.famiscmaster1();
+                    famiscmaster1.destroy({
                         where: {},
                         truncate: true
-                })
-                .then(() => {
-                    var bulkdata = results.workSheetsFromFile;
-                    famiscmaster1.bulkCreate(bulkdata).then(() => {
-                        return famiscmaster1.findAll();
                     })
-                    .then((result) => {
-                        res.status(200).json({ Success: true, Message: "All records saved successfully", Data: null });
-                    })
-                    .catch(function (error) {
-                        dataconn.errorlogger('TransactionService', 'dumpExcel', error);
-                        res.status(200).json({ Success: false, Message: "Error while saving details", Data: error });
-                    });
+                        .then(() => {
+                            var bulkdata = results.workSheetsFromFile;
+                            famiscmaster1.bulkCreate(bulkdata).then(() => {
+                                return famiscmaster1.findAll();
+                            })
+                                .then((result) => {
+                                    res.status(200).json({ Success: true, Message: "All records saved successfully", Data: null });
+                                })
+                                .catch(function (error) {
+                                    dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+                                    res.status(200).json({ Success: false, Message: "Error while saving details", Data: error });
+                                });
+                        })
+                        .catch(function (error) {
+                            dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+                            res.status(200).json({ Success: true, Message: "Error while truncate", Data: error });
+                        });
                 })
-                .catch(function (error) {
+                .catch((error) => {
                     dataconn.errorlogger('TransactionService', 'dumpExcel', error);
-                    res.status(200).json({ Success: true, Message: "Error while truncate", Data: error });
+                    res.status(200).json({ Success: false, Message: 'Error', Data: error });
                 });
-        })
-        .catch((error)=>{
-            dataconn.errorlogger('TransactionService', 'dumpExcel', error);
-            res.status(200).json({ Success: false, Message: 'Error', Data: error });
         });
-    });
 
     router.route('/CreateSubInventoryDetails')
-    .post(function (req, res) {
+        .post(function (req, res) {
             var config = {
-                method : configuration.SubinventoryData.configData.method,
-                url : configuration.SubinventoryData.configData.url,
-                headers : configuration.SubinventoryData.configData.headers
+                method: configuration.SubinventoryData.configData.method,
+                url: configuration.SubinventoryData.configData.url,
+                headers: configuration.SubinventoryData.configData.headers
             };
             axios(config)
                 .then(function (response) {
@@ -1695,10 +1752,10 @@ var routes = function () {
         });
 
     router.route('/GetSubInventoryDetails')
-    .post(function (req, res) {
+        .post(function (req, res) {
             const SubInventoryDetails = datamodel.SubInventoryDetails();
             var param = {
-                where: { 
+                where: {
                     Description: req.body.Description,
                     OrganizationId: req.body.OrganizationId,
                     IsActive: true
@@ -1710,7 +1767,7 @@ var routes = function () {
                         res.status(200).json({ success: true, message: "SubInventoryDetails access", Data: result })
                     }
                     else {
-                        res.status(200).json({ success: false, message: "No such SubInventoryDetails data found",Data: null });
+                        res.status(200).json({ success: false, message: "No such SubInventoryDetails data found", Data: null });
                     }
                 },
                     function (err) {
@@ -1720,7 +1777,7 @@ var routes = function () {
         });
 
     router.route('/GetDistinctAssetLocation')
-    .get(function (req, res) {
+        .get(function (req, res) {
 
             const famiscmaster = datamodel.famiscmaster();
             var param = {
@@ -1741,17 +1798,17 @@ var routes = function () {
                 });
         });
 
-    
+
     //RMO Start
 
     router.route('/GetDistinctItemLocation')
-    .get(function (req, res) {
+        .get(function (req, res) {
 
             const rmomaster = datamodel.rmomaster();
             var param = {
                 attributes: [
-                    [ sequelize.fn('DISTINCT', sequelize.col('INTERNAL_LOCATION_CODE')), 'INTERNAL_LOCATION_CODE'],
-                    'LOCATION_NAME'  
+                    [sequelize.fn('DISTINCT', sequelize.col('INTERNAL_LOCATION_CODE')), 'INTERNAL_LOCATION_CODE'],
+                    'LOCATION_NAME'
                 ],
             };
 
@@ -1775,9 +1832,10 @@ var routes = function () {
             let INTERNAL_LOCATION_CODE_Obj = req.body.INTERNAL_LOCATION_CODE;
             const rmomaster = datamodel.rmomaster();
             var param = {
-                where: { 
-                    INTERNAL_LOCATION_CODE:INTERNAL_LOCATION_CODE_Obj,
-                    ITEM_NUMBER: ITEM_NUMBER_Obj },
+                where: {
+                    INTERNAL_LOCATION_CODE: INTERNAL_LOCATION_CODE_Obj,
+                    ITEM_NUMBER: ITEM_NUMBER_Obj
+                },
             };
             dataaccess.FindAll(rmomaster, param)
                 .then(function (result) {
@@ -1785,7 +1843,7 @@ var routes = function () {
                         res.status(200).json({ success: true, message: "rmomaster access", Data: result })
                     }
                     else {
-                        res.status(200).json({ success: false, message: "User has no access of rmomaster",Data: null });
+                        res.status(200).json({ success: false, message: "User has no access of rmomaster", Data: null });
                     }
                 },
                     function (err) {
@@ -1794,15 +1852,15 @@ var routes = function () {
                     })
         });
 
-        router.route('/GetAllITEM_NUMBER/:INTERNAL_LOCATION_CODE')
+    router.route('/GetAllITEM_NUMBER/:INTERNAL_LOCATION_CODE')
         .get(function (req, res) {
 
             const rmomaster = datamodel.rmomaster();
-            var param = { 
-                    attributes: ['Id', 'ITEM_NUMBER', 'INTERNAL_LOCATION_CODE' ,'ITEM_DESC','SUPPLIER_ITEM_CODE','SUPPLIER_ITEM_DESC','LOT_NUMBER'],
-                    where: { INTERNAL_LOCATION_CODE: req.params.INTERNAL_LOCATION_CODE },
-                    order: [['ITEM_NUMBER']]
-                };
+            var param = {
+                attributes: ['Id', 'ITEM_NUMBER', 'INTERNAL_LOCATION_CODE', 'ITEM_DESC', 'SUPPLIER_ITEM_CODE', 'SUPPLIER_ITEM_DESC', 'LOT_NUMBER'],
+                where: { INTERNAL_LOCATION_CODE: req.params.INTERNAL_LOCATION_CODE },
+                order: [['ITEM_NUMBER']]
+            };
 
             dataaccess.FindAll(rmomaster, param)
                 .then(function (result) {
@@ -1820,6 +1878,321 @@ var routes = function () {
 
 
     //RMO End
+
+    //Update start
+
+    router.route('/UpdateMultipleAsset')
+        .post(function (req, res) {
+
+            let oldAssetDetails = req.body.oldAssetDetails;
+            let newAssetDetails = req.body.updateAssetDetails;
+            let AssetId = req.body.AssetId;
+            let UserId = req.body.userId;
+            AssetHistory(oldAssetDetails, AssetId, UserId)
+                .then(async (result) => {
+                    console.log('AssetHistory');
+                    setTimeout(async function () {
+                        DeleteAssetDetails(AssetId)
+                            .then(async (result) => {
+                                console.log('DeleteAssetDetails');
+                                setTimeout(async function () {
+                                    console.log("deleted Successfully");
+
+                                    UpdateAssetDetails(newAssetDetails, AssetId, UserId)
+                                        .then(async (result) => {
+                                            console.log('UpdateAssetDetails');
+                                            setTimeout(async function () {
+                                                console.log("Update Succesfully");
+                                                res.status(200).json({ Success: true, Message: "Asset Updated successfully", Data: null });
+                                            }, 1000)
+                                        })
+
+                                        .catch((error) => {
+                                            console.log("error", error);
+                                            dataconn.errorlogger('TransactionService', 'UpdateMultipleAsset', error);
+                                            res.status(200).json({ Success: false, Message: 'error', Data: error });
+                                        })
+                                }, 1000)
+                            })
+                            .catch((error) => {
+                                dataconn.errorlogger('TransactionService', 'UpdateMultipleAsset', error);
+                                res.status(200).json({ Success: false, Message: 'Error', Data: error });
+                            })
+                    }, 1000)
+                })
+                .catch((error) => {
+                    dataconn.errorlogger('TransactionService', 'UpdateMultipleAsset', error);
+                    res.status(200).json({ Success: false, Message: 'Error', Data: error });
+                })
+        });
+
+    async function AssetHistory(request, AssetId, UserId) {
+        return new Promise(async (resolve, reject) => {
+            connect.sequelize.transaction().then(trans => {
+                const AssetHistory = datamodel.AssetHistory();
+                var values = {
+                    AssetId: AssetId,
+                    SerialNumber: request.SerialNumber,
+                    ReceiptNumber: request.ReceiptNumber,
+                    AssetNumber: request.AssetNumber,
+                    OrganizationId: request.OrganizationId,
+                    LocationCode: request.LocationCode,
+                    AssetType: request.AssetType,
+                    InterfaceBatchNumber: request.InterfaceBatchNumber,
+                    TransactionDate: request.TransactionDate,
+                    DesORGCode: request.DesORGCode,
+                    DesTypeCode: request.DesTypeCode,
+                    Locator: request.Locator,
+                    //DesSubInventoryCode: request.AssetType == 'CAM' ? 'CAM' : request.DesSubInventoryCode,
+                    DesSubInventoryCode: request.DesSubInventoryCode,
+                    DesSubInventoryName: request.DesSubInventoryName,
+                    DFFS: request.DFFS,
+                    StatusId: request.StatusId,
+                    Remarks: request.Remarks,
+                    CreatedBy: UserId
+                };
+                dataaccess.CreateWithTransaction(AssetHistory, values, trans)
+                    .then(function (result) {
+                        if (result != null) {
+                            let AssetType = request.AssetType;
+                            const AssetDetailsHistory = datamodel.AssetDetailsHistory();
+                            var mapDetails = [];
+                            var promiseDetails = request.AssetDetails.map(function (mapitem) {
+                                if (AssetType == 'CAM' || AssetType == 'SRN') {
+                                    mapDetails.push({
+                                        AssetId: AssetId,
+                                        AssetNumber: mapitem.AssetNumber,
+                                        AssetDesc: mapitem.AssetDesc,
+                                        Cost: mapitem.Cost,
+                                        LTD_DEP: mapitem.LTD_DEP,
+                                        NBV: mapitem.NBV,
+                                        AssertQuantity: mapitem.AssertQuantity,
+                                        Item: mapitem.Item,
+                                        ItemDesc: mapitem.ItemDesc,
+                                        UnitOfMeasure: mapitem.UnitOfMeasure,
+                                        Location: mapitem.Location,
+                                        SupplierCode: mapitem.SupplierCode,
+                                        LocationCode: mapitem.LocationCode,
+                                        DepartmentCode: mapitem.DepartmentCode,
+
+                                        CreatedBy: UserId,
+                                    });
+                                }
+                                else {
+                                    mapDetails.push({
+                                        AssetId: AssetId,
+                                        Cost: mapitem.Cost,
+                                        AssertQuantity: mapitem.AssertQuantity,
+                                        LotNumber: mapitem.LotNumber,
+                                        Item: mapitem.Item,
+                                        ItemDesc: mapitem.ItemDesc,
+                                        UnitOfMeasure: mapitem.UnitOfMeasure,
+                                        Location: mapitem.Location,
+                                        SupplierCode: mapitem.SupplierCode,
+                                        LocationCode: mapitem.LocationCode,
+                                        DepartmentCode: mapitem.DepartmentCode,
+                                        CreatedBy: UserId
+                                    });
+                                }
+
+                            });
+
+                            Promise.all(promiseDetails).then(function () {
+                                dataaccess.BulkCreateWithTransaction(AssetDetailsHistory, mapDetails, trans)
+                                    .then((assetresult) => {
+                                        trans.commit();
+                                        resolve();
+                                    },
+                                        function (err) {
+                                            trans.rollback();
+                                            dataconn.errorlogger('transaction', 'CreateMultipleAsset', err);
+                                            reject();
+                                        });
+                            });
+                        }
+
+                    }, function (err) {
+                        trans.rollback();
+                        dataconn.errorlogger('transaction', 'CreateMultipleAsset', err);
+                        reject();
+                    });
+            });
+
+        });
+    }
+
+    async function DeleteAssetDetails(reqAssetId) {
+        return new Promise(async (resolve, reject) => {
+
+            const AssetDetails = datamodel.AssetDetails();
+
+            AssetDetails.destroy({
+                where: {
+                    AssetId: reqAssetId
+                }
+            }).then(() => {
+                resolve();
+            })
+                .catch((err) => {
+                    dataconn.errorlogger('transaction', 'DeleteAssetDetails', err);
+                    reject();
+                })
+
+        });
+    }
+
+    async function UpdateAssetDetails(request, AssetId, UserId) {
+        return new Promise(async (resolve, reject) => {
+            connect.sequelize.transaction().then(trans => {
+                const Asset = datamodel.Asset();
+                console.log(request);
+                var values = {
+                    //AssetId: AssetId,
+                    SerialNumber: request.SerialNumber,
+                    ReceiptNumber: request.ReceiptNumber,
+                    AssetNumber: request.AssetNumber,
+                    OrganizationId: request.Organization.OrganizationId,
+                    LocationCode: request.ToLocation.LocationCode,
+                    AssetType: request.AssetType,
+                    InterfaceBatchNumber: request.InterfaceBatchNumber,
+                    TransactionDate: request.TransactionDate,
+                    DesORGCode: request.DesORGCode.OrganizationCode,
+                    DesTypeCode: request.DesTypeCode,
+                    Locator: request.Locator,
+                    //DesSubInventoryCode: request.AssetType == 'CAM' ? 'CAM' : request.DesSubInventoryCode,
+                    DesSubInventoryCode: request.DesSubInventoryCode,
+                    DesSubInventoryName: request.DesSubInventoryName,
+                    DFFS: request.DFFS,
+                    StatusId: request.StatusId,
+                    Remarks: null,
+                    CreatedBy: UserId
+                };
+                var param = {
+                    Id: AssetId
+                }
+                dataaccess.UpdateWithTransaction(Asset, values, param, trans)
+
+                    .then(function (result) {
+
+                        if (result != null) {
+                            console.log("UpdateWithTransaction Asset");
+
+                            let AssetType = request.AssetType;
+                            const AssetDetails = datamodel.AssetDetails();
+                            var mapDetails = [];
+                            console.log('request.AssetDetails', request.AssetDetails);
+                            var promiseDetails = request.AssetDetails.map(function (mapitem) {
+                                if (AssetType == 'CAM' || AssetType == 'SRN') {
+                                    mapDetails.push({
+                                        AssetId: AssetId,
+                                        AssetNumber: mapitem.ASSET_NUMBER,
+                                        AssetDesc: mapitem.ASSET_DESC,
+                                        Cost: mapitem.COST,
+                                        LTD_DEP: mapitem.DEPRN_RESERVE,
+                                        NBV: mapitem.NBV,
+                                        AssertQuantity: mapitem.CURRENT_UNITS,
+                                        Item: mapitem.ITEM_NUMBER,
+                                        ItemDesc: mapitem.ITEM_DESC,
+                                        UnitOfMeasure: mapitem.PRIMARY_UOM_CODEA,
+                                        Location: mapitem.LOCATION,
+                                        SupplierCode: mapitem.SUPPLIER_CODE,
+                                        LocationCode: mapitem.LOCATION_CODE,
+                                        DepartmentCode: mapitem.DEPTARTMENT_CODE,
+                                        CreatedBy: UserId,
+                                    });
+                                }
+                                else {
+                                    mapDetails.push({
+                                        AssetId: AssetId,
+                                        Cost: mapitem.COST,
+                                        AssertQuantity: mapitem.ITEM_QUANTITY,
+                                        LotNumber: mapitem.LOT_NUMBER,
+                                        Item: mapitem.ITEM_NUMBER,
+                                        ItemDesc: mapitem.ITEM_DESC,
+                                        UnitOfMeasure: mapitem.PRIMARY_UOM_CODE,
+                                        Location: mapitem.INTERNAL_LOCATION_CODE,
+                                        SupplierCode: mapitem.SUPPLIER_ITEM_CODE,
+                                        LocationCode: mapitem.LOCATION_CODE,
+                                        DepartmentCode: mapitem.DEPTARTMENT_CODE,
+                                        CreatedBy: UserId
+                                    });
+                                }
+                            });
+                            console.log("BeforePromiseAll then");
+                            Promise.all(promiseDetails).then(function () {
+                                console.log('mapDetails', mapDetails);
+
+                                dataaccess.BulkCreateWithTransaction(AssetDetails, mapDetails, trans)
+                                    .then((assetresult) => {
+                                        console.log("AfterPromiseAll then");
+                                        trans.commit();
+                                        resolve();
+                                    },
+                                        function (err) {
+                                            trans.rollback();
+                                            dataconn.errorlogger('transaction', 'CreateMultipleAsset', err);
+                                            reject();
+                                        });
+                            });
+                        }
+
+                    }, function (err) {
+                        trans.rollback();
+                        dataconn.errorlogger('transaction', 'CreateMultipleAsset', err);
+                        reject();
+                    });
+            });
+        });
+    }
+
+
+    //Update end
+
+    router.route('/UpdateMultipleAssetDraft')
+        .post(function (req, res) {
+
+            // let oldAssetDetails = req.body.oldAssetDetails;
+            let newAssetDetails = req.body.updateAssetDetails;
+            let AssetId = req.body.AssetId;
+            let UserId = req.body.userId;
+
+            // AssetHistory(oldAssetDetails, AssetId, UserId)
+            //     .then(async (result) => {
+            // console.log('AssetHistory');
+            // setTimeout(async function () {
+            DeleteAssetDetails(AssetId)
+                .then(async (result) => {
+                    console.log('DeleteAssetDetails');
+                    setTimeout(async function () {
+                        console.log("deleted Successfully");
+
+                        UpdateAssetDetails(newAssetDetails, AssetId, UserId)
+                            .then(async (result) => {
+                                console.log('UpdateAssetDetails');
+                                setTimeout(async function () {
+                                    console.log("Update Succesfully");
+                                    res.status(200).json({ Success: true, Message: "Asset Updated successfully", Data: null });
+                                }, 1000)
+                            })
+                            .catch((error) => {
+                                console.log("error", error);
+                                dataconn.errorlogger('TransactionService', 'UpdateMultipleAssetDraft', error);
+                                res.status(200).json({ Success: false, Message: 'error', Data: error });
+                            })
+                    }, 1000)
+                })
+                .catch((error) => {
+                    dataconn.errorlogger('TransactionService', 'UpdateMultipleAssetDraft', error);
+                    res.status(200).json({ Success: false, Message: 'Error', Data: error });
+                })
+            // }, 1000)
+            // })
+            // .catch((error) => {
+            //     dataconn.errorlogger('TransactionService', 'UpdateMultipleAsset', error);
+            //     res.status(200).json({ Success: false, Message: 'Error', Data: error });
+            // })
+
+        });
 
     return router;
 

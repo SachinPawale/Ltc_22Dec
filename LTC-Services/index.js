@@ -83,6 +83,13 @@ app.use("/uirolemap", uiroleService);
 
 var transactionService = require('./Service/Transaction/transaction')();
 app.use("/transaction", transactionService);
+
+var BoEService = require('./Service/BoE/BoEService')();
+app.use("/BoE", BoEService);
+
+var BoEDetailsService = require('./Service/BoE/BoEDetailsService')();
+app.use("/BoEDetails", BoEDetailsService);
+
 ////#region Reports
 
 // var reportService = require('./Service/Report/ReportService')();
@@ -94,6 +101,16 @@ app.use("/transaction", transactionService);
 // app.get('*', (req, res) => {
 //     res.sendFile(path.join(staticRoot, 'index.html'));
 // });
+
+//BoE-Entry Folder Creation Start
+
+//console.log(path.join(__dirname + config.Uploads_Folder + config.BoE_Entry_Folder));
+
+var BoE_Entry = path.join(__dirname + config.Uploads_Folder + config.BoE_Entry_Folder);
+if (!fs.existsSync(BoE_Entry)){
+    fs.mkdirSync(BoE_Entry, { recursive: true });
+}
+//BoE-Entry Folder Creation End
 
 // Start server and listen on http://localhost:1339/
 var server = app.listen(config.service_port, function () {
