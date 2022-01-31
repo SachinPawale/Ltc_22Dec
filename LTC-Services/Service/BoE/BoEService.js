@@ -50,7 +50,10 @@ var routes = function () {
             const BoEMasterDetails = datamodel.BoEMasterDetails();
             var param = {
                 where: { VENDOR_ID: req.params.VENDOR_ID },
-                attributes: [[sequelize.fn('DISTINCT', sequelize.col('PO_NUMBER')), 'PO_NUMBER']],
+                attributes: [
+                    [sequelize.fn('DISTINCT', sequelize.col('PO_NUMBER')), 'PO_NUMBER'],
+                    'ENTITY_CODE'
+                ],
             };
 
             dataaccess.FindAll(BoEMasterDetails, param)
@@ -327,16 +330,18 @@ var routes = function () {
 
                 HAWB: requestBody.HAWB,
                 SupplierInvoiceNumber: requestBody.SupplierInvoiceNumber,
-                ShipmentNumber: requestBody.ShipmentNumber,
+                //ShipmentNumber: requestBody.ShipmentNumber,
                 ChallanNumber: requestBody.ChallanNumber,
                 PONumber: requestBody.PONumber,
+                EntityCode: requestBody.EntityCode,
                 VendorID: requestBody.VendorID,
-                VendorName: requestBody.VendorName,
+                VendorName: requestBody.VendorName, 
+                VendorSiteCode: requestBody.VendorSiteCode, 
                 PortCode: requestBody.PortCode,
                 PortDesc: requestBody.PortDesc,
 
                 //InvoiceId: apiResponse.InvoiceId,
-
+                BoEDetailsCreated : 0,
                 //StatusId: 1,
                 FileName: fileDetails.fileName,
                 FilePath: fileDetails.filePath,
@@ -385,8 +390,8 @@ var routes = function () {
 
 
             var data = JSON.stringify({
-                "InvoiceType": InvoiceType,  //HardCoded
-                "InvoiceNumber": requestBody.BoENumber,
+                "InvoiceType" : InvoiceType,  //HardCoded
+                "InvoiceNumber": "ADV-" + requestBody.BoENumber,
                 "InvoiceCurrency": InvoiceCurrency, //HardCoded
                 "InvoiceAmount": requestBody.BoETotalAmount,
                 "InvoiceDate": InvoiceDate,
@@ -414,12 +419,14 @@ var routes = function () {
                                 "DistributionLineNumber": DistributionLineNumber, //HardCoded
                                 "DistributionLineType": DistributionLineType, //HardCoded
                                 "DistributionAmount": requestBody.BoETotalAmount,
-                                "DistributionCombination": "102-221407-12-1001-99-999-999-999-999-9999-99999"
+                                "DistributionCombination": requestBody.EntityCode + "-324106-12-1001-99-999-999-999-999-9999-99999" //Entity code-Hardcoded
                             }
                         ]
                     }
                 ]
             });
+
+            //console.log("BoE Entry API request Body",data)
 
             var config = {
                 method: configuration.BoEInvoiceData.configData.method,
@@ -516,6 +523,7 @@ var routes = function () {
             readFileAndConvertToBase64(filePath)
                 .then((result) => {
                     let request = {
+                        EntityCode: req.body.BoEData.EntityCode,
                         BoENumber: req.body.BoEData.BoENumber,
                         BoETotalAmount: req.body.BoEData.BoETotalAmount,
                         BoEDate: req.body.BoEData.BoEDate,

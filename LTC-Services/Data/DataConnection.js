@@ -30,7 +30,7 @@ module.exports.CreateTable = function (res) {
     datamodel.UIRoleMap();
 
     datamodel.famiscmaster();
-    datamodel.famiscmaster1();
+    //datamodel.famiscmaster1();
     datamodel.OrganizationDetails();
     datamodel.LocationDetails();
     datamodel.AssetDetails();
@@ -45,10 +45,13 @@ module.exports.CreateTable = function (res) {
     datamodel.BoEEntry();
     datamodel.BoEMasterDetails();
     datamodel.PortMaster();
-    // datamodel.UserJourney();
+    datamodel.UserJourney();
 
     datamodel.BoEDetails();
     datamodel.BoEDetailsMap();
+
+    datamodel.HSNMaster();
+    datamodel.POCostReport();
     //datamodel.EntityMaster();
     //datamodel.CurrencyMaster();
 

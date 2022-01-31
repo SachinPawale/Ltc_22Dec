@@ -183,6 +183,65 @@ const BoEInvoiceData = {
     },
 }
 
+const ReceiptAPIData = {
+    configData : {
+        method: 'post',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivingReceiptRequests',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json',
+        },
+    },
+    HardCodedData : {
+        ASNType: "ASBN",
+        ReceiptSourceCode:"VENDOR",
+        BusinessUnit:"LTC BU",
+        EmployeeId:"300000003460557",
+        Lines_ReceiptSourceCode:"VENDOR",
+        SourceDocumentCode:"PO",
+        TransactionType:"RECEIVE",
+        AutoTransactCode:"RECEIVE",
+    },
+}
+
+const StandardInvoiceAPIData = {
+    configData : {
+        method: 'post',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/invoices',
+        headers: { 
+        'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+        'Content-Type': 'application/json'
+        },
+    },
+    HardCodedData : {
+        InvoiceCurrency:"INR",
+        BusinessUnit:"LTC BU",
+        Supplier:"Custom Authority",
+        SupplierSite:"Custom-Delhi",
+        LineType:"Item",
+        DistributionLineNumber:1,
+        DistributionLineType:"Item"
+
+    },
+}
+
+const CostAdjustmentAPIData = {
+    configData : {
+        method: 'post',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/costAdjustments',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json'
+        }
+    },
+    HardCodedData : {
+        AdjustmentTypeCode: "R",
+        AdjustmentStatusCode: "S",
+        Reason: "Customs Duty",
+        CostElement: "Overhead",
+    },
+}
+
 const Uploads_Folder = '/Uploads'
 const BoE_Entry_Folder = '/BoE-Entry'
 
@@ -207,4 +266,7 @@ module.exports.Uploads_Folder = Uploads_Folder;
 module.exports.BoE_Entry_Folder = BoE_Entry_Folder;
 
 module.exports.BoEInvoiceData = BoEInvoiceData;
+module.exports.ReceiptAPIData = ReceiptAPIData;
+module.exports.StandardInvoiceAPIData = StandardInvoiceAPIData;
+module.exports.CostAdjustmentAPIData = CostAdjustmentAPIData;
 

@@ -90,6 +90,9 @@ app.use("/BoE", BoEService);
 var BoEDetailsService = require('./Service/BoE/BoEDetailsService')();
 app.use("/BoEDetails", BoEDetailsService);
 
+var UserJourneyService = require('./Service/UserJourneyTracking/UserTrackingJourney')();
+app.use("/UserJourney", UserJourneyService);
+
 ////#region Reports
 
 // var reportService = require('./Service/Report/ReportService')();
@@ -107,7 +110,7 @@ app.use("/BoEDetails", BoEDetailsService);
 //console.log(path.join(__dirname + config.Uploads_Folder + config.BoE_Entry_Folder));
 
 var BoE_Entry = path.join(__dirname + config.Uploads_Folder + config.BoE_Entry_Folder);
-if (!fs.existsSync(BoE_Entry)){
+if (!fs.existsSync(BoE_Entry)) {
     fs.mkdirSync(BoE_Entry, { recursive: true });
 }
 //BoE-Entry Folder Creation End

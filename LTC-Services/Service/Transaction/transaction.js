@@ -1037,13 +1037,16 @@ var routes = function () {
                                         res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
                                     })
                                     .catch((error) => {
-                                        dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
+                                        console.log("error1",error);
+                        
+                                    
+                                        dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', error);
                                         res.status(200).json({ success: false, message: "Transfer Method API Error", Data: error });
                                     });
                             }
                             else {
                                 console.log("misAPIStatus false , ApproveRejectAsset API Ended");
-                                dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
+                                //dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
                                 res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
                             }
                         }, 1000)
@@ -1051,7 +1054,8 @@ var routes = function () {
 
                     })
                     .catch((error) => {
-                        dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
+                        console.log("error 2",error);
+                        dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', error);
                         res.status(200).json({ success: false, message: "Misc Method API Error", Data: error });
                     });
 
@@ -1093,6 +1097,7 @@ var routes = function () {
                             res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                         }
                     }, function (err) {
+                        console.log("error 3",error);
                         dataconn.errorlogger('TransactionService', 'ApproveRejectAsset', err);
                         res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                     });
@@ -1281,7 +1286,7 @@ var routes = function () {
                     });
                 })
                     .catch(function (error) {
-                        console.log("error response", error);
+                        console.log("error 4", error);
                         dataconn.errorlogger('TransactionService', 'Misc Function Promise.all Error', error);
 
                         if (error.response) {
@@ -1457,14 +1462,16 @@ var routes = function () {
                                             resolve();
                                         })
                                             .catch((error) => {
-                                                dataconn.errorlogger('TransactionService', 'Transfer Move Order Promise.all Error ', err);
+                                                console.log("error 5",error);
+                                                dataconn.errorlogger('TransactionService', 'Transfer Move Order Promise.all Error ', error);
                                                 res.status(400).json({ Success: false, Message: 'TransferMethodAPI Error', Data: null });
                                                 //reject();
                                             });
                                     }
                                 })
                                 .catch((error) => {
-                                    dataconn.errorlogger('TransactionService', 'Transfer Move Order Promise.all Error ', err);
+                                    console.log("error 6",error);
+                                    dataconn.errorlogger('TransactionService', 'Transfer Move Order Promise.all Error ', error);
                                     res.status(400).json({ Success: false, Message: 'TransferMethodAPI Error', Data: null });
                                     //reject();
                                 })
