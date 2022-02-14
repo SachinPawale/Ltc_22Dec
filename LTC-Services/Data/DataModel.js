@@ -49,6 +49,7 @@ class BoEDetailsMap extends Model { }
 class HSNMaster extends Model { }
 
 class POCostReport extends Model { }
+class SchedulerLogger extends Model { }
 
 
 ////#region Tables
@@ -709,8 +710,9 @@ module.exports.MailLog = function () {
     MailLog.init({
         Id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
         assetId: { type: Sequelize.BIGINT, allowNull: true },
-        mailTo: { type: Sequelize.STRING(1000), allowNull: true },
-        mailFrom: { type: Sequelize.STRING(200), allowNull: true },
+        mailTo: { type: Sequelize.TEXT, allowNull: true },
+        mailFrom: { type: Sequelize.TEXT, allowNull: true },
+        mailCc: { type: Sequelize.TEXT, allowNull: true },
         mailSubject: { type: Sequelize.STRING(1000), allowNull: true },
         mailBody: { type: Sequelize.TEXT, allowNull: true },
         messageId: { type: Sequelize.STRING(100), allowNull: true },
@@ -859,6 +861,11 @@ module.exports.BoEEntry = function () {
         BoENumber: { type: Sequelize.STRING(200), allowNull: true },
         BoEDate: { type: Sequelize.DATE, allowNull: true },
         BoEExchangeRate: { type: Sequelize.DOUBLE, allowNull: true },
+
+        BoEBCD: { type: Sequelize.DOUBLE, allowNull: true },
+        BoESWS: { type: Sequelize.DOUBLE, allowNull: true },
+        BoEIGST: { type: Sequelize.DOUBLE, allowNull: true },
+
         BoETotalAmount: { type: Sequelize.DOUBLE, allowNull: true },
 
         HAWB: { type: Sequelize.STRING(200), allowNull: true },
@@ -1146,5 +1153,20 @@ module.exports.POCostReport = function () {
     return POCostReport;
 }
 
+module.exports.SchedulerLogger = function() {
+    SchedulerLogger.init({
+        Id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
+        SchedulerName: { type: Sequelize.STRING(200), allowNull: true },
+        Start: { type: Sequelize.DATE,allowNull: true},
+        End: { type: Sequelize.DATE,allowNull: true},
+        CreatedDate: { type: Sequelize.DATE,allowNull: true,defaultValue: Sequelize.NOW},
+    }, 
+    {
+        sequelize,
+        modelName: "SchedulerLogger",
+        tableName: "SchedulerLogger",
+    });
+    return SchedulerLogger;
+};
 
 ////#endregion

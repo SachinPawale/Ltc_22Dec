@@ -103,7 +103,7 @@ var routes = function () {
                     [sequelize.fn('DISTINCT', sequelize.col('ASN_NO')), 'ASNNumber'],
                     //'ASN_QTY_SHIP'
                 ],
-                order: [['Id']] 
+                //order: [['Id']] 
             };
 
             dataaccess.FindAll(BoEMasterDetails, param)
@@ -972,116 +972,151 @@ var routes = function () {
     function CostAdjustmentAPI(requestData){
         return new Promise(async (resolve, reject) => {
 
-            let promises = []
-            let request = requestData;
-
-            let AdjustmentTypeCode = configuration.CostAdjustmentAPIData.HardCodedData.AdjustmentTypeCode;
-            let AdjustmentStatusCode = configuration.CostAdjustmentAPIData.HardCodedData.AdjustmentStatusCode;
-            let Reason = configuration.CostAdjustmentAPIData.HardCodedData.Reason;
-            let CostElement = configuration.CostAdjustmentAPIData.HardCodedData.CostElement;
-
-            request.forEach(element => {
-                var data = JSON.stringify({
-                    "TransactionId": element.TRANSACTION_ID,
-                    "AdjustmentTypeCode": AdjustmentTypeCode,
-                    "AdjustmentStatusCode": AdjustmentStatusCode,
-                    "Reason": Reason,
-                    "AdjustmentDetail": [
-                      {
-                        "CostElement": CostElement,
-                        "NewCost": element.NewUnitPrice
-                      }
-                    ]
-                });
-                  
-                var config = {
-                    method: configuration.CostAdjustmentAPIData.configData.method,
-                    url: configuration.CostAdjustmentAPIData.configData.url,
-                    headers: configuration.CostAdjustmentAPIData.configData.headers,
-                    data : data
-                }; 
-
-                promises.push(axios(config));
-            });
-
-            Promise.all(promises).then(function (results) {
-                results.forEach(function (response, index, array) {
-
-                    console.log("AdjustmentNumber", response.data.AdjustmentNumber);
-
-                    const BoEDetailsMap = datamodel.BoEDetailsMap();
-
-                    var values = {
-                        isCostUpdatedId:1,
-                        AdjustmentNumber:response.data.AdjustmentNumber,
-                        ModifiedDate: connect.sequelize.fn("NOW"),
-                    };
-
-                    var param = {
-                        RecieptNumber: response.data.ReceiptNumber,
-                        InventoryItemId: response.data.ItemId,
-                    };
-
-                    dataaccess.Update(BoEDetailsMap, values, param)
-                    .then(() => {
-                            if (index === array.length - 1) {
-                                console.log('CostAdjustmentAPI');
-                                resolve();
-                            }
-                        })
-                    .catch((error) => {
-                            console.log(error);
+            console.log("requestData.length",requestData.length);
+            if(requestData.length != 0){
+                let promises = []
+                let request = requestData;
+    
+                let AdjustmentTypeCode = configuration.CostAdjustmentAPIData.HardCodedData.AdjustmentTypeCode;
+                let AdjustmentStatusCode = configuration.CostAdjustmentAPIData.HardCodedData.AdjustmentStatusCode;
+                let Reason = configuration.CostAdjustmentAPIData.HardCodedData.Reason;
+                let CostElement = configuration.CostAdjustmentAPIData.HardCodedData.CostElement;
+    
+                request.forEach(element => {
+                    var data = JSON.stringify({
+                        "TransactionId": element.TRANSACTION_ID,
+                        "AdjustmentTypeCode": AdjustmentTypeCode,
+                        "AdjustmentStatusCode": AdjustmentStatusCode,
+                        "Reason": Reason,
+                        "AdjustmentDetail": [
+                          {
+                            "CostElement": CostElement,
+                            "NewCost": element.NewUnitPrice
+                          }
+                        ]
                     });
+                      
+                    var config = {
+                        method: configuration.CostAdjustmentAPIData.configData.method,
+                        url: configuration.CostAdjustmentAPIData.configData.url,
+                        headers: configuration.CostAdjustmentAPIData.configData.headers,
+                        data : data
+                    }; 
+    
+                    promises.push(axios(config));
                 });
-            })
-            .catch(function (error) {
-                    console.log("CostAdjustmentAPI", error);
-                    dataconn.errorlogger('TransactionService', 'Cost Adjustment API Promise.all Error', error);
-
-                    // if (error.response) {
-                    //     if (error.response.status == 400) {
-                    //         dataconn.apiResponselogger('Misc Reciept API', requestBody.AssetRequestBody.Id, 0, error.response.status, error.response.data, 1);
-                    //     }
-                    // }
-                    reject();
-            });
-            
-              
-            //   axios(config)
-            //   .then(function (response) {
-            //     console.log(JSON.stringify(response.data));
-            //   })
-            //   .catch(function (error) {
-            //     console.log(error);
-            //   });
-
+    
+                Promise.all(promises).then(function (results) {
+                    results.forEach(function (response, index, array) {
+    
+                        console.log("AdjustmentNumber", response.data.AdjustmentNumber);
+    
+                        const BoEDetailsMap = datamodel.BoEDetailsMap();
+    
+                        var values = {
+                            isCostUpdatedId:1,
+                            AdjustmentNumber:response.data.AdjustmentNumber,
+                            ModifiedDate: connect.sequelize.fn("NOW"),
+                        };
+    
+                        var param = {
+                            RecieptNumber: response.data.ReceiptNumber,
+                            InventoryItemId: response.data.ItemId,
+                        };
+    
+                        dataaccess.Update(BoEDetailsMap, values, param)
+                        .then(() => {
+                                if (index === array.length - 1) {
+                                    console.log('CostAdjustmentAPI');
+                                    resolve();
+                                }
+                            })
+                        .catch((error) => {
+                                console.log(error);
+                        });
+                    });
+                })
+                .catch(function (error) {
+                        if (error.response) {
+                            if (error.response.status == 400) {
+                                dataconn.apiResponselogger('Cost Adjustment API', 0 , 0, error.response.status, error.response.data, 1);
+                            }
+                        }
+                        reject(error.response.data);
+                });
+            }
+            else{
+                resolve();
+            }
         });
     }
 
-    router.route('/CostAPI')
-    .get(function (req, res) {
+    // router.route('/CostAPI')
+    // .get(function (req, res) {
+    //     FetchDetailsForCostAPI()
+    //     .then((result1)=>{
+    //         let BoEDetailsList = result1;
+    //         FetchDetailsFormPOCostReport(BoEDetailsList)
+    //         .then((result2)=>{
+    //             let FinalListForCostAPI = result2;
+    //             CostAdjustmentAPI(FinalListForCostAPI)
+    //             .then((responseResult)=>{
+    //                 res.status(200).json({ success: true, message: "Fetch Details Form PO Cost Report", Data: null })
+    //             })
+    //             .catch((error)=>{
+    //                 res.status(200).json({ success: false, message: "Cost Adjustment API", Data: null })
+    //             })
+    //         })
+    //         .catch((error)=>{
+    //             res.status(200).json({ success: false, message: "Fetch Details Form PO Cost Report", Data: null })
+    //         })
+    //     })
+    //     .catch((error)=>{
+    //         res.status(200).json({ success: false, message: "Fetch Details For Cost API", Data: null })
+    //     })
+    // });
+
+    module.exports.CostAPI = function(){
+
+        var Schedulerdata = {
+            SchedulerName:'Cost API',
+            Start: connect.sequelize.fn('NOW'),
+            End: null ,
+        }
+        dataconn.Schedulerlog(Schedulerdata);
+
         FetchDetailsForCostAPI()
         .then((result1)=>{
+            console.log("Cost API Step 1 Completed");
             let BoEDetailsList = result1;
             FetchDetailsFormPOCostReport(BoEDetailsList)
             .then((result2)=>{
+                console.log("Cost API Step 2 Completed");
                 let FinalListForCostAPI = result2;
+                console.log("FinalListForCostAPI",FinalListForCostAPI);
                 CostAdjustmentAPI(FinalListForCostAPI)
                 .then((responseResult)=>{
-                    res.status(200).json({ success: true, message: "Fetch Details Form PO Cost Report", Data: null })
+                    console.log("Cost API Step 3 Completed");
+                    var Schedulerdata = {
+                        SchedulerName:'Cost API',
+                        Start: null,
+                        End: connect.sequelize.fn('NOW') ,
+                    }
+                    dataconn.Schedulerlog(Schedulerdata);
                 })
                 .catch((error)=>{
-                    res.status(200).json({ success: false, message: "Cost Adjustment API", Data: null })
+                    console.log("Cost API Step 3 Error",error);
                 })
             })
             .catch((error)=>{
-                res.status(200).json({ success: false, message: "Fetch Details Form PO Cost Report", Data: null })
+                console.log("Cost API Step 2 Error",error);
             })
         })
         .catch((error)=>{
-            res.status(200).json({ success: false, message: "Fetch Details For Cost API", Data: null })
+            console.log("Cost API Step 1 Error",error);
         })
-    });
+    }
+
     //End Routes
 
     return router;

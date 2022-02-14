@@ -326,6 +326,11 @@ var routes = function () {
                 BoENumber: requestBody.BoENumber,
                 BoEDate: requestBody.BoEDate,
                 BoEExchangeRate: requestBody.BoEExchangeRate,
+                
+                BoEBCD: requestBody.BoEBCD,
+                BoESWS: requestBody.BoESWS,
+                BoEIGST: requestBody.BoEIGST,
+                
                 BoETotalAmount: requestBody.BoETotalAmount,
 
                 HAWB: requestBody.HAWB,

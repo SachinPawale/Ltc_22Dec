@@ -52,6 +52,7 @@ module.exports.CreateTable = function (res) {
 
     datamodel.HSNMaster();
     datamodel.POCostReport();
+    datamodel.SchedulerLogger();
     //datamodel.EntityMaster();
     //datamodel.CurrencyMaster();
 
@@ -95,6 +96,7 @@ module.exports.maillogger = function (mailobj) {
         assetId: mailobj.assetId,
         mailTo: mailobj.mailTo,
         mailFrom: mailobj.mailFrom,
+        mailCc: mailobj.mailCc,
         mailSubject: mailobj.mailSubject,
         mailBody: mailobj.mailBody,
         messageId: mailobj.messageId,
@@ -136,4 +138,24 @@ module.exports.GetAllCronService = function () {
     const CronService = datamodel.CronService();
     var param = { attributes: ['Code', 'IsActive'] };
     return dataaccess.FindAll(CronService, param);
+}
+
+/// Schedulerlog function used to insert Scheduler logs into SchedulerLogger table
+module.exports.Schedulerlog = function(Schedulerdata) {
+    const SchedulerLogger = datamodel.SchedulerLogger();
+
+    var values = {
+        SchedulerName:Schedulerdata.SchedulerName,
+        Start: Schedulerdata.Start,
+        End: Schedulerdata.End,
+        CreatedDate: connect.sequelize.fn('NOW')
+    };
+
+    dataaccess.Create(SchedulerLogger, values)
+        .then(function(result) {
+            if (result == null)
+                module.exports.errorlogger('SchedulerLogger', 'SchedulerLogger', { message: 'No object found', stack: '' });
+        }, function(err) {
+            module.exports.errorlogger('SchedulerLogger', 'SchedulerLogger', err);
+        });
 }

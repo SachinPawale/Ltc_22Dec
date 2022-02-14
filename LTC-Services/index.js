@@ -5,7 +5,7 @@ var fs = require('fs');
 var app = express();
 var config = require('./Config');
 //const mail = require('./Common/EmailService');
-//var cron = require('./CronScheduler/RunScheduler');
+var cron = require('./CronScheduler/RunScheduler');
 
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));

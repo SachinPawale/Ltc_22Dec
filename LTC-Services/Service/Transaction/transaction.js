@@ -249,7 +249,6 @@ var routes = function () {
             connect.sequelize.transaction().then(trans => {
 
                 const Asset = datamodel.Asset();
-                // console.log("orginzation", req.body.Organization);
                 var values = {
                     SerialNumber: req.body.SerialNumber,
                     ReceiptNumber: req.body.ReceiptNumber,
@@ -262,7 +261,6 @@ var routes = function () {
                     DesORGCode: req.body.DesORGCode == null ? null : req.body.DesORGCode.OrganizationCode,
                     DesTypeCode: req.body.DesTypeCode,
                     Locator: req.body.Locator,
-                    //DesSubInventoryCode: req.body.AssetType == 'CAM'? 'CAM' : req.body.DesSubInventoryCode,
                     DesSubInventoryCode: req.body.DesSubInventoryCode,
                     DesSubInventoryName: req.body.DesSubInventoryName,
                     DFFS: req.body.DFFS,
@@ -274,7 +272,7 @@ var routes = function () {
                         if (result != null) {
 
                             let AssetType = req.body.AssetType;
-
+                            let AssetIdForEmail = result.Id;
                             const AssetDetails = datamodel.AssetDetails();
                             var mapDetails = [];
                             var promiseDetails = req.body.AssetDetails.map(function (mapitem) {
@@ -300,11 +298,7 @@ var routes = function () {
                                 else {
                                     mapDetails.push({
                                         AssetId: result.Id,
-                                        //AssetNumber: mapitem.ASSET_NUMBER,
-                                        //AssetDesc: mapitem.ASSET_DESC,
                                         Cost: mapitem.COST,
-                                        //LTD_DEP: mapitem.DEPRN_RESERVE,
-                                        //NBV: mapitem.NBV,
                                         AssertQuantity: mapitem.ITEM_QUANTITY,
                                         LotNumber: mapitem.LOT_NUMBER,
                                         Item: mapitem.ITEM_NUMBER,
@@ -324,20 +318,34 @@ var routes = function () {
                                     .then((assetresult) => {
                                         trans.commit();
 
+                                        // let pdftemplateData = {
+                                        //     //URL: req.protocol + '://' + req.get('host'),
+                                        //     data: req.body.AssetDetails,
+                                        //     Remarks: "Pending For Approval"
+                                        // };
 
-                                        let pdftemplateData = {
-                                            URL: req.protocol + '://' + req.get('host'),
-                                            Remarks: "Pending For Approval"
-                                        };
-                                        let mailtemplateData = {};
-                                        let mailData = {
-                                            fromEmail: "Notification.Centre@Lightstorm.in",
-                                            toEmail: "rahul.g@neweltechnologies.com",
-                                            subjectEmail: "New Asset Request"
-                                        };
-                                        const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetPDF.ejs');
-                                        const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetResponse.ejs');
-                                        //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+                                        if(req.body.StatusId != 3){
+                                            let formatedCost = Number(parseFloat(req.body.totalNBVForEmail).toFixed(2)).toLocaleString('en', {
+                                                minimumFractionDigits: 2
+                                            });
+    
+                                            let mailtemplateData = {
+                                                AssetType: req.body.AssetType,
+                                                AssetNumber: req.body.InterfaceBatchNumber,
+                                                FromLocation: req.body.Organization.OrganizationName,
+                                                ToLocation: req.body.DesORGCode.OrganizationName,
+                                                TotalAmount: formatedCost,
+                                            };
+                                            let mailData = {
+                                                fromEmail: req.body.userEmail,
+                                                toEmail: configuration.EmailIds.ForApproval.ToEmailIds,
+                                                ccEmail : configuration.EmailIds.ForApproval.CcEmailIds,
+                                                subjectEmail: req.body.AssetType + ' - ' + req.body.InterfaceBatchNumber + " For Approval"
+                                            };
+                                            //const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetPDF.ejs');
+                                            const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetResponse.ejs');
+                                            sentAssetMail(AssetIdForEmail,mailtemplateData,mailData,emailTemplatePath);
+                                        }
 
                                         res.status(200).json({ Success: true, Message: 'Asset saved successfully', Data: result });
                                     },
@@ -1018,21 +1026,25 @@ var routes = function () {
                                     .then((finalresult) => {
                                         console.log("ApproveRejectAsset API Ended")
 
-                                        let pdftemplateData = {
-                                            Remarks: "Approved successfully",
-                                            data: req.body.AssetRequestBody.AssetDetails
-                                        };
+                                        let formatedCost = Number(parseFloat(request.TotalAmount).toFixed(2)).toLocaleString('en', {
+                                            minimumFractionDigits: 2
+                                        });
+
                                         let mailtemplateData = {
-                                            Status: 'Approved'
+                                            AssetType: request.AssetType,
+                                            AssetNumber: request.InterfaceBatchNumber,
+                                            FromLocation: request.FromLocation,
+                                            ToLocation: request.ToLocation,
+                                            TotalAmount: formatedCost,
                                         };
                                         let mailData = {
-                                            fromEmail: "Notification.Centre@Lightstorm.in",
-                                            toEmail: "rahul.g@neweltechnologies.com",
-                                            subjectEmail: "Asset Status"
+                                            fromEmail: request.userEmail,
+                                            toEmail: configuration.EmailIds.Approved.ToEmailIds,
+                                            ccEmail : request.userEmail + ';' + configuration.EmailIds.Approved.CcEmailIds,
+                                            subjectEmail: req.body.AssetType + ' - ' + req.body.InterfaceBatchNumber + " Approved"
                                         };
-                                        const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/pdfTemplate.ejs');
-                                        const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/response.ejs');
-                                        //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+                                        const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/approveAssetResponse.ejs');
+                                        sentAssetMail(req.body.Id,mailtemplateData,mailData,emailTemplatePath);
 
                                         res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: null });
                                     })
@@ -1075,21 +1087,29 @@ var routes = function () {
                 dataaccess.Update(Asset, values, param)
                     .then(function (result) {
                         if (result != null) {
-                            let pdftemplateData = {
-                                Remarks: req.body.Remarks,
-                                data: req.body.AssetRequestBody.AssetDetails
-                            };
+                            
+                            let formatedCost = Number(parseFloat(request.TotalAmount).toFixed(2)).toLocaleString('en', {
+                                  minimumFractionDigits: 2
+                            });
+
+                            //let formatedCost = (parseFloat(request.TotalAmount).toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
                             let mailtemplateData = {
-                                Status: 'Rejected'
+                                AssetType: request.AssetType,
+                                AssetNumber: request.InterfaceBatchNumber,
+                                FromLocation: request.FromLocation,
+                                ToLocation: request.ToLocation,
+                                TotalAmount: formatedCost,
                             };
                             let mailData = {
-                                fromEmail: "Notification.Centre@Lightstorm.in",
-                                toEmail: "rahul.g@neweltechnologies.com",
-                                subjectEmail: "Asset Status"
+                                fromEmail: request.userEmail,
+                                toEmail: request.userEmail,
+                                ccEmail : configuration.EmailIds.Rejected.CcEmailIds,
+                                subjectEmail: req.body.AssetType + ' - ' + req.body.InterfaceBatchNumber + " Rejected"
                             };
-                            const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/pdfTemplate.ejs');
-                            const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/response.ejs');
-                            //sentAssetDetailsMail(pdftemplateData,mailtemplateData,mailData,pdfTemplatePath,emailTemplatePath);
+                            const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/rejectAssetResponse.ejs');
+                            sentAssetMail(req.body.Id,mailtemplateData,mailData,emailTemplatePath);
+                            
                             res.status(200).json({ Success: true, Message: 'AssetDetails updated successfully', Data: result });
                         }
                         else {
@@ -1633,59 +1653,61 @@ var routes = function () {
 
         });
 
-    function sentAssetDetailsMail(pdftemplateData, mailtemplateData, mailData, pdfHTMLPath, emailHTMLPath) {
-        const templateData = pdftemplateData;
-        const pdftemplatePath = pdfHTMLPath;
-        //const pdftemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
-        emailService.htmlToPdf(pdftemplatePath, templateData)
-            .then((results) => {
-                console.log('File Path : ', results);
-                let attachmentFilePath = results.fileSavePath;
-                let attachmentFileName = results.fileName;
-                let templateLocation = emailHTMLPath;
-                //let templateLocation = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
-                let templateData = mailtemplateData;
-                let fromEmail = mailData.fromEmail;
-                let toEmail = mailData.toEmail;
-                let subjectEmail = mailData.subjectEmail;
+    // function sentAssetDetailsMail(pdftemplateData, mailtemplateData, mailData, pdfHTMLPath, emailHTMLPath) {
+    //     const templateData = pdftemplateData;
+    //     const pdftemplatePath = pdfHTMLPath;
+    //     //const pdftemplatePath = path.join(__dirname +'/../../Templates/LTC_Response/pdfTemplate.ejs');
+    //     emailService.htmlToPdf(pdftemplatePath, templateData)
+    //         .then((results) => {
+    //             console.log('File Path : ', results);
+    //             let attachmentFilePath = results.fileSavePath;
+    //             let attachmentFileName = results.fileName;
+    //             let templateLocation = emailHTMLPath;
+    //             //let templateLocation = path.join(__dirname +'/../../Templates/LTC_Response/response.ejs');
+    //             let templateData = mailtemplateData;
+    //             let fromEmail = mailData.fromEmail;
+    //             let toEmail = mailData.toEmail;
+    //             let ccEmail = mailData.ccEmail;
+    //             let subjectEmail = mailData.subjectEmail;
 
-                emailService.notifyMail(fromEmail, toEmail, subjectEmail, templateLocation, templateData, attachmentFilePath, attachmentFileName)
-                    .then((results) => {
 
-                        let mailObj = {
-                            assetId: 121,
-                            mailTo: results.messageData.to,
-                            mailFrom: results.messageData.from,
-                            mailSubject: results.messageData.subject,
-                            mailBody: results.messageData.html,
-                            messageId: results.info.messageId,
-                            mailStatus: true,
-                        }
-                        dataconn.maillogger(mailObj);
-                        console.log('Email Sent');
-                        //res.status(200).json({ success: true, message: "Success", Data: null })
-                    })
-                    .catch((err) => {
-                        console.log(err)
-                        let mailObj = {
-                            assetId: 121,
-                            mailTo: err.messageData.to,
-                            mailFrom: err.messageData.from,
-                            mailSubject: err.messageData.subject,
-                            mailBody: err.messageData.html,
-                            messageId: null,
-                            mailStatus: false,
-                        }
-                        dataconn.maillogger(mailObj);
-                        console.log('Email Not Sent');
-                        //res.status(200).json({ success: false, message: "Error", Data: null })
-                    });
-            })
-            .catch((error) => {
-                dataconn.errorlogger('TransactionService', 'convertPDF', error);
-                console.log('Error : ', error)
-            });
-    }
+    //             emailService.notifyMail(fromEmail, toEmail,ccEmail, subjectEmail, templateLocation, templateData, attachmentFilePath, attachmentFileName)
+    //                 .then((results) => {
+
+    //                     let mailObj = {
+    //                         assetId: 121,
+    //                         mailTo: results.messageData.to,
+    //                         mailFrom: results.messageData.from,
+    //                         mailSubject: results.messageData.subject,
+    //                         mailBody: results.messageData.html,
+    //                         messageId: results.info.messageId,
+    //                         mailStatus: true,
+    //                     }
+    //                     dataconn.maillogger(mailObj);
+    //                     console.log('Email Sent');
+    //                     //res.status(200).json({ success: true, message: "Success", Data: null })
+    //                 })
+    //                 .catch((err) => {
+    //                     console.log(err)
+    //                     let mailObj = {
+    //                         assetId: 121,
+    //                         mailTo: err.messageData.to,
+    //                         mailFrom: err.messageData.from,
+    //                         mailSubject: err.messageData.subject,
+    //                         mailBody: err.messageData.html,
+    //                         messageId: null,
+    //                         mailStatus: false,
+    //                     }
+    //                     dataconn.maillogger(mailObj);
+    //                     console.log('Email Not Sent');
+    //                     //res.status(200).json({ success: false, message: "Error", Data: null })
+    //                 });
+    //         })
+    //         .catch((error) => {
+    //             dataconn.errorlogger('TransactionService', 'convertPDF', error);
+    //             console.log('Error : ', error)
+    //         });
+    // }
 
     router.route('/dumpExcel')
         .get(function (req, res) {
@@ -2058,12 +2080,12 @@ var routes = function () {
                     SerialNumber: request.SerialNumber,
                     ReceiptNumber: request.ReceiptNumber,
                     AssetNumber: request.AssetNumber,
-                    OrganizationId: request.Organization.OrganizationId,
-                    LocationCode: request.ToLocation.LocationCode,
+                    OrganizationId: request.Organization == null ? null : request.Organization.OrganizationId,
+                    LocationCode: request.ToLocation == null ? null : request.ToLocation.LocationCode,
                     AssetType: request.AssetType,
                     InterfaceBatchNumber: request.InterfaceBatchNumber,
                     TransactionDate: request.TransactionDate,
-                    DesORGCode: request.DesORGCode.OrganizationCode,
+                    DesORGCode: request.DesORGCode == null ? null : request.DesORGCode.OrganizationCode,
                     DesTypeCode: request.DesTypeCode,
                     Locator: request.Locator,
                     //DesSubInventoryCode: request.AssetType == 'CAM' ? 'CAM' : request.DesSubInventoryCode,
@@ -2133,6 +2155,29 @@ var routes = function () {
                                     .then((assetresult) => {
                                         console.log("AfterPromiseAll then");
                                         trans.commit();
+
+                                        if(request.StatusId != 3){
+                                            let formatedCost = Number(parseFloat(request.totalNBVForEmail).toFixed(2)).toLocaleString('en', {
+                                                minimumFractionDigits: 2
+                                            });
+    
+                                            let mailtemplateData = {
+                                                AssetType: request.AssetType,
+                                                AssetNumber: request.InterfaceBatchNumber,
+                                                FromLocation: request.Organization.OrganizationName,
+                                                ToLocation: request.DesORGCode.OrganizationName,
+                                                TotalAmount: formatedCost,
+                                            };
+                                            let mailData = {
+                                                fromEmail: request.userEmail,
+                                                toEmail: configuration.EmailIds.ForApproval.ToEmailIds,
+                                                ccEmail : configuration.EmailIds.ForApproval.CcEmailIds,
+                                                subjectEmail: request.AssetType + ' - ' + request.InterfaceBatchNumber + " For Approval"
+                                            };
+                                            const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetResponse.ejs');
+                                            sentAssetMail(AssetId,mailtemplateData,mailData,emailTemplatePath);
+                                        }
+
                                         resolve();
                                     },
                                         function (err) {
@@ -2200,6 +2245,47 @@ var routes = function () {
             // })
 
         });
+
+    
+        function sentAssetMail(AssetIdForEmail,mailtemplateData, mailData, emailHTMLPath) {
+          let fromEmail = mailData.fromEmail;
+          let toEmail = mailData.toEmail;
+          let ccEmail = mailData.ccEmail;
+          let subjectEmail = mailData.subjectEmail;
+          let templateLocation = emailHTMLPath;
+          let templateData = mailtemplateData;
+
+          emailService.notifyMail(fromEmail,toEmail,ccEmail,subjectEmail,templateLocation,templateData)
+            .then((results) => {
+              let mailObj = {
+                assetId: AssetIdForEmail,
+                mailTo: results.messageData.to,
+                mailFrom: results.messageData.from,
+                mailCc: results.messageData.cc,
+                mailSubject: results.messageData.subject,
+                mailBody: results.messageData.html,
+                messageId: results.info.messageId,
+                mailStatus: true,
+              };
+              dataconn.maillogger(mailObj);
+              console.log("Email Sent");
+            })
+            .catch((err) => {
+              console.log(err);
+              let mailObj = {
+                assetId: AssetIdForEmail,
+                mailTo: err.messageData.to,
+                mailFrom: err.messageData.from,
+                mailCc: err.messageData.cc,
+                mailSubject: err.messageData.subject,
+                mailBody: err.messageData.html,
+                messageId: null,
+                mailStatus: false,
+              };
+              dataconn.maillogger(mailObj);
+              console.log("Email Not Sent");
+            });
+        }
 
     return router;
 

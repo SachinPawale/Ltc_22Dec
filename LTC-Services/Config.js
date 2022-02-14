@@ -156,7 +156,7 @@ const EmailSMTPConfig = {
     port: 587,                 //SMTP PORT
     auth: {
         user: "Notification.Centre@Lightstorm.in",   //Username
-        pass: "Tatva#2022"    //Password
+        pass: "Retro#1942"    //Password
     }
 }
 
@@ -245,6 +245,30 @@ const CostAdjustmentAPIData = {
 const Uploads_Folder = '/Uploads'
 const BoE_Entry_Folder = '/BoE-Entry'
 
+const EmailIds = {
+    ForApproval:{
+        //ToEmailIds:'Sayan.Bhattacharyya@Lightstormtelecom.com',
+        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
+    
+        ToEmailIds:'rahul.g@neweltechnologies.com',
+        CcEmailIds: 'sachin.pawale@neweltechnologies.com; rugved.c@neweltechnologies.com;'
+        
+    },
+    Approved:{
+        //ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
+        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com;'
+        ToEmailIds:'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;',
+        CcEmailIds: 'rg050409@gmail.com;'
+        
+    },
+    Rejected:{
+        //ToEmailIds:'',
+        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
+        ToEmailIds:'rahul.g@neweltechnologies.com',
+        CcEmailIds: 'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;'
+        
+    },
+}
 
 
 module.exports.service_port = finalConfig.service_port;
@@ -269,4 +293,6 @@ module.exports.BoEInvoiceData = BoEInvoiceData;
 module.exports.ReceiptAPIData = ReceiptAPIData;
 module.exports.StandardInvoiceAPIData = StandardInvoiceAPIData;
 module.exports.CostAdjustmentAPIData = CostAdjustmentAPIData;
+
+module.exports.EmailIds = EmailIds;
 

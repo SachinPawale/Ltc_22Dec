@@ -14,33 +14,34 @@ let transporter = nodemailer.createTransport({
     }
   });
 
-  module.exports.notifyMail = function (fromEmail,toEmail,subjectEmail,htmlEmailTemplatePath,dataEmailTemplateBody,attachmentFilePath,attachmentFileName){
+  // module.exports.notifyMail = function (fromEmail,toEmail,ccEmail,subjectEmail,htmlEmailTemplatePath,dataEmailTemplateBody,attachmentFilePath,attachmentFileName){
 
-    return new Promise((resolve, reject) => {
-        const templateString = fs.readFileSync(htmlEmailTemplatePath,'utf-8');
-        const HTMLTemplete = ejs.render(templateString,dataEmailTemplateBody);
+  //   return new Promise((resolve, reject) => {
+  //       const templateString = fs.readFileSync(htmlEmailTemplatePath,'utf-8');
+  //       const HTMLTemplete = ejs.render(templateString,dataEmailTemplateBody);
 
-        let messageData = {
-          from: fromEmail,
-          to: toEmail,
-          subject: subjectEmail,
-          attachments: [{filename: attachmentFileName,path :attachmentFilePath}],
-          html: HTMLTemplete
-        }
+  //       let messageData = {
+  //         from: fromEmail,
+  //         to: toEmail,
+  //         cc:ccEmail,
+  //         subject: subjectEmail,
+  //         attachments: [{filename: attachmentFileName,path :attachmentFilePath}],
+  //         html: HTMLTemplete
+  //       }
         
-        transporter.sendMail(messageData,(err, info) => {
-          if (err) {
-            let sentData = { messageData:messageData , err:err }
-            reject(sentData);
-          } 
-          else {
-            let sentData = { messageData:messageData , info:info }
-            fs.unlinkSync(attachmentFilePath);
-            resolve(sentData);
-          }
-        });
-    });
-  }
+  //       transporter.sendMail(messageData,(err, info) => {
+  //         if (err) {
+  //           let sentData = { messageData:messageData , err:err }
+  //           reject(sentData);
+  //         } 
+  //         else {
+  //           let sentData = { messageData:messageData , info:info }
+  //           fs.unlinkSync(attachmentFilePath);
+  //           resolve(sentData);
+  //         }
+  //       });
+  //   });
+  // }
 
   module.exports.htmlToPdf =  function(templatePath,templateData){
     return new Promise((resolve, reject) => {
@@ -64,4 +65,31 @@ let transporter = nodemailer.createTransport({
             console.log(error)
           });
     })
+  }
+
+  module.exports.notifyMail = function (fromEmail,toEmail,ccEmail,subjectEmail,htmlEmailTemplatePath,dataEmailTemplateBody){
+
+    return new Promise((resolve, reject) => {
+        const templateString = fs.readFileSync(htmlEmailTemplatePath,'utf-8');
+        const HTMLTemplete = ejs.render(templateString,dataEmailTemplateBody);
+
+        let messageData = {
+          from: 'Notification.Centre@Lightstorm.in',
+          to: toEmail,
+          cc:ccEmail,
+          subject: subjectEmail,
+          html: HTMLTemplete
+        }
+        
+        transporter.sendMail(messageData,(err, info) => {
+          if (err) {
+            let sentData = { messageData:messageData , err:err }
+            reject(sentData);
+          } 
+          else {
+            let sentData = { messageData:messageData , info:info }
+            resolve(sentData);
+          }
+        });
+    });
   }
