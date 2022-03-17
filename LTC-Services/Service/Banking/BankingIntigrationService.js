@@ -12,7 +12,8 @@ const configuration = require('../../Config');
 var axios = require('axios');
 // let Client = require('ssh2-sftp-client');
 const fs = require('fs');
-const fsPromises = require("fs/promises");
+// const fsPromises = require("fs/promises");
+const fsPromises = require('fs').promises;
 const path = require('path');
 var unzipper = require('unzipper');
 const ftp = require('basic-ftp');
@@ -100,7 +101,8 @@ var routes = function () {
         .then((result)=>{
             let API1Data = result;
             // console.log("API1Data",API1Data);
-
+            res.status(200).json({ Success: true, Message: 'Successfully Saved', Data: null });
+            
             API1Call(API1Data)
             .then((result1)=>{
                 let API2Data = result1;
@@ -122,17 +124,17 @@ var routes = function () {
 
                                 FinalUpdateStatus(API1Data,requestData.userId)
                                 .then((finalupdateresult)=>{
-                                    res.status(200).json({ Success: true, Message: 'Successfully Saved', Data: null });
+                                    // res.status(200).json({ Success: true, Message: 'Successfully Saved', Data: null });
                                 })
                                 .catch((finalupdateerror)=>{
                                     ErrorUpdateStatus(API1Data,requestData.userId)
                                     .then((finalupdateresult)=>{
                                         dataconn.errorlogger('BankingIntigrationService', 'FinalUpdateStatus', {message:'Error occurred while updating record' , stack:finalupdateerror});
-                                        res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
+                                        //res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                                     })
                                     .catch((finalupdateerror)=>{
                                         dataconn.errorlogger('BankingIntigrationService', 'ErrorUpdateStatus', {message:'Error occurred while updating record' , stack:finalupdateerror});
-                                        res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
+                                       // res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                                     })
                                     
                                 })
@@ -142,11 +144,11 @@ var routes = function () {
                                 ErrorUpdateStatus(API1Data,requestData.userId)
                                 .then((finalupdateresult)=>{
                                     dataconn.errorlogger('BankingIntigrationService', 'MovingFileToSFTP', {message:'Error occurred while moving file to sftp' , stack:error4});
-                                    res.status(200).json({ Success: false, Message: 'Error occurred while moving file to sftp', Data: null });
+                                    //res.status(200).json({ Success: false, Message: 'Error occurred while moving file to sftp', Data: null });
                                 })
                                 .catch((finalupdateerror)=>{
                                     dataconn.errorlogger('BankingIntigrationService', 'ErrorUpdateStatus', {message:'Error occurred while updating record' , stack:finalupdateerror});
-                                    res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
+                                    //res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                                 })
                                 
                             })
@@ -157,11 +159,11 @@ var routes = function () {
                             ErrorUpdateStatus(API1Data,requestData.userId)
                             .then((finalupdateresult)=>{
                                 dataconn.errorlogger('BankingIntigrationService', 'API3Call', {message:'Error occurred while calling API 3' , stack:error3});
-                                res.status(200).json({ Success: false, Message: 'Error occurred while calling API 3', Data: null });
+                                //res.status(200).json({ Success: false, Message: 'Error occurred while calling API 3', Data: null });
                             })
                             .catch((finalupdateerror)=>{
                                 dataconn.errorlogger('BankingIntigrationService', 'ErrorUpdateStatus', {message:'Error occurred while updating record' , stack:finalupdateerror});
-                                res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
+                                //res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                             })
                             
                         })
@@ -170,11 +172,11 @@ var routes = function () {
                     ErrorUpdateStatus(API1Data,requestData.userId)
                     .then((finalupdateresult)=>{
                         dataconn.errorlogger('BankingIntigrationService', 'API2Call', {message:'Error occurred while calling API 2' , stack:error2});
-                        res.status(200).json({ Success: false, Message: 'Error occurred while calling API 2', Data: null });
+                        //res.status(200).json({ Success: false, Message: 'Error occurred while calling API 2', Data: null });
                     })
                     .catch((finalupdateerror)=>{
                         dataconn.errorlogger('BankingIntigrationService', 'ErrorUpdateStatus', {message:'Error occurred while updating record' , stack:finalupdateerror});
-                        res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
+                        //res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                     })
                     
                 })       
@@ -183,18 +185,18 @@ var routes = function () {
                 ErrorUpdateStatus(API1Data,requestData.userId)
                 .then((finalupdateresult)=>{
                     dataconn.errorlogger('BankingIntigrationService', 'API1Call', {message:'Error occurred while calling API 1' , stack:error1});
-                    res.status(200).json({ Success: false, Message: 'Error occurred while calling API 1', Data: null });
+                    //res.status(200).json({ Success: false, Message: 'Error occurred while calling API 1', Data: null });
                 })
                 .catch((finalupdateerror)=>{
                     dataconn.errorlogger('BankingIntigrationService', 'ErrorUpdateStatus', {message:'Error occurred while updating record' , stack:finalupdateerror});
-                    res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
+                    //res.status(200).json({ Success: false, Message: 'Error occurred while updating record', Data: null });
                 })
                 
             })
         })
         .catch((error)=>{
             dataconn.errorlogger('BankingIntigrationService', 'SavingDetails', {message:'Error occurred while saving record' , stack:error});
-            res.status(200).json({ Success: false, Message: 'Error occurred while saving record', Data: null });
+            //res.status(200).json({ Success: false, Message: 'Error occurred while saving record', Data: null });
         })
     });
 
