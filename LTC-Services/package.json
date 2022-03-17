@@ -16,6 +16,7 @@
         "activedirectory": "^0.7.2",
         "async": "^2.6.3",
         "axios": "^0.24.0",
+        "basic-ftp": "^4.6.6",
         "ejs": "^2.7.4",
         "email-templates": "^5.1.0",
         "emailjs": "^2.2.0",
@@ -37,7 +38,11 @@
         "sequelize-auto-migrations": "^1.0.3",
         "sequelize-cli": "^5.4.0",
         "soap": "^0.30.0",
-        "strong-soap": "^1.21.0"
+        "ssh2": "^1.7.0",
+        "ssh2-sftp-client": "^7.2.2",
+        "strong-soap": "^1.21.0",
+        "unzipper": "^0.10.11",
+        "xml2js": "^0.4.23"
     },
     "devDependencies": {
         "nodemon": "^1.19.4"

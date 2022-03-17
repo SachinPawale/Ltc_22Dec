@@ -155,7 +155,7 @@ var routes = function () {
         });
 
     router.route('/CreateOrganization')
-        .post(function (req, res) {
+        .get(function (req, res) {
 
             var config = {
                 // method: 'get',
@@ -264,6 +264,8 @@ var routes = function () {
                     DesSubInventoryCode: req.body.DesSubInventoryCode,
                     DesSubInventoryName: req.body.DesSubInventoryName,
                     DFFS: req.body.DFFS,
+                    FromLocation: req.body.FromLocation,
+                    ToLocationWithSiteCode: req.body.ToLocationWithSiteCode,
                     StatusId: req.body.StatusId,
                     CreatedBy: req.body.userId
                 };
@@ -334,7 +336,10 @@ var routes = function () {
                                                 AssetNumber: req.body.InterfaceBatchNumber,
                                                 FromLocation: req.body.Organization.OrganizationName,
                                                 ToLocation: req.body.DesORGCode.OrganizationName,
+                                                FromLocationWithSiteCode: req.body.FromLocation,
+                                                ToLocationWithSiteCode: req.body.ToLocationWithSiteCode,
                                                 TotalAmount: formatedCost,
+                                                ui_url : configuration.ui_url
                                             };
                                             let mailData = {
                                                 fromEmail: req.body.userEmail,
@@ -436,7 +441,7 @@ var routes = function () {
         });
 
     router.route('/CreateLocationDetails')
-        .post(function (req, res) {
+        .get(function (req, res) {
             var config = {
                 // method: 'get',
                 // url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/hcmRestApi/resources/11.13.18.05/locationsV2/',
@@ -1035,7 +1040,10 @@ var routes = function () {
                                             AssetNumber: request.InterfaceBatchNumber,
                                             FromLocation: request.FromLocation,
                                             ToLocation: request.ToLocation,
+                                            FromLocationWithSiteCode: request.FromLocationWithSiteCode,
+                                            ToLocationWithSiteCode: request.ToLocationWithSiteCode,
                                             TotalAmount: formatedCost,
+                                            ui_url : configuration.ui_url
                                         };
                                         let mailData = {
                                             fromEmail: request.userEmail,
@@ -1099,7 +1107,10 @@ var routes = function () {
                                 AssetNumber: request.InterfaceBatchNumber,
                                 FromLocation: request.FromLocation,
                                 ToLocation: request.ToLocation,
+                                FromLocationWithSiteCode: request.FromLocationWithSiteCode,
+                                ToLocationWithSiteCode: request.ToLocationWithSiteCode,
                                 TotalAmount: formatedCost,
+                                ui_url : configuration.ui_url
                             };
                             let mailData = {
                                 fromEmail: request.userEmail,
@@ -1709,41 +1720,41 @@ var routes = function () {
     //         });
     // }
 
-    router.route('/dumpExcel')
-        .get(function (req, res) {
-            excelService.ExportExcelFile()
-                .then((results) => {
-                    const famiscmaster1 = datamodel.famiscmaster1();
-                    famiscmaster1.destroy({
-                        where: {},
-                        truncate: true
-                    })
-                        .then(() => {
-                            var bulkdata = results.workSheetsFromFile;
-                            famiscmaster1.bulkCreate(bulkdata).then(() => {
-                                return famiscmaster1.findAll();
-                            })
-                                .then((result) => {
-                                    res.status(200).json({ Success: true, Message: "All records saved successfully", Data: null });
-                                })
-                                .catch(function (error) {
-                                    dataconn.errorlogger('TransactionService', 'dumpExcel', error);
-                                    res.status(200).json({ Success: false, Message: "Error while saving details", Data: error });
-                                });
-                        })
-                        .catch(function (error) {
-                            dataconn.errorlogger('TransactionService', 'dumpExcel', error);
-                            res.status(200).json({ Success: true, Message: "Error while truncate", Data: error });
-                        });
-                })
-                .catch((error) => {
-                    dataconn.errorlogger('TransactionService', 'dumpExcel', error);
-                    res.status(200).json({ Success: false, Message: 'Error', Data: error });
-                });
-        });
+    // router.route('/dumpExcel')
+    //     .get(function (req, res) {
+    //         excelService.ExportExcelFile()
+    //             .then((results) => {
+    //                 const famiscmaster1 = datamodel.famiscmaster1();
+    //                 famiscmaster1.destroy({
+    //                     where: {},
+    //                     truncate: true
+    //                 })
+    //                     .then(() => {
+    //                         var bulkdata = results.workSheetsFromFile;
+    //                         famiscmaster1.bulkCreate(bulkdata).then(() => {
+    //                             return famiscmaster1.findAll();
+    //                         })
+    //                             .then((result) => {
+    //                                 res.status(200).json({ Success: true, Message: "All records saved successfully", Data: null });
+    //                             })
+    //                             .catch(function (error) {
+    //                                 dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+    //                                 res.status(200).json({ Success: false, Message: "Error while saving details", Data: error });
+    //                             });
+    //                     })
+    //                     .catch(function (error) {
+    //                         dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+    //                         res.status(200).json({ Success: true, Message: "Error while truncate", Data: error });
+    //                     });
+    //             })
+    //             .catch((error) => {
+    //                 dataconn.errorlogger('TransactionService', 'dumpExcel', error);
+    //                 res.status(200).json({ Success: false, Message: 'Error', Data: error });
+    //             });
+    //     });
 
     router.route('/CreateSubInventoryDetails')
-        .post(function (req, res) {
+        .get(function (req, res) {
             var config = {
                 method: configuration.SubinventoryData.configData.method,
                 url: configuration.SubinventoryData.configData.url,
@@ -1976,6 +1987,8 @@ var routes = function () {
                     DesSubInventoryCode: request.DesSubInventoryCode,
                     DesSubInventoryName: request.DesSubInventoryName,
                     DFFS: request.DFFS,
+                    FromLocation: request.FromLocation,
+                    ToLocationWithSiteCode: request.ToLocationWithSiteCode,
                     StatusId: request.StatusId,
                     Remarks: request.Remarks,
                     CreatedBy: UserId
@@ -2092,6 +2105,8 @@ var routes = function () {
                     DesSubInventoryCode: request.DesSubInventoryCode,
                     DesSubInventoryName: request.DesSubInventoryName,
                     DFFS: request.DFFS,
+                    FromLocation: request.FromLocation,
+                    ToLocationWithSiteCode: request.ToLocationWithSiteCode,
                     StatusId: request.StatusId,
                     Remarks: null,
                     CreatedBy: UserId
@@ -2166,7 +2181,10 @@ var routes = function () {
                                                 AssetNumber: request.InterfaceBatchNumber,
                                                 FromLocation: request.Organization.OrganizationName,
                                                 ToLocation: request.DesORGCode.OrganizationName,
+                                                FromLocationWithSiteCode: request.FromLocation,
+                                                ToLocationWithSiteCode: request.ToLocationWithSiteCode,
                                                 TotalAmount: formatedCost,
+                                                ui_url : configuration.ui_url
                                             };
                                             let mailData = {
                                                 fromEmail: request.userEmail,

@@ -51,6 +51,13 @@ class HSNMaster extends Model { }
 class POCostReport extends Model { }
 class SchedulerLogger extends Model { }
 
+class Masterschedulerdetails extends Model { }
+
+class BankingInmst extends Model { }
+class BankAccountMst extends Model { }
+
+class TDSGST extends Model { }
+
 
 ////#region Tables
 // module.exports.CurrencyMaster = function () {
@@ -111,6 +118,8 @@ module.exports.OrganizationDetails = function () {
         OrganizationId: { type: Sequelize.STRING(200), primaryKey: true, autoIncrement: false, allowNull: true },
         OrganizationCode: { type: Sequelize.STRING(200), allowNull: true },
         OrganizationName: { type: Sequelize.STRING(200), allowNull: true },
+        CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
+
     }, {
         sequelize,
         modelName: 'OrganizationDetails',
@@ -184,6 +193,8 @@ module.exports.Asset = function () {
         DFFS: { type: Sequelize.STRING(150), allowNull: true },
         EntityCode: { type: Sequelize.STRING(100), allowNull: true },
         CurrencyCode: { type: Sequelize.STRING(100), allowNull: true },
+        FromLocation : { type: Sequelize.STRING(200), allowNull: true },
+        ToLocationWithSiteCode : { type: Sequelize.STRING(200), allowNull: true },
         StatusId: { type: Sequelize.INTEGER, allowNull: true },
         Remarks: { type: Sequelize.STRING(200), allowNull: true },
         CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
@@ -673,7 +684,9 @@ module.exports.famiscmaster = function () {
         SUPPLIER_CODE: { type: Sequelize.STRING(200), allowNull: true },
         SUPPLIER_ITEM_DESC: { type: Sequelize.STRING(200), allowNull: true },
         DEPTARTMENT_CODE: { type: Sequelize.INTEGER, allowNull: true },
-        LOCATION_CODE: { type: Sequelize.INTEGER, allowNull: true }
+        LOCATION_CODE: { type: Sequelize.INTEGER, allowNull: true },
+        CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
+
     }, {
         sequelize,
         modelName: "famiscmaster",
@@ -766,6 +779,8 @@ module.exports.rmomaster = function () {
         COST: { type: Sequelize.INTEGER, allowNull: true },
         DEPTARTMENT_CODE: { type: Sequelize.INTEGER, allowNull: true },
         LOCATION_CODE: { type: Sequelize.INTEGER, allowNull: true },
+        CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
+
     }, {
         sequelize,
         modelName: "rmomaster",
@@ -793,6 +808,8 @@ module.exports.AssetHistory = function () {
         DFFS: { type: Sequelize.STRING(150), allowNull: true },
         EntityCode: { type: Sequelize.STRING(100), allowNull: true },
         CurrencyCode: { type: Sequelize.STRING(100), allowNull: true },
+        FromLocation : { type: Sequelize.STRING(200), allowNull: true },
+        ToLocationWithSiteCode : { type: Sequelize.STRING(200), allowNull: true },
         StatusId: { type: Sequelize.INTEGER, allowNull: true },
         Remarks: { type: Sequelize.STRING(200), allowNull: true },
         CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
@@ -956,6 +973,8 @@ module.exports.BoEMasterDetails = function () {
         SUPPLIER_ITEM_DESC: { type: Sequelize.TEXT, allowNull: true },
         SUPPLIER_ITEM_CODE: { type: Sequelize.TEXT, allowNull: true },
         ORGANIZATION_CODE:{ type: Sequelize.TEXT, allowNull: true },
+        CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
+
 
     },
         {
@@ -1168,5 +1187,98 @@ module.exports.SchedulerLogger = function() {
     });
     return SchedulerLogger;
 };
+
+module.exports.Masterschedulerdetails = function () {
+    Masterschedulerdetails.init({
+        Id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
+        SchedulerName: { type: Sequelize.STRING(100), allowNull: true },
+        RequestId: { type: Sequelize.STRING(100), allowNull: true },
+        RequestStatus: { type: Sequelize.STRING(100), allowNull: true },
+        APIObject: { type: Sequelize.TEXT, allowNull: true },
+        StartDate:{type:Sequelize.DATE,allowNull:true},
+        EndDate:{type:Sequelize.DATE,allowNull:true},
+        CreatedDate: {
+            type: Sequelize.DATE,
+            allowNull: true,
+            defaultValue: Sequelize.NOW,
+        },
+    }, {
+        sequelize,
+        modelName: "Masterschedulerdetails",
+        tableName: "Masterschedulerdetails",
+    });
+    return Masterschedulerdetails;
+}
+
+module.exports.BankingInmst = function () {
+    BankingInmst.init({
+        Id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
+        AcNumber: { type: Sequelize.STRING(100), allowNull: true },
+        // CheckDate: { type: Sequelize.DATE, allowNull: true },
+        CheckrunName: { type: Sequelize.STRING(100), allowNull: true },
+        IsActive: { type: Sequelize.BOOLEAN, allowNull: true },
+        apiStatus: { type: Sequelize.INTEGER, allowNull: true },
+        CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
+        CreatedDate: { type: Sequelize.DATE,allowNull: true,defaultValue: Sequelize.NOW},
+        ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
+        ModifiedDate: { type: Sequelize.DATE, allowNull: true },
+    }, 
+    {
+        sequelize,
+        modelName: "BankingInmst",
+        tableName: "BankingInmst",
+    });
+        return BankingInmst;
+    }
+
+    module.exports.BankAccountMst = function () {
+            BankAccountMst.init({
+            Id: { type: Sequelize.BIGINT, primaryKey: true, autoIncrement: true },
+            AccountNumber: { type: Sequelize.STRING(100), allowNull: true },
+            BankName: { type: Sequelize.STRING(100), allowNull: true },
+            IsActive: { type: Sequelize.BOOLEAN, allowNull: true },
+            CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
+            CreatedDate: { type: Sequelize.DATE,allowNull: true,defaultValue: Sequelize.NOW},
+        }, 
+        {
+            sequelize,
+            modelName: "BankAccountMst",
+            tableName: "BankAccountMst",
+        });
+            return BankAccountMst;
+    }
+
+    module.exports.TDSGST = function () {
+        TDSGST.init({
+            Id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            PartyId:{ type:Sequelize.BIGINT,allowNull: true},
+            PartySiteId:{ type:Sequelize.BIGINT, allowNull:true },
+            PartyTypeCode: { type: Sequelize.STRING(100), allowNull: true},
+            PartyName: { type: Sequelize.STRING(100), allowNull: true},
+            PartyNumber:{type:Sequelize.INTEGER,allowNull: true},
+            PartySiteNumber: {type:Sequelize.INTEGER, allowNull:true},
+            TaxRegimeCode:{ type: Sequelize.STRING(100), allowNull: true},
+            RegistrationTypeCode: {  type: Sequelize.STRING(100), allowNull: true},
+            RegistrationStatusCode: { type: Sequelize.STRING(100), allowNull: true},
+            EffectiveFrom:{ type: Sequelize.DATE, allowNull: true},
+            RegistrationNumber: { type: Sequelize.STRING(100), allowNull: true},
+            RoundingRuleCode:{ type: Sequelize.STRING(100), allowNull: true},
+            ValidationType:{  type: Sequelize.STRING(100), allowNull: true},
+            ValidationLevel:{ type: Sequelize.STRING(100), allowNull: true},
+            IsUpdated:{ type: Sequelize.INTEGER, allowNull:true},
+            RegistrationId:{ type:Sequelize.BIGINT,allowNull: true},
+            CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
+            CreatedDate: { type: Sequelize.DATE, allowNull: true },
+            ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
+            ModifiedDate: { type: Sequelize.DATE, allowNull: true },
+        }, {
+            sequelize,
+            modelName: 'TDSGST',
+            tableName: 'TDSGST',
+        });
+    
+        return TDSGST;
+    
+    }
 
 ////#endregion

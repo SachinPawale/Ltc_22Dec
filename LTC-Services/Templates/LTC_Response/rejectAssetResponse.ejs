@@ -2,8 +2,12 @@
      <body>
          <p>Hi,</p>
          <p style="margin-left:20px">
-            <%= AssetType %> No. <%= AssetNumber %> From <%= FromLocation %> To <%= ToLocation %>.
+            <%= AssetType %> No. <%= AssetNumber %> From <%= FromLocation %> (<%= FromLocationWithSiteCode %>) To <%= ToLocation %> (<%= ToLocationWithSiteCode %>).
          <br>Total Value INR <%= TotalAmount %> is rejected.</p>
+        <p style="font-family: Calibri; color: #0b3263;">
+            For further information, please log into 
+            <a href=<%= ui_url %>> <%= ui_url %> </a>
+        </p>
          <p>Regards,<br>LTC</p>
      </body>
  </html>

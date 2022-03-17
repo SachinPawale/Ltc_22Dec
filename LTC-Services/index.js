@@ -27,42 +27,42 @@ const staticImageRootLocal = path.join(__dirname + '/public/');
 app.use(express.static(staticImageRootLocal));
 
 // Service checking method
-app.get("/sample", function (req, res) {
+app.get("/api/sample", function (req, res) {
     res.status(200).json({ Success: true, Message: "Welcome Hello ", Data: null });
 });
 
 // Connection checking method
-app.get("/CheckConnection", function (req, res) {
+app.get("/api/CheckConnection", function (req, res) {
     dataconn.CheckConnection(res);
 });
 
 //Table creation Method
-app.get("/CreateTable", function (reg, res) {
+app.get("/api/CreateTable", function (reg, res) {
     dataconn.CreateTable(res);
 });
 
 var loginService = require('./Service/Login/LoginService')();
-app.use("/login", loginService);
+app.use("/api/login", loginService);
 
 var menuService = require('./Service/Login/MenuService')();
-app.use("/menu", menuService);
+app.use("/api/menu", menuService);
 
 var maillogService = require('./Service/Master/MailLogService')();
-app.use("/maillog", maillogService);
+app.use("/api/maillog", maillogService);
 
 var errorlogService = require('./Service/Master/ErrorLogService')();
-app.use("/errorlog", errorlogService);
+app.use("/api/errorlog", errorlogService);
 
 ////#region User Management
 
 var userService = require('./Service/UserManagement/UserService')();
-app.use("/user", userService);
+app.use("/api/user", userService);
 
 var roleService = require('./Service/UserManagement/RoleService')();
-app.use("/role", roleService);
+app.use("/api/role", roleService);
 
 var uiroleService = require('./Service/UserManagement/UIRoleService')();
-app.use("/uirolemap", uiroleService);
+app.use("/api/uirolemap", uiroleService);
 
 ////#region Master Service
 
@@ -82,16 +82,28 @@ app.use("/uirolemap", uiroleService);
 // app.use("/branch", branchService);
 
 var transactionService = require('./Service/Transaction/transaction')();
-app.use("/transaction", transactionService);
+app.use("/api/transaction", transactionService);
 
 var BoEService = require('./Service/BoE/BoEService')();
-app.use("/BoE", BoEService);
+app.use("/api/BoE", BoEService);
 
 var BoEDetailsService = require('./Service/BoE/BoEDetailsService')();
-app.use("/BoEDetails", BoEDetailsService);
+app.use("/api/BoEDetails", BoEDetailsService);
 
 var UserJourneyService = require('./Service/UserJourneyTracking/UserTrackingJourney')();
-app.use("/UserJourney", UserJourneyService);
+app.use("/api/UserJourney", UserJourneyService);
+
+var schedulerService = require('./Service/Scheduler/SchedulerFunction')();
+app.use("/api/scheduler", schedulerService);
+
+var BankAccountService = require('./Service/Banking/BankAccountService')();
+app.use("/api/AcNo", BankAccountService)
+
+var BankingIntigrationService = require('./Service/Banking/BankingIntigrationService')()
+app.use("/api/BankIn", BankingIntigrationService)
+
+var TDSGSTServices = require ('./Service/TDSGST/TDSGSTServices')();
+app.use("/api/TDSGST", TDSGSTServices)
 
 ////#region Reports
 

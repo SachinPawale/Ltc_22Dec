@@ -53,6 +53,10 @@ module.exports.CreateTable = function (res) {
     datamodel.HSNMaster();
     datamodel.POCostReport();
     datamodel.SchedulerLogger();
+    datamodel.Masterschedulerdetails();
+    datamodel.BankingInmst();
+    datamodel.BankAccountMst();
+    datamodel.TDSGST();
     //datamodel.EntityMaster();
     //datamodel.CurrencyMaster();
 

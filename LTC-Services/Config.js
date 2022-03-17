@@ -247,26 +247,194 @@ const BoE_Entry_Folder = '/BoE-Entry'
 
 const EmailIds = {
     ForApproval:{
-        //ToEmailIds:'Sayan.Bhattacharyya@Lightstormtelecom.com',
-        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
+        ToEmailIds:'Sayan.Bhattacharyya@Lightstormtelecom.com',
+        CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
     
-        ToEmailIds:'rahul.g@neweltechnologies.com',
-        CcEmailIds: 'sachin.pawale@neweltechnologies.com; rugved.c@neweltechnologies.com;'
+        //ToEmailIds:'rahul.g@neweltechnologies.com;technologiesnewel@gmail.com;',
+        //CcEmailIds: 'sachin.pawale@neweltechnologies.com; rugved.c@neweltechnologies.com;'
         
     },
     Approved:{
-        //ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
-        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com;'
-        ToEmailIds:'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;',
-        CcEmailIds: 'rg050409@gmail.com;'
+        ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
+        CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com;'
+        //ToEmailIds:'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;',
+        //CcEmailIds: 'technologiesnewel@gmail.com;'
         
     },
     Rejected:{
-        //ToEmailIds:'',
-        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
-        ToEmailIds:'rahul.g@neweltechnologies.com',
-        CcEmailIds: 'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;'
+        ToEmailIds:'',
+        CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
+        //ToEmailIds:'rahul.g@neweltechnologies.com;technologiesnewel@gmail.com',
+        //CcEmailIds: 'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;'
         
+    },
+}
+
+
+const PO_ReportData = {
+    configData : {
+        method: 'POST',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive'
+            //'Cookie': 'ak_bmsc=B9244C35BF30314DA14FEF96BAC9F1F5~000000000000000000000000000000~YAAQXDZ8aBkKneV9AQAACesK/A7VBMHwoU7xE/eSLP2pwHWXYJVEqfMHDDYW0cz3ewtuQuYvzp/zsLdYpAEOQY10tFfSWyd6zM9bKOdk4BNPcnxl/vVdbowV7blvvxK9q8fRbHQplU4TOK/kv5usLJ48XeO4U+ynN3IO/ZYY78YhQ2MPB2dtVbbVVg8+3dIYSD74NV186qVPLDLABbiht9eWzB3Re69ACIIPGLBfTeAQuXQbVcPCxXSoPVGrBBfhSpIxsprwzKPaBo9IOf6iUf6JyecDlwdZHGZ5xJ6D9Dus0gNaLN/O32SVPYj4f7/uTrFhlheHgK6yU1Ghrwv2BTRoCmPcr7n8Q9sK6SOoBmH+SWJ5y5KYXmh6TonFsqW0ipkQ7BoeBY0=; bm_sv=8807AB44B2F685F1D8F918BA0150D946~58zY590GBW+mMbQyc11qG7RDj5ciHI6tZcaGMOPwha/YEej86DvT8/oFWZULKj+BgB9tbwqZ8u9dHEe2661v4pEhaujCjFapm+dpJ9COSJ83h2Gr7Dx7Lr5dYifFdnEJq5UMQm+64V0uA9FyzcfYeoChRaTms0KNxAMTV/jA4iI='
+        }
+    },
+    Body:{
+        OperationName:'submitESSJobRequest',
+        JobPackageName:'/oracle/apps/ess/custom/Financials/A_LTC/LTC PO Extract Report for CusApp/',
+        JobDefName:'XLTC_PO_EXTRACT_FOR_CUSAPP_DM',
+        ESSParameters:'NULL'
+    },
+    configData_Status:{
+        method:'Get',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+            //'Cookie': 'ak_bmsc=B9244C35BF30314DA14FEF96BAC9F1F5~000000000000000000000000000000~YAAQXDZ8aBkKneV9AQAACesK/A7VBMHwoU7xE/eSLP2pwHWXYJVEqfMHDDYW0cz3ewtuQuYvzp/zsLdYpAEOQY10tFfSWyd6zM9bKOdk4BNPcnxl/vVdbowV7blvvxK9q8fRbHQplU4TOK/kv5usLJ48XeO4U+ynN3IO/ZYY78YhQ2MPB2dtVbbVVg8+3dIYSD74NV186qVPLDLABbiht9eWzB3Re69ACIIPGLBfTeAQuXQbVcPCxXSoPVGrBBfhSpIxsprwzKPaBo9IOf6iUf6JyecDlwdZHGZ5xJ6D9Dus0gNaLN/O32SVPYj4f7/uTrFhlheHgK6yU1Ghrwv2BTRoCmPcr7n8Q9sK6SOoBmH+SWJ5y5KYXmh6TonFsqW0ipkQ7BoeBY0=; bm_sv=8807AB44B2F685F1D8F918BA0150D946~58zY590GBW+mMbQyc11qG7RDj5ciHI6tZcaGMOPwha/YEej86DvT8/oFWZULKj+BgB9tbwqZ8u9dHEe2661v4pEhaujCjFapm+dpJ9COSJ83h2Gr7Dx7Lr5dYifFdnEJq5UMQm+64V0uA9FyzcfYeoChRaTms0KNxAMTV/jA4iI='
+        }
+    },
+    Fileoutput:{
+        method:'Get',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    }
+}
+
+const FA_ReportData = {
+    configData : {
+        method: 'POST',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        //url: 'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive'
+        }
+    },
+    Body:{
+        OperationName:'submitESSJobRequest',
+        JobPackageName:'/oracle/apps/ess/custom/Financials/A_LTC/LTC FA Extract Report for CusApp/',
+        JobDefName:'XXLTC_FA_DM',
+        ESSParameters:'NULL'
+    },
+    configData_Status:{
+        method:'Get',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        //url:'https://fa-test-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    },
+    Fileoutput:{
+        method:'Get',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        //url:'https://fa-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+            //'Cookie': 'ak_bmsc=B9244C35BF30314DA14FEF96BAC9F1F5~000000000000000000000000000000~YAAQXDZ8aBkKneV9AQAACesK/A7VBMHwoU7xE/eSLP2pwHWXYJVEqfMHDDYW0cz3ewtuQuYvzp/zsLdYpAEOQY10tFfSWyd6zM9bKOdk4BNPcnxl/vVdbowV7blvvxK9q8fRbHQplU4TOK/kv5usLJ48XeO4U+ynN3IO/ZYY78YhQ2MPB2dtVbbVVg8+3dIYSD74NV186qVPLDLABbiht9eWzB3Re69ACIIPGLBfTeAQuXQbVcPCxXSoPVGrBBfhSpIxsprwzKPaBo9IOf6iUf6JyecDlwdZHGZ5xJ6D9Dus0gNaLN/O32SVPYj4f7/uTrFhlheHgK6yU1Ghrwv2BTRoCmPcr7n8Q9sK6SOoBmH+SWJ5y5KYXmh6TonFsqW0ipkQ7BoeBY0=; bm_sv=8807AB44B2F685F1D8F918BA0150D946~58zY590GBW+mMbQyc11qG7RDj5ciHI6tZcaGMOPwha/YEej86DvT8/oFWZULKj+BgB9tbwqZ8u9dHEe2661v4pEhaujCjFapm+dpJ9COSJ83h2Gr7Dx7Lr5dYifFdnEJq5UMQm+64V0uA9FyzcfYeoChRaTms0KNxAMTV/jA4iI='
+        }
+    }
+}
+
+const RMO_ReportData = {
+    configData : {
+        method: 'POST',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        //url: 'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive'
+        }
+    },
+    Body:{
+        OperationName:'submitESSJobRequest',
+        JobPackageName:'/oracle/apps/ess/custom/Financials/A_LTC/LTC RMO Extract Report for CusApp/',
+        JobDefName:'XLTC_RMO_DM',
+        ESSParameters:'NULL'
+    },
+    configData_Status:{
+        method:'Get',
+        //url:'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    },
+    Fileoutput:{
+        method:'Get',
+        //url:'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    }
+}
+
+const SchedulerEmailConfig={
+    fromEmail:'',
+    toEmail:'rahul.g@neweltechnologies.com',
+    ccEmail:'aniket.yadav@neweltechnologies.com; sachin.pawale@neweltechnologies.com',
+
+}
+
+const BankingIntegrationAPIData = {
+    configData : {
+        method: 'post',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json'
+        }
+    },
+    HardCodedData : {
+        // OperationName: "submitESSJobRequest",
+        // JobPackageName: "/Custom/Financials/A_LTC/LTC HSBC Payment File - Text/",
+        // JobDefName: "LTC_HSBC_Payment_DM_TXT",
+        OperationName:"submitESSJobRequest",
+        JobPackageName:"/oracle/apps/ess/custom/Financials/A_LTC/LTC HSBC Payment File - Text/",
+        JobDefName:"LTC_HSBC_Payment_DM_TXT", 
+    },
+    API2configDetails:{
+        method: 'get',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    },
+    API3configDetails:{
+        method: 'get',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        },
+    },
+    SFTPDetails:{
+        host: '10.3.0.71',
+        port: '21',
+        username: 'ftpuser',
+        password: 'ftpuser'
+    }
+
+}
+
+const TDSGSTAdjustmentAPIData = {
+    configData : {
+        method: 'post',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/taxRegistrations',
+        headers: {
+          'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
+          'Content-Type': 'application/json'
+        }
+    },
+    HardCodedData : {
+        "DefaultRegistrationFlag": false,
+        "InclusiveTaxFlag": false,
     },
 }
 
@@ -295,4 +463,11 @@ module.exports.StandardInvoiceAPIData = StandardInvoiceAPIData;
 module.exports.CostAdjustmentAPIData = CostAdjustmentAPIData;
 
 module.exports.EmailIds = EmailIds;
+
+module.exports.PO_ReportData = PO_ReportData;
+module.exports.FA_ReportData = FA_ReportData;
+module.exports.RMO_ReportData = RMO_ReportData;
+module.exports.SchedulerEmailConfig = SchedulerEmailConfig;
+module.exports.BankingIntegrationAPIData = BankingIntegrationAPIData;
+module.exports.TDSGSTAdjustmentAPIData = TDSGSTAdjustmentAPIData;
 
