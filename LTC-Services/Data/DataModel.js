@@ -1033,6 +1033,7 @@ module.exports.BoEDetails = function () {
         VendorSiteCode: { type: Sequelize.TEXT, allowNull: true }, 
         PONumber: { type: Sequelize.TEXT, allowNull: true },
         BoEShipmentNumber:{ type: Sequelize.TEXT, allowNull: true },
+        BoEHAWB: { type: Sequelize.STRING(200), allowNull: true },
         BoEExchangeRate: { type: Sequelize.INTEGER, allowNull: true },
         BoETotalAmount: { type: Sequelize.DOUBLE, allowNull: true },
         TotalInvoiceAmount: { type: Sequelize.DOUBLE, allowNull: true },
@@ -1268,7 +1269,7 @@ module.exports.BankingInmst = function () {
             IsUpdated:{ type: Sequelize.INTEGER, allowNull:true},
             RegistrationId:{ type:Sequelize.BIGINT,allowNull: true},
             CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
-            CreatedDate: { type: Sequelize.DATE, allowNull: true },
+            CreatedDate: { type: Sequelize.DATE, allowNull: true , defaultValue: Sequelize.NOW },
             ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
             ModifiedDate: { type: Sequelize.DATE, allowNull: true },
         }, {

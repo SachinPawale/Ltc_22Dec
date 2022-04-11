@@ -75,7 +75,7 @@ var routes = function () {
     .get(function (req, res) {
             const BoEEntry = datamodel.BoEEntry();
             var param = { 
-                attributes:['Id','BoENumber','VendorID','VendorName','VendorSiteCode','PONumber','BoEExchangeRate','BoETotalAmount','SupplierInvoiceNumber'],
+                attributes:['Id','BoENumber','VendorID','VendorName','VendorSiteCode','PONumber','HAWB','BoEExchangeRate','BoETotalAmount','SupplierInvoiceNumber'],
                 where : { BoEDetailsCreated : 0 },
                 order: [['Id']] 
             };
@@ -377,6 +377,7 @@ var routes = function () {
                     PONumber: reqBody.PONumber,
                     BoEShipmentNumber:reqBody.BoEShipmentNumber,
                     RecieptDate: reqBody.RecieptDate,
+                    BoEHAWB: reqBody.BoEHAWB,
                     BoEExchangeRate: reqBody.BoEExchangeRate,
                     BoETotalAmount: reqBody.BoETotalAmount,
                     TotalInvoiceAmount: reqBody.TotalInvoiceAmount,
@@ -503,7 +504,22 @@ var routes = function () {
                         //"DocumentLineNumber": index + 1,
                         "Quantity": element.RecieptQuantity,
                         "UOMCode": element.UOMCode,
-                        "ASNLineNumber": element.RCPT_LINE_NUM //RCPT_LINE_NUM (27 jan) done
+                        "ASNLineNumber": element.RCPT_LINE_NUM, //RCPT_LINE_NUM (27 jan) done,
+                        "transactionDFF": [
+                            {
+                                "__FLEX_Context" : "BOE Details",
+                                "bcd": element.BCD,
+                                "bcdAmountInr": element.BCDAmountINR,             
+                                "sws": element.SWS,
+                                "swsAmountInr": element.SWSAmountINR,
+                                "igst": element.GST,
+                                // "bcd": parseInt(element.BCD),
+                                // "bcdAmountInr": parseInt(element.BCDAmountINR),             
+                                // "sws": parseInt(element.SWS),
+                                // "swsAmountInr": parseInt(element.SWSAmountINR),
+                                // "igst": parseInt(element.GST),
+                            }
+                        ]
                     });
                 });
     
@@ -518,6 +534,14 @@ var routes = function () {
                     "EmployeeId": EmployeeId,  //HardCoded
                     "TransactionDate": currentDate,
                     "GLDate": currentDate,
+                    "DFF": [
+                        {
+                            "hawb": request.BoEHAWB,
+                            "boe": request.BoENumber.BoENumber,
+                            "boeExchangeRate": request.BoEExchangeRate,
+                            "totalCustomDuty": request.TotalInvoiceAmount
+                        }
+                    ],
                     "lines": list
                 });
     
@@ -548,7 +572,7 @@ var routes = function () {
                   .catch(function (error) {
                     if (error.response) {
                         if (error.response.status == 400) {
-                            dataconn.apiResponselogger('Receipt API', 0 , 0, error.response.status, error.response.data, userId);
+                            dataconn.apiResponselogger('Receipt API', 0 , 0, error.response.status, error.response.data, request.userId);
                         }
                     }
                     let updateData = {

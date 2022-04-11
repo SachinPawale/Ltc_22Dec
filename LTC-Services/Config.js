@@ -376,10 +376,45 @@ const RMO_ReportData = {
     }
 }
 
+const TDSGST_ReportData = {
+    configData : {
+        method: 'POST',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        //url: 'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive'
+        }
+    },
+    Body:{
+        "OperationName":"submitESSJobRequest",
+        "JobPackageName":"/oracle/apps/ess/custom/Financials/A_LTC/LTC GST TDS details for CusApp/",
+        "JobDefName":"LTC_GST_TDS_DET_DM", 
+        "ESSParameters": "NULL"
+     },
+    configData_Status:{
+        method:'Get',
+        //url:'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    },
+    Fileoutput:{
+        method:'Get',
+        //url:'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    }
+}
+
 const SchedulerEmailConfig={
     fromEmail:'',
     toEmail:'rahul.g@neweltechnologies.com',
-    ccEmail:'aniket.yadav@neweltechnologies.com; sachin.pawale@neweltechnologies.com',
+    ccEmail:'sachin.pawale@neweltechnologies.com;Omkar.G@neweltechnologies.com',
 
 }
 
@@ -438,6 +473,41 @@ const TDSGSTAdjustmentAPIData = {
     },
 }
 
+const PO_Cost_Report_ReportData = {
+    configData : {
+        method: 'POST',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        //url: 'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive'
+        }
+    },
+    Body:{
+        "OperationName":"submitESSJobRequest",
+        "JobPackageName":"/oracle/apps/ess/custom/Financials/A_LTC/LTC Cost Update Report for CusApp/", 
+        "JobDefName":"LTC_Cost_Update_DM", 
+        "ESSParameters":"NULL" 
+        },
+    configData_Status:{
+        method:'Get',
+        //url:'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/financialCommonApi/resources/11.13.18.05/erpintegrations?finder=ESSExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    },
+    Fileoutput:{
+        method:'Get',
+        //url:'https://fa-etcj-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        url:'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/erpintegrations?finder=ESSJobExecutionDetailsRF;requestId=',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
+        }
+    }
+}
+
 
 module.exports.service_port = finalConfig.service_port;
 module.exports.ui_url = finalConfig.ui_url;
@@ -467,7 +537,8 @@ module.exports.EmailIds = EmailIds;
 module.exports.PO_ReportData = PO_ReportData;
 module.exports.FA_ReportData = FA_ReportData;
 module.exports.RMO_ReportData = RMO_ReportData;
+module.exports.TDSGST_ReportData = TDSGST_ReportData;
 module.exports.SchedulerEmailConfig = SchedulerEmailConfig;
 module.exports.BankingIntegrationAPIData = BankingIntegrationAPIData;
 module.exports.TDSGSTAdjustmentAPIData = TDSGSTAdjustmentAPIData;
-
+module.exports.PO_Cost_Report_ReportData = PO_Cost_Report_ReportData;

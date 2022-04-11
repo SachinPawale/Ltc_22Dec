@@ -18,10 +18,15 @@ cron.schedule('00 21 * * *',function(){
    SchedulerFunction.Get_PO_Files_APIFunction();
 });
 
+//For TDSGST Master Data
+cron.schedule('21 18 * * *',function(){
+   SchedulerFunction.Get_TDSGST_Files_APIFunction();
+});
+
 //For COST Master Data
-// cron.schedule('00 21 * * *',function(){
-//    //SchedulerFunction.Get_PO_Files_APIFunction();
-// });
+cron.schedule('13 17 * * *',function(){
+   SchedulerFunction.Get_PO_Cost_Report_Files_APIFunction();
+});
 
 //For COST Update API
 // var BoEDetails = require('../Service/BoE/BoEDetailsService')

@@ -80,6 +80,42 @@ module.exports.GetFiles_API = async function(Filename){
               data:Harddata
           };
         }
+
+        else if(Filename=='TDSGST')
+        {
+          var Harddata = JSON.stringify({
+            "OperationName": configuration.TDSGST_ReportData.Body.OperationName, 
+            "JobPackageName": configuration.TDSGST_ReportData.Body.JobPackageName, 
+            "JobDefName": configuration.TDSGST_ReportData.Body.JobDefName, 
+            "ESSParameters": configuration.TDSGST_ReportData.Body.ESSParameters,
+          });
+
+          var config = {
+              method : configuration.TDSGST_ReportData.configData.method,
+              url : configuration.TDSGST_ReportData.configData.url,
+              headers : configuration.TDSGST_ReportData.configData.headers,
+              keepAlive: true,
+              data:Harddata
+          };
+        }
+
+        else if(Filename=='PO_Cost_Report'){
+          var Harddata = JSON.stringify({
+            "OperationName": configuration.PO_Cost_Report_ReportData.Body.OperationName, 
+            "JobPackageName": configuration.PO_Cost_Report_ReportData.Body.JobPackageName, 
+            "JobDefName": configuration.PO_Cost_Report_ReportData.Body.JobDefName, 
+            "ESSParameters": configuration.PO_Cost_Report_ReportData.Body.ESSParameters,
+          });
+
+          var config = {
+              method : configuration.PO_Cost_Report_ReportData.configData.method,
+              url : configuration.PO_Cost_Report_ReportData.configData.url,
+              headers : configuration.PO_Cost_Report_ReportData.configData.headers,
+              keepAlive: true,
+              data:Harddata
+          };
+        }
+
         const response = await axios(config);
         console.log('Actual response from 1st API',response.data.ReqstId);
 
@@ -129,6 +165,22 @@ module.exports.GetFiles_API = async function(Filename){
                       url : configuration.RMO_ReportData.configData_Status.url+ response.data.ReqstId,
                       headers : configuration.RMO_ReportData.configData_Status.headers,
                   }
+                  }
+                  else  if(Filename=='TDSGST')
+                  {
+                    config_status = {
+                      method : configuration.TDSGST_ReportData.configData_Status.method,
+                      url : configuration.TDSGST_ReportData.configData_Status.url+ response.data.ReqstId,
+                      headers : configuration.TDSGST_ReportData.configData_Status.headers,
+                    }
+                  }
+
+                  else  if(Filename=='PO_Cost_Report'){
+                    config_status = {
+                      method : configuration.PO_Cost_Report_ReportData.configData_Status.method,
+                      url : configuration.PO_Cost_Report_ReportData.configData_Status.url+ response.data.ReqstId,
+                      headers : configuration.PO_Cost_Report_ReportData.configData_Status.headers,
+                    }
                   }
   
                   const response1 = await axios(config_status)
@@ -277,6 +329,26 @@ function CallAPI3(RequestID,Filename)
           headers:configuration.RMO_ReportData.Fileoutput.headers
           }
         }
+
+        else if(Filename=='TDSGST')
+        {
+          Fileoutput =
+          {
+          method:configuration.TDSGST_ReportData.Fileoutput.method,
+          url:configuration.TDSGST_ReportData.Fileoutput.url + RequestID+',fileType=out',
+          headers:configuration.TDSGST_ReportData.Fileoutput.headers
+          }
+        }
+
+        else if(Filename=='PO_Cost_Report'){
+          Fileoutput =
+          {
+          method:configuration.PO_Cost_Report_ReportData.Fileoutput.method,
+          url:configuration.PO_Cost_Report_ReportData.Fileoutput.url + RequestID+',fileType=out',
+          headers:configuration.PO_Cost_Report_ReportData.Fileoutput.headers
+          }
+        }
+
         var FinalOutputfile = await axios(Fileoutput)
 
         if(FinalOutputfile.status == 200 || FinalOutputfile.status == 201){

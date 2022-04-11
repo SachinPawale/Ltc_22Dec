@@ -1326,6 +1326,7 @@ class BOEDetailsComponent {
         this.dataSourceViewPage = [];
         this.isCorrectBoEDetailsMapData = false;
         this.BoETotalAmount = 0;
+        this.BoEHAWB = '';
         this.BoEShipmentNumber = '';
         this.calculatedTotalInvoiceAmount = 0;
         this.calculatedTotalGSTAmount = 0;
@@ -1455,6 +1456,7 @@ class BOEDetailsComponent {
         this.rest.getAll(this.global.getapiendpoint() + "BoEDetails/GetAllBoENumber").subscribe((data) => {
             if (data.Success) {
                 this.BoENumberIds = data.Data;
+                //console.log("getBoNumberList",this.BoENumberIds);
                 //this.PortCodeIds.map((i:any) => { i.PortDisplay = i.Code + ' ( ' + i.Desc + ' ) '; return i; });
             }
             else {
@@ -1478,7 +1480,7 @@ class BOEDetailsComponent {
         });
     }
     onBoENumberchange() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
         //this.BoENumber?.value;
         if (((_a = this.BoENumber) === null || _a === void 0 ? void 0 : _a.value) != null) {
             this.ASNNumberIds = [];
@@ -1490,6 +1492,7 @@ class BOEDetailsComponent {
             this.ExchangeRate = (_g = this.BoENumber) === null || _g === void 0 ? void 0 : _g.value.BoEExchangeRate;
             this.BoETotalAmount = (_h = this.BoENumber) === null || _h === void 0 ? void 0 : _h.value.BoETotalAmount;
             this.BoEShipmentNumber = (_j = this.BoENumber) === null || _j === void 0 ? void 0 : _j.value.SupplierInvoiceNumber;
+            this.BoEHAWB = (_k = this.BoENumber) === null || _k === void 0 ? void 0 : _k.value.HAWB;
             this.calculatedTotalInvoiceAmount = 0;
             this.calculatedTotalGSTAmount = 0;
             this.calculatedTotalAmount = 0;
@@ -1591,11 +1594,11 @@ class BOEDetailsComponent {
             // });
         }
         else {
-            (_k = this.VendorName) === null || _k === void 0 ? void 0 : _k.setValue('');
-            (_l = this.PONumber) === null || _l === void 0 ? void 0 : _l.setValue('');
+            (_l = this.VendorName) === null || _l === void 0 ? void 0 : _l.setValue('');
+            (_m = this.PONumber) === null || _m === void 0 ? void 0 : _m.setValue('');
             this.dataSourceCreatePage = [];
             this.ASNNumberIds = [];
-            (_m = this.ASNNumber) === null || _m === void 0 ? void 0 : _m.setValue(null);
+            (_o = this.ASNNumber) === null || _o === void 0 ? void 0 : _o.setValue(null);
             this.BoETotalAmount = 0;
             this.calculatedTotalInvoiceAmount = 0;
             this.calculatedTotalGSTAmount = 0;
@@ -1901,6 +1904,7 @@ class BOEDetailsComponent {
                     dataNew.RecieptDate = new Date();
                     dataNew.BoEShipmentNumber = this.BoEShipmentNumber;
                     dataNew.BoEExchangeRate = this.ExchangeRate;
+                    dataNew.BoEHAWB = this.BoEHAWB;
                     dataNew.BoETotalAmount = this.BoETotalAmount;
                     dataNew.TotalInvoiceAmount = this.calculatedTotalInvoiceAmount;
                     dataNew.TotalGSTAmount = this.calculatedTotalGSTAmount;
