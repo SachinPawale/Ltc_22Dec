@@ -156,7 +156,7 @@ const EmailSMTPConfig = {
     port: 587,                 //SMTP PORT
     auth: {
         user: "Notification.Centre@Lightstorm.in",   //Username
-        pass: "Retro#1942"    //Password
+        pass: "C@re@123!#"    //Password
     }
 }
 
@@ -244,6 +244,30 @@ const CostAdjustmentAPIData = {
 
 const Uploads_Folder = '/Uploads'
 const BoE_Entry_Folder = '/BoE-Entry'
+const BoE_Folder = '/BoE'
+
+const BoEReceiptAPIData = {
+    configData : {
+        method: 'post',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivingReceiptRequests',
+        headers: { 
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
+            'Content-Type': 'application/json',
+        },
+    },
+    HardCodedData : {
+        ASNType: "ASBN",
+        ReceiptSourceCode:"VENDOR",
+        BusinessUnit:"LTC BU",
+        EmployeeId:"300000003460557",
+        Lines_ReceiptSourceCode:"VENDOR",
+        SourceDocumentCode:"PO",
+        TransactionType:"RECEIVE",
+        AutoTransactCode:"RECEIVE",
+        DatatypeCode: "FILE",
+        Description: "REST Invoice related attachment"
+    },
+}
 
 const EmailIds = {
     ForApproval:{
@@ -526,9 +550,11 @@ module.exports.EmailSMTPConfig = EmailSMTPConfig;
 
 module.exports.Uploads_Folder = Uploads_Folder;
 module.exports.BoE_Entry_Folder = BoE_Entry_Folder;
+module.exports.BoE_Folder = BoE_Folder;
 
 module.exports.BoEInvoiceData = BoEInvoiceData;
 module.exports.ReceiptAPIData = ReceiptAPIData;
+module.exports.BoEReceiptAPIData = BoEReceiptAPIData;
 module.exports.StandardInvoiceAPIData = StandardInvoiceAPIData;
 module.exports.CostAdjustmentAPIData = CostAdjustmentAPIData;
 

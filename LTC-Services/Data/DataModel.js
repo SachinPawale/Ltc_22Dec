@@ -58,6 +58,8 @@ class BankAccountMst extends Model { }
 
 class TDSGST extends Model { }
 
+class BoE extends Model { }
+class BoEMap extends Model { }
 
 ////#region Tables
 // module.exports.CurrencyMaster = function () {
@@ -1280,6 +1282,105 @@ module.exports.BankingInmst = function () {
     
         return TDSGST;
     
+    }
+
+    //BoEPage New CR Start
+
+    module.exports.BoE = function () {
+        BoE.init({
+            Id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            BoENumber: { type: Sequelize.STRING(200), allowNull: true },
+            BoEDate: { type: Sequelize.DATE, allowNull: true },
+            RecieptDate: { type: Sequelize.DATE, allowNull: true },
+            BoEExchangeRate: { type: Sequelize.DOUBLE, allowNull: true },
+            HAWB: { type: Sequelize.STRING(200), allowNull: true },
+            SupplierInvoiceNumber: { type: Sequelize.STRING(200), allowNull: true },
+            SupplierID: { type: Sequelize.DOUBLE, allowNull: true },
+            SupplierName: { type: Sequelize.STRING(200), allowNull: true },
+            SupplierSiteCode: { type: Sequelize.TEXT, allowNull: true },
+            PONumber: { type: Sequelize.STRING(200), allowNull: true },
+            EntityCode : { type: Sequelize.INTEGER, allowNull: true },
+            PortCode: { type: Sequelize.STRING(200), allowNull: true },
+            PortDesc: { type: Sequelize.STRING(200), allowNull: true },
+            ASNNumber: { type: Sequelize.TEXT, allowNull: true },
+            TotalCustomDuty: { type: Sequelize.DOUBLE, allowNull: true },
+            TotalGSTAmount: { type: Sequelize.DOUBLE, allowNull: true },
+            TotalAmountWithGST: { type: Sequelize.DOUBLE, allowNull: true },
+            FileName: { type: Sequelize.STRING(200), allowNull: true },
+            FilePath: { type: Sequelize.STRING(200), allowNull: true },
+            StatusId: { type: Sequelize.INTEGER, allowNull: true },
+            ReceitAPIResponse: { type: Sequelize.INTEGER, allowNull: true },
+            RecieptNumber: { type: Sequelize.BIGINT, allowNull: true },
+            isCostUpdatedId: { type: Sequelize.INTEGER, allowNull: true },
+            AdjustmentNumber: { type: Sequelize.BIGINT, allowNull: true },
+            CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
+            CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
+            ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
+            ModifiedDate: { type: Sequelize.DATE, allowNull: true },
+        }, {
+            sequelize,
+            modelName: 'BoE',
+            tableName: 'BoE',
+        });
+    
+        exports.BoEMap();
+        BoE.hasMany(BoEMap, { foreignKey: "BoEId" });
+    
+        return BoE;
+    }
+
+    module.exports.BoEMap = function () {
+        BoEMap.init({
+            Id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            BoEId: { type: Sequelize.INTEGER, allowNull: true },
+
+            UOMCode: { type: Sequelize.TEXT, allowNull: true },
+            AccountCode: { type: Sequelize.TEXT, allowNull: true },
+            EntityCode: { type: Sequelize.INTEGER, allowNull: true },
+            DestType: { type: Sequelize.TEXT, allowNull: true },
+            LocationCode: { type: Sequelize.INTEGER, allowNull: true },
+            DeptCode: { type: Sequelize.INTEGER, allowNull: true },
+            OrganizationCode:{ type: Sequelize.TEXT, allowNull: true },
+            HSNCode: { type: Sequelize.BIGINT, allowNull: true },
+            SupplierItemCode: { type: Sequelize.TEXT, allowNull: true },
+            POLineNumber: { type: Sequelize.INTEGER, allowNull: true },
+            ItemNumber: { type: Sequelize.TEXT, allowNull: true },
+            ItemDesc: { type: Sequelize.TEXT, allowNull: true },
+            POQuantity: { type: Sequelize.INTEGER, allowNull: true },
+            POPendingQuantity: { type: Sequelize.INTEGER, allowNull: true },
+            ReceiptQuantity: { type: Sequelize.INTEGER, allowNull: true },
+            BCD: { type: Sequelize.INTEGER, allowNull: true },
+            SWS: { type: Sequelize.INTEGER, allowNull: true },
+            ASNNumber: { type: Sequelize.TEXT, allowNull: true },
+            ReceiptLineNumber: { type: Sequelize.BIGINT, allowNull: true },
+            ASNQuantity: { type: Sequelize.BIGINT, allowNull: true },
+            IGST: { type: Sequelize.TEXT, allowNull: true },
+            IGSTPercent: { type: Sequelize.INTEGER, allowNull: true },
+            Rate: { type: Sequelize.INTEGER, allowNull: true },   
+            BCDinINR: { type: Sequelize.DOUBLE, allowNull: true },
+            SWSinINR: { type: Sequelize.DOUBLE, allowNull: true }, 
+            UnitPrice: { type: Sequelize.INTEGER, allowNull: true },
+            AssessableValueINR: { type: Sequelize.DOUBLE, allowNull: true },
+            TotalTaxableValue: { type: Sequelize.DOUBLE, allowNull: true }, 
+            NewUnitPrice: { type: Sequelize.DOUBLE, allowNull: true },         
+            TotalInUSD:{ type: Sequelize.DOUBLE, allowNull: true },
+            AssessableValue:{ type: Sequelize.DOUBLE, allowNull: true },
+            GST:{ type: Sequelize.DOUBLE, allowNull: true },
+            TotalInvoiceAmount:{ type: Sequelize.DOUBLE, allowNull: true },
+            InventoryItemId: { type: Sequelize.BIGINT, allowNull: true },
+            DistributionCombination:{ type: Sequelize.TEXT, allowNull: true },
+    
+            CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
+            CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
+            ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
+            ModifiedDate: { type: Sequelize.DATE, allowNull: true },
+        }, {
+            sequelize,
+            modelName: 'BoEMap',
+            tableName: 'BoEMap',
+        });
+    
+        return BoEMap;
     }
 
 ////#endregion

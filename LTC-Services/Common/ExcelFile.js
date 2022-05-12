@@ -28,7 +28,11 @@ module.exports.ExportExcelFile = function(Filename,RequestID) {
             //const POCost_HeaderObject =['TRANSACTION_ID','INVENTORY_ITEM_ID','INVENTORY_ORG_ID','TXN_SOURCE_DOC_TYPE','GRN_NO','TXN_SOURCE_REF_DOC_NUMBER'];
             const POCost_HeaderObject =['TRANSACTION_ID','INVENTORY_ITEM_ID','INVENTORY_ORG_ID','TXN_SOURCE_DOC_TYPE','GRN_NO','TXN_SOURCE_REF_DOC_NUMBER','CREATION_DATE'];
 
-            const TDSGST_HeaderObject = ['PartyId','PartySiteId','PartyTypeCode','PartyName','PartyNumber','PartySiteNumber','TaxRegimeCode','RegistrationTypeCode','RegistrationStatusCode','EffectiveFrom','RegistrationNumber','RoundingRuleCode','ValidationType','ValidationLevel'];
+            const TDSGST_HeaderObject = [
+                'PARTY_ID','PARTY_SITE_ID','PARTYTYPECODE','PARTYNAME','PARTY_NUMBER','PARTY_SITE_NUMBER',
+                'TAX_REGIME_CODE','REGISTRATIONTYPECODE','REGISTRATIONSTATUSCODE','EFFECTIVEFROM','REGISTRATIONNUMBER',
+                'ROUNDINGRULECODE','VALIDATIONTYPE','VALIDATIONLEVEL','CREATION_DATE'
+            ];
 
 
             let MismatchedColumn=[];
@@ -305,24 +309,47 @@ module.exports.ExportExcelFile = function(Filename,RequestID) {
                         if(MismatchedColumn.length==0)
                         {
                             jsonTextFromXML['DATA_DS']['G_1'].forEach((element)=>{
-                                finalObject.push({
-                                    PartyId :element['PartyId'],
-                                    PartySiteId :element['PartySiteId'],
-                                    PartyTypeCode :element['PartyTypeCode'],
-                                    PartyName :element['PartyName'],
-                                    PartyNumber :element['PartyNumber'],
-                                    PartySiteNumber :element['PartySiteNumber'],
-                                    TaxRegimeCode :element['TaxRegimeCode'],
-                                    RegistrationTypeCode :element['RegistrationTypeCode'],
-                                    RegistrationStatusCode :element['RegistrationStatusCode'],
-                                    EffectiveFrom :element['EffectiveFrom'],
-                                    RegistrationNumber :element['RegistrationNumber'],
-                                    RoundingRuleCode :element['RoundingRuleCode'],
-                                    ValidationType :element['ValidationType'],
-                                    ValidationLevel :element['ValidationLevel'],
-                                    IsUpdated : 0,
-                                    CreatedBy : 1
-                                });
+                                if(element['PARTYTYPECODE'] == 'THIRD_PARTY_SITE'){
+                                    finalObject.push({
+                                        PartyId :element['PARTY_ID'],
+                                        PartySiteId :element['PARTY_SITE_ID'],
+                                        PartyTypeCode :element['PARTYTYPECODE'],
+                                        PartyName :element['PARTYNAME'],
+                                        PartyNumber :element['PARTY_NUMBER'],
+                                        PartySiteNumber :element['PARTY_SITE_NUMBER'],
+                                        TaxRegimeCode :element['TAX_REGIME_CODE'],
+                                        RegistrationTypeCode :element['REGISTRATIONTYPECODE'],
+                                        RegistrationStatusCode :element['REGISTRATIONSTATUSCODE'],
+                                        EffectiveFrom :element['EFFECTIVEFROM'],
+                                        RegistrationNumber :element['REGISTRATIONNUMBER'],
+                                        RoundingRuleCode :element['ROUNDINGRULECODE'],
+                                        ValidationType :element['VALIDATIONTYPE'],
+                                        ValidationLevel :element['VALIDATIONLEVEL'],
+                                        IsUpdated : 0,
+                                        CreatedBy : 1
+                                    });
+                                }
+                                else{
+                                    finalObject.push({
+                                        PartyId :element['PARTY_ID'],
+                                        PartySiteId :null,
+                                        PartyTypeCode :element['PARTYTYPECODE'],
+                                        PartyName :element['PARTYNAME'],
+                                        PartyNumber :element['PARTY_NUMBER'],
+                                        PartySiteNumber :null,
+                                        TaxRegimeCode :element['TAX_REGIME_CODE'],
+                                        RegistrationTypeCode :element['REGISTRATIONTYPECODE'],
+                                        RegistrationStatusCode :element['REGISTRATIONSTATUSCODE'],
+                                        EffectiveFrom :element['EFFECTIVEFROM'],
+                                        RegistrationNumber :element['REGISTRATIONNUMBER'],
+                                        RoundingRuleCode :element['ROUNDINGRULECODE'],
+                                        ValidationType :element['VALIDATIONTYPE'],
+                                        ValidationLevel :element['VALIDATIONLEVEL'],
+                                        IsUpdated : 0,
+                                        CreatedBy : 1
+                                    });
+                                }
+                                
                             });
                             // console.log(finalObject)
                             resolve(finalObject);

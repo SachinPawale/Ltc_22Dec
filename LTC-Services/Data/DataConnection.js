@@ -57,6 +57,11 @@ module.exports.CreateTable = function (res) {
     datamodel.BankingInmst();
     datamodel.BankAccountMst();
     datamodel.TDSGST();
+
+    datamodel.BoE();
+    datamodel.BoEMap();
+
+
     //datamodel.EntityMaster();
     //datamodel.CurrencyMaster();
 
