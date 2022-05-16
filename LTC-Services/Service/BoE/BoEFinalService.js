@@ -491,6 +491,7 @@ var routes = function () {
                                             IGSTPercent: mapitem.IGST_PERCENT,
                                             InventoryItemId:mapitem.ItemID,
                                             DistributionCombination:DistributionCombinationCode,
+                                            NumberOfBox: mapitem.NumberOfBox,
                                             CreatedBy: requestBody.userId
                                         });    
                                 });
@@ -544,32 +545,33 @@ var routes = function () {
                         HeaderOrganizationCode = element.OrganizationCode
                     }
                     list.push({
-                        // "ItemId": element.ItemID, //commented on 11 May 2022
                         "ReceiptSourceCode": Lines_ReceiptSourceCode,
                         "SourceDocumentCode": SourceDocumentCode,
                         "TransactionType": TransactionType,
                         "AutoTransactCode": AutoTransactCode,
                         "DocumentNumber": request.PONumber,
-                        "OrganizationCode": element.OrganizationCode, 
                         "DocumentLineNumber": element.PONumber,
+                        // "DocumentShipmentLineNumber": element.RCPT_LINE_NUM,
+                        "ASNLineNumber": element.RCPT_LINE_NUM,
+                        "OrganizationCode": element.OrganizationCode,
                         "Quantity": element.RecieptQuantity,
+                        "ItemNumber": element.ItemNumber,
                         "UOMCode": element.UOMCode,
-                        // "ASNLineNumber": element.RCPT_LINE_NUM, //commented on 11 May 2022
-                        // "transactionDFF": [ //commented on 11 May 2022
-                        //     {
-                        //         "__FLEX_Context" : "BOE Details",
-                        //         "bcd": element.BCD,
-                        //         "bcdAmountInr": element.BCDAmountINR,             
-                        //         "sws": element.SWS,
-                        //         "swsAmountInr": element.SWSAmountINR,
-                        //         "igst": element.GST,
-                        //     }
-                        // ]
+                        "transactionDFF": [ 
+                            {
+                                "totalNoOfBoxes" : element.NumberOfBox,
+                                "bcd": element.BCD,
+                                "bcdAmountInInr": element.BCDAmountINR,             
+                                "sws": element.SWS,
+                                "swsAmountInInr": element.SWSAmountINR,
+                                "igst": element.GST,
+                            }
+                        ]
                     });
                 });
     
                 var data = JSON.stringify({
-                    // "ShipmentNumber": request.ASNNumber, //commented on 11 May 2022
+                    "ShipmentNumber": request.ASNNumber, 
                     "ReceiptSourceCode": ReceiptSourceCode,
                     "BusinessUnit": BusinessUnit,
                     "VendorName": request.SupplierName,
@@ -577,6 +579,15 @@ var routes = function () {
                     "OrganizationCode": HeaderOrganizationCode, 
                     "EmployeeId": EmployeeId,
                     "TransactionDate": currentDate,
+                    "GLDate": currentDate,
+                    "DFF": [
+                        {
+                            "hawb": request.HAWB,
+                            "boe": request.BoENumber,
+                            "boeExchangeRate": request.BoEExchangeRate,
+                            "totalCustomDuty": request.TotalCustomDuty
+                        }
+                    ],
                     "attachments": [
                         {
                             "DatatypeCode": DatatypeCode,
@@ -586,15 +597,6 @@ var routes = function () {
                             "FileContents": fileData.fileBase64Data
                         }
                     ],
-                    "GLDate": currentDate,
-                    // "DFF": [ //commented on 11 May 2022
-                    //     {
-                    //         "hawb": request.HAWB,
-                    //         "boe": request.BoENumber,
-                    //         "boeExchangeRate": request.BoEExchangeRate,
-                    //         "totalCustomDuty": request.TotalCustomDuty
-                    //     }
-                    // ],
                     "lines": list
                 });
     
@@ -605,7 +607,7 @@ var routes = function () {
                     data : data
                   };
     
-                //   console.log("BoEFinalService - Reciept Data Body",data);
+                  //console.log("BoEFinalService - Reciept Data Body - list",list);
                   
                   axios(config)
                   .then(function (response) {
