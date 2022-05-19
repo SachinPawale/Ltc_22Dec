@@ -419,6 +419,7 @@ var routes = function () {
                     BoENumber: requestBody.BoENumber,
                     BoEDate: requestBody.BoEDate,
                     RecieptDate: requestBody.RecieptDate,
+                    InvoiceDate: requestBody.InvoiceDate,
                     BoEExchangeRate: requestBody.BoEExchangeRate,
                     HAWB: requestBody.HAWB,
                     SupplierInvoiceNumber: requestBody.SupplierInvoiceNumber,
@@ -557,6 +558,8 @@ var routes = function () {
                         "Quantity": element.RecieptQuantity,
                         "ItemNumber": element.ItemNumber,
                         "UOMCode": element.UOMCode,
+                        "TaxInvoiceDate": request.InvoiceDate,
+                        "TaxInvoiceNumber": request.SupplierInvoiceNumber,
                         "transactionDFF": [ 
                             {
                                 "totalNoOfBoxes" : element.NumberOfBox,

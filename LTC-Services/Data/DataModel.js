@@ -1292,6 +1292,7 @@ module.exports.BankingInmst = function () {
             BoENumber: { type: Sequelize.STRING(200), allowNull: true },
             BoEDate: { type: Sequelize.DATE, allowNull: true },
             RecieptDate: { type: Sequelize.DATE, allowNull: true },
+            InvoiceDate: { type: Sequelize.DATE, allowNull: true },
             BoEExchangeRate: { type: Sequelize.DOUBLE(18,4), allowNull: true },
             HAWB: { type: Sequelize.STRING(200), allowNull: true },
             SupplierInvoiceNumber: { type: Sequelize.STRING(200), allowNull: true },
