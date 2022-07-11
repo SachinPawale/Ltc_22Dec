@@ -59,9 +59,11 @@ module.exports.CreateTable = function (res) {
     datamodel.TDSGST();
 
     datamodel.BoE();
-    datamodel.BoEMap();
-
-
+    datamodel.BoEMap();   
+datamodel.M_TransferOrder();
+datamodel.transferordermasterdetails();
+datamodel.T_TransferOrderItems();
+datamodel.M_HeaderMappingMaster();
     //datamodel.EntityMaster();
     //datamodel.CurrencyMaster();
 

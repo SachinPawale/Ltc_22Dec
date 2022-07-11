@@ -263,26 +263,26 @@ var routes = function () {
                     });
     });
 
-    router.route('/CheckDuplicateBoENumber/:BoENumber')
+    router.route('/CheckDuplicateSupplierInvoiceNumber/:SupplierInvoiceNumber')
     .get(function (req, res) {
 
             const BoE = datamodel.BoE();
             var param = {
-                where: { BoENumber: { [connect.Op.eq]: req.params.BoENumber } },
-                attributes: [[connect.sequelize.fn('count', connect.sequelize.col('BoENumber')), 'Count']]
+                where: { SupplierInvoiceNumber: { [connect.Op.eq]: req.params.SupplierInvoiceNumber } },
+                attributes: [[connect.sequelize.fn('count', connect.sequelize.col('SupplierInvoiceNumber')), 'Count']]
             };
 
             dataaccess.FindAll(BoE, param)
             .then(function (result) {
                 if (result != null && result.length > 0 && result[0].dataValues.Count != null && result[0].dataValues.Count > 0) {
-                        res.status(200).json({ Success: true, Message: 'BoENumber exists', Data: true });
+                        res.status(200).json({ Success: true, Message: 'Supplier Invoice Number exists', Data: true });
                 }
                 else {
-                        res.status(200).json({ Success: true, Message: 'BoENumber not exists', Data: false });
+                        res.status(200).json({ Success: true, Message: 'Supplier Invoice Number not exists', Data: false });
                 }
             },
             function (err) {
-                dataconn.errorlogger('BoEFinalService', 'CheckDuplicateBoENumber', err);
+                dataconn.errorlogger('BoEFinalService', 'CheckDuplicateSupplierInvoiceNumber', err);
                 res.status(200).json({ Success: false, Message: 'Error occured while checking duplicate BoENumber', Data: null });
             });
     });
@@ -314,7 +314,15 @@ var routes = function () {
                     .then((results4)=>{
                         updateAfterResponse(results4)
                         .then((result5)=>{
-                            res.status(200).json({ Success: true, Message: 'BoE Created Successfully', Data: null });
+
+                            updateAfterResponseMapTable(results4)
+                            .then((result6)=>{
+                                res.status(200).json({ Success: true, Message: 'BoE Created Successfully', Data: null });
+                            })
+                            .catch((error6)=>{
+                                res.status(200).json({ Success: false, Message: 'Error occurred while updating data into map database', Data: null });
+                            })
+
                         })
                         .catch((error5) => {
                             res.status(200).json({ Success: false, Message: 'Error occurred while updating data into database', Data: null });
@@ -348,7 +356,15 @@ var routes = function () {
         .then((results1)=>{
             updateAfterResponse(results1)
             .then((result2)=>{
-                res.status(200).json({ Success: true, Message: 'BoE Push Successfully', Data: null });
+
+                updateAfterResponseMapTable()
+                .then((result3)=>{
+                    res.status(200).json({ Success: true, Message: 'BoE Push Successfully', Data: null });
+                })
+                .catch((error3)=>{
+                    res.status(200).json({ Success: false, Message: 'Error occurred while updating data into database', Data: null });
+                })
+
             })
             .catch((error2) => {
                 res.status(200).json({ Success: false, Message: 'Error occurred while updating data into database', Data: null });
@@ -397,6 +413,8 @@ var routes = function () {
                             filePath: result,
                             fileBase64Data: base64data
                         }
+
+                        console.log("finalData",finalData)
                         resolve(finalData);
                     }
                 );
@@ -419,6 +437,7 @@ var routes = function () {
                     BoENumber: requestBody.BoENumber,
                     BoEDate: requestBody.BoEDate,
                     RecieptDate: requestBody.RecieptDate,
+                    InvoiceDate: requestBody.InvoiceDate,
                     BoEExchangeRate: requestBody.BoEExchangeRate,
                     HAWB: requestBody.HAWB,
                     SupplierInvoiceNumber: requestBody.SupplierInvoiceNumber,
@@ -491,6 +510,7 @@ var routes = function () {
                                             IGSTPercent: mapitem.IGST_PERCENT,
                                             InventoryItemId:mapitem.ItemID,
                                             DistributionCombination:DistributionCombinationCode,
+                                            NumberOfBox: mapitem.NumberOfBox,
                                             CreatedBy: requestBody.userId
                                         });    
                                 });
@@ -544,32 +564,36 @@ var routes = function () {
                         HeaderOrganizationCode = element.OrganizationCode
                     }
                     list.push({
-                        // "ItemId": element.ItemID, //commented on 11 May 2022
                         "ReceiptSourceCode": Lines_ReceiptSourceCode,
                         "SourceDocumentCode": SourceDocumentCode,
                         "TransactionType": TransactionType,
                         "AutoTransactCode": AutoTransactCode,
                         "DocumentNumber": request.PONumber,
-                        "OrganizationCode": element.OrganizationCode, 
                         "DocumentLineNumber": element.PONumber,
+                        // "DocumentShipmentLineNumber": element.RCPT_LINE_NUM,
+                        "ASNLineNumber": element.RCPT_LINE_NUM,
+                        "OrganizationCode": element.OrganizationCode,
                         "Quantity": element.RecieptQuantity,
+                        "ItemNumber": element.ItemNumber,
+                        "CurrencyConversionRate" : request.BoEExchangeRate,
                         "UOMCode": element.UOMCode,
-                        // "ASNLineNumber": element.RCPT_LINE_NUM, //commented on 11 May 2022
-                        // "transactionDFF": [ //commented on 11 May 2022
-                        //     {
-                        //         "__FLEX_Context" : "BOE Details",
-                        //         "bcd": element.BCD,
-                        //         "bcdAmountInr": element.BCDAmountINR,             
-                        //         "sws": element.SWS,
-                        //         "swsAmountInr": element.SWSAmountINR,
-                        //         "igst": element.GST,
-                        //     }
-                        // ]
+                        "TaxInvoiceDate": request.InvoiceDate,
+                        "TaxInvoiceNumber": request.SupplierInvoiceNumber,
+                        "transactionDFF": [ 
+                            {
+                                "totalNoOfBoxes" : element.NumberOfBox,
+                                "bcd": element.BCD,
+                                "bcdAmountInInr": element.BCDAmountINR,             
+                                "sws": element.SWS,
+                                "swsAmountInInr": element.SWSAmountINR,
+                                "igst": element.GST,
+                            }
+                        ]
                     });
                 });
     
                 var data = JSON.stringify({
-                    // "ShipmentNumber": request.ASNNumber, //commented on 11 May 2022
+                    "ShipmentNumber": request.ASNNumber, 
                     "ReceiptSourceCode": ReceiptSourceCode,
                     "BusinessUnit": BusinessUnit,
                     "VendorName": request.SupplierName,
@@ -577,6 +601,15 @@ var routes = function () {
                     "OrganizationCode": HeaderOrganizationCode, 
                     "EmployeeId": EmployeeId,
                     "TransactionDate": currentDate,
+                    "GLDate": currentDate,
+                    "DFF": [
+                        {
+                            "hawb": request.HAWB,
+                            "boe": request.BoENumber,
+                            "boeExchangeRate": request.BoEExchangeRate,
+                            "totalCustomDuty": request.TotalCustomDuty
+                        }
+                    ],
                     "attachments": [
                         {
                             "DatatypeCode": DatatypeCode,
@@ -586,15 +619,6 @@ var routes = function () {
                             "FileContents": fileData.fileBase64Data
                         }
                     ],
-                    "GLDate": currentDate,
-                    // "DFF": [ //commented on 11 May 2022
-                    //     {
-                    //         "hawb": request.HAWB,
-                    //         "boe": request.BoENumber,
-                    //         "boeExchangeRate": request.BoEExchangeRate,
-                    //         "totalCustomDuty": request.TotalCustomDuty
-                    //     }
-                    // ],
                     "lines": list
                 });
     
@@ -602,10 +626,12 @@ var routes = function () {
                     method: configuration.BoEReceiptAPIData.configData.method,
                     url: configuration.BoEReceiptAPIData.configData.url,
                     headers: configuration.BoEReceiptAPIData.configData.headers,
-                    data : data
+                    data : data,
+                    maxContentLength: Infinity,
+                    maxBodyLength: Infinity
                   };
     
-                //   console.log("BoEFinalService - Reciept Data Body",data);
+                  console.log("BoEFinalService - Reciept Data Body - list",list);
                   
                   axios(config)
                   .then(function (response) {
@@ -620,6 +646,7 @@ var routes = function () {
                         resolve(updateData);
                   })
                   .catch(function (error) {
+                    console.log("error",error)
                     if (error.response) {
                         if (error.response.status == 400) {
                             dataconn.apiResponselogger('BoEFinalService - Receipt API', 0 , 0, error.response.status, error.response.data, request.userId);
@@ -678,6 +705,32 @@ var routes = function () {
         })
     }
 
+    function updateAfterResponseMapTable(updatedata){
+        return new Promise((resolve, reject)=>{
+
+            // let APIName = updatedata.ApiName;
+            let values = {
+                RecieptNumber: updatedata.data,
+                ModifiedBy: updatedata.userId,
+                ModifiedDate: connect.sequelize.fn("NOW"),
+            };
+
+            const BoEMap = datamodel.BoEMap();
+
+            var params = { BoEId : updatedata.Id } 
+
+            dataaccess.Update(BoEMap,values,params)
+            .then(function (result) {
+                 if (result != null) {
+                    resolve();
+                }
+            }, function (err) {
+                dataconn.errorlogger('BoEFinalService', 'updateAfterResponseMapTable()', err);
+                reject();
+            });
+        })
+    }
+
     //Cost API Start
 
     function FetchDetailsForCostAPI(){
@@ -689,12 +742,13 @@ var routes = function () {
                 attributes: ['Id','BoENumber','PONumber','RecieptNumber'],
                 where: { 
                     StatusId: 2,
-                    isCostUpdatedId: null
+                    // isCostUpdatedId: null //commented on 20 june 22
                  },
                 include: [
                     { 
                         model: BoEMap,
-                        attributes: ['Id','BoEId','InventoryItemId','NewUnitPrice'], //removed on 10 May 22 - RecieptNumber
+                        attributes: ['Id','BoEId','InventoryItemId','NewUnitPrice','RecieptNumber'], //removed on 10 May 22 - RecieptNumber
+                        where: { isCostUpdatedId: null } //Added on 20 june 22
                     },
                 ]
             };
@@ -711,7 +765,7 @@ var routes = function () {
                             BoEDetailsMaps.forEach(element2 => {
                                 newBoEList.push({
                                     Id: element2.Id,
-                                    BoEDetailsId: element2.BoEDetailsId,
+                                    BoEId: element2.BoEId,
                                     InventoryItemId: element2.InventoryItemId,
                                     RecieptNumber: BoERecieptNumber, //removed on 10 May 22 - element2.RecieptNumber
                                     NewUnitPrice: element2.NewUnitPrice,
@@ -743,12 +797,14 @@ var routes = function () {
                         let POCostReportList = result;
                         let finalCostAPIList = [];
 
+                        console.log("BoEDetailsList",BoEDetailsList);
+
                         BoEDetailsList.forEach(element1 => {
                             POCostReportList.forEach(element2 => {
                                 if(element1.InventoryItemId == element2.INVENTORY_ITEM_ID && element1.RecieptNumber == element2.GRN_NO && element1.PONumber == element2.TXN_SOURCE_REF_DOC_NUMBER){
                                     finalCostAPIList.push({
                                         Id: element1.Id,
-                                        BoEDetailsId: element1.BoEDetailsId,
+                                        BoEId: element1.BoEId,
                                         NewUnitPrice: element1.NewUnitPrice,
                                         InventoryItemId:element1.InventoryItemId,
                                         RecieptNumber:element1.RecieptNumber,
@@ -813,7 +869,7 @@ var routes = function () {
     
                         console.log("AdjustmentNumber", response.data.AdjustmentNumber);
     
-                        const BoE = datamodel.BoE();
+                        const BoEMap = datamodel.BoEMap();
     
                         var values = {
                             isCostUpdatedId:1,
@@ -822,12 +878,12 @@ var routes = function () {
                         };
     
                         var param = {
-                            Id: request.Id, //added on 10 May 22 
+                            // Id: request.Id, //added on 10 May 22 //commented on 22 May 22
                             RecieptNumber: response.data.ReceiptNumber,
-                            // InventoryItemId: response.data.ItemId, //commented on 10 May 22 
+                            InventoryItemId: response.data.ItemId, //commented on 10 May 22 //
                         };
     
-                        dataaccess.Update(BoE, values, param)
+                        dataaccess.Update(BoEMap, values, param)
                         .then(() => {
                                 if (index === array.length - 1) {
                                     console.log('CostAdjustmentAPI');

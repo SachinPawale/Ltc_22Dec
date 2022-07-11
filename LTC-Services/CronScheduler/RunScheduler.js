@@ -13,7 +13,7 @@ var TDSGSTFunction = require('../Service/TDSGST/TDSGSTServices');
     SchedulerFunction.Get_RMO_Files_APIFunction();
 });
 
-//For PO Master Data
+//For Boe PO Master Data
 cron.schedule('00 21 * * *',function(){
    SchedulerFunction.Get_PO_Files_APIFunction();
 });
@@ -28,11 +28,11 @@ cron.schedule('13 17 * * *',function(){
    SchedulerFunction.Get_PO_Cost_Report_Files_APIFunction();
 });
 
-//For COST Update API
-// var BoEDetails = require('../Service/BoE/BoEDetailsService')
-// cron.schedule('24 16 * * *', () => {
-//     BoEDetails.CostAPI();
-// });
+// For BoE COST Update API
+var BoEDetails = require('../Service/BoE/BoEFinalService')
+cron.schedule('02 21 * * *', () => {
+    BoEDetails.CostAPI();
+});
 
 //For TDSGST API
 cron.schedule('30 21 * * *',function(){

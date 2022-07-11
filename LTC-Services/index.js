@@ -84,6 +84,9 @@ app.use("/api/uirolemap", uiroleService);
 var transactionService = require('./Service/Transaction/transaction')();
 app.use("/api/transaction", transactionService);
 
+var transactionService = require('./Service/Transaction/TransferingOrder')();
+app.use("/api/TransferingOrder", transactionService);
+
 var BoEService = require('./Service/BoE/BoEService')();
 app.use("/api/BoE", BoEService);
 

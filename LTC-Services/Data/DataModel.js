@@ -15,13 +15,15 @@ class RoleMst extends Model { }
 class UserRoleMap extends Model { }
 class UIRoleMap extends Model { }
 class UIMst extends Model { }
+class T_TransferOrderItems extends Model {}
+
 
 // class StateMst extends Model { }
 // class CityMst extends Model { }
 // class PincodeMst extends Model { }
 // class BankMst extends Model { }
 // class BranchMst extends Model { }
-
+class transferordermasterdetails extends Model {}
 class famiscmaster extends Model { }
 class famiscmaster1 extends Model { }
 class Asset extends Model { }
@@ -52,6 +54,7 @@ class POCostReport extends Model { }
 class SchedulerLogger extends Model { }
 
 class Masterschedulerdetails extends Model { }
+class M_HeaderMappingMaster extends Model {}
 
 class BankingInmst extends Model { }
 class BankAccountMst extends Model { }
@@ -60,6 +63,7 @@ class TDSGST extends Model { }
 
 class BoE extends Model { }
 class BoEMap extends Model { }
+class M_TransferOrder extends Model{}
 
 ////#region Tables
 // module.exports.CurrencyMaster = function () {
@@ -942,25 +946,25 @@ module.exports.BoEMasterDetails = function () {
         ITEM_NUMBER: { type: Sequelize.TEXT, allowNull: true },
         ITEM_DESCRIPTION: { type: Sequelize.TEXT, allowNull: true },
         UOM_CODE: { type: Sequelize.TEXT, allowNull: true },
-        UNIT_PRICE: { type: Sequelize.INTEGER, allowNull: true },
-        LINE_QTY: { type: Sequelize.INTEGER, allowNull: true },
+        UNIT_PRICE: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+        LINE_QTY: { type: Sequelize.DOUBLE(18,2), allowNull: true },
         CANCEL_FLAG: { type: Sequelize.TEXT, allowNull: true },
         VENDOR_PRODUCT_NUM: { type: Sequelize.TEXT, allowNull: true },
         DESTINATION_TYPE_CODE: { type: Sequelize.TEXT, allowNull: true },
         DISTRI_STATUS: { type: Sequelize.TEXT, allowNull: true },
-        QUANTITY: { type: Sequelize.INTEGER, allowNull: true },
-        QUANTITY_RECEIVED: { type: Sequelize.INTEGER, allowNull: true },
-        QUANTITY_ACCEPTED: { type: Sequelize.INTEGER, allowNull: true },
-        QUANTITY_REJECTED: { type: Sequelize.INTEGER, allowNull: true },
-        QUANTITY_BILLED: { type: Sequelize.INTEGER, allowNull: true },
-        QUANTITY_CANCELLED: { type: Sequelize.INTEGER, allowNull: true },
+        QUANTITY: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+        QUANTITY_RECEIVED: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+        QUANTITY_ACCEPTED: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+        QUANTITY_REJECTED: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+        QUANTITY_BILLED: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+        QUANTITY_CANCELLED: { type: Sequelize.DOUBLE(18,2), allowNull: true },
         SHIPMENT_NUM: { type: Sequelize.INTEGER, allowNull: true },
         MATCH_OPTION: { type: Sequelize.TEXT, allowNull: true },
         DEPT: { type: Sequelize.INTEGER, allowNull: true },
         LOCATION: { type: Sequelize.INTEGER, allowNull: true },
         DEST_TYPE: { type: Sequelize.TEXT, allowNull: true },
-        BAL_QTY: { type: Sequelize.INTEGER, allowNull: true },
-        ENTITY_CODE: { type: Sequelize.INTEGER, allowNull: true },
+        BAL_QTY: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+        ENTITY_CODE: { type: Sequelize.TEXT, allowNull: true },
         ENTITY_DESC: { type: Sequelize.TEXT, allowNull: true },
         FIRST_PARTY_REGN_NUMBER: { type: Sequelize.TEXT, allowNull: true },
         ACC_CODE: { type: Sequelize.TEXT, allowNull: true },
@@ -970,7 +974,7 @@ module.exports.BoEMasterDetails = function () {
 
         ASN_NO: { type: Sequelize.TEXT, allowNull: true },
         RCPT_LINE_NUM: { type: Sequelize.BIGINT, allowNull: true },
-        ASN_QTY_SHIP: { type: Sequelize.BIGINT, allowNull: true },
+        ASN_QTY_SHIP: { type: Sequelize.DOUBLE(18,2), allowNull: true },
         HSN_CODE: { type: Sequelize.BIGINT, allowNull: true },
         SUPPLIER_ITEM_DESC: { type: Sequelize.TEXT, allowNull: true },
         SUPPLIER_ITEM_CODE: { type: Sequelize.TEXT, allowNull: true },
@@ -1292,7 +1296,8 @@ module.exports.BankingInmst = function () {
             BoENumber: { type: Sequelize.STRING(200), allowNull: true },
             BoEDate: { type: Sequelize.DATE, allowNull: true },
             RecieptDate: { type: Sequelize.DATE, allowNull: true },
-            BoEExchangeRate: { type: Sequelize.DOUBLE, allowNull: true },
+            InvoiceDate: { type: Sequelize.DATE, allowNull: true },
+            BoEExchangeRate: { type: Sequelize.DOUBLE(18,4), allowNull: true },
             HAWB: { type: Sequelize.STRING(200), allowNull: true },
             SupplierInvoiceNumber: { type: Sequelize.STRING(200), allowNull: true },
             SupplierID: { type: Sequelize.DOUBLE, allowNull: true },
@@ -1311,8 +1316,8 @@ module.exports.BankingInmst = function () {
             StatusId: { type: Sequelize.INTEGER, allowNull: true },
             ReceitAPIResponse: { type: Sequelize.INTEGER, allowNull: true },
             RecieptNumber: { type: Sequelize.BIGINT, allowNull: true },
-            isCostUpdatedId: { type: Sequelize.INTEGER, allowNull: true },
-            AdjustmentNumber: { type: Sequelize.BIGINT, allowNull: true },
+            // isCostUpdatedId: { type: Sequelize.INTEGER, allowNull: true },
+            // AdjustmentNumber: { type: Sequelize.BIGINT, allowNull: true },
             CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
             CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
             ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
@@ -1336,7 +1341,7 @@ module.exports.BankingInmst = function () {
 
             UOMCode: { type: Sequelize.TEXT, allowNull: true },
             AccountCode: { type: Sequelize.TEXT, allowNull: true },
-            EntityCode: { type: Sequelize.INTEGER, allowNull: true },
+            EntityCode: { type: Sequelize.TEXT, allowNull: true },
             DestType: { type: Sequelize.TEXT, allowNull: true },
             LocationCode: { type: Sequelize.INTEGER, allowNull: true },
             DeptCode: { type: Sequelize.INTEGER, allowNull: true },
@@ -1346,30 +1351,35 @@ module.exports.BankingInmst = function () {
             POLineNumber: { type: Sequelize.INTEGER, allowNull: true },
             ItemNumber: { type: Sequelize.TEXT, allowNull: true },
             ItemDesc: { type: Sequelize.TEXT, allowNull: true },
-            POQuantity: { type: Sequelize.INTEGER, allowNull: true },
-            POPendingQuantity: { type: Sequelize.INTEGER, allowNull: true },
-            ReceiptQuantity: { type: Sequelize.INTEGER, allowNull: true },
+            POQuantity: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+            POPendingQuantity: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+            ReceiptQuantity: { type: Sequelize.DOUBLE(18,2), allowNull: true },
             BCD: { type: Sequelize.INTEGER, allowNull: true },
             SWS: { type: Sequelize.INTEGER, allowNull: true },
             ASNNumber: { type: Sequelize.TEXT, allowNull: true },
             ReceiptLineNumber: { type: Sequelize.BIGINT, allowNull: true },
-            ASNQuantity: { type: Sequelize.BIGINT, allowNull: true },
+            ASNQuantity: { type: Sequelize.DOUBLE(18,2), allowNull: true },
             IGST: { type: Sequelize.TEXT, allowNull: true },
             IGSTPercent: { type: Sequelize.INTEGER, allowNull: true },
             Rate: { type: Sequelize.INTEGER, allowNull: true },   
-            BCDinINR: { type: Sequelize.DOUBLE, allowNull: true },
-            SWSinINR: { type: Sequelize.DOUBLE, allowNull: true }, 
-            UnitPrice: { type: Sequelize.INTEGER, allowNull: true },
-            AssessableValueINR: { type: Sequelize.DOUBLE, allowNull: true },
-            TotalTaxableValue: { type: Sequelize.DOUBLE, allowNull: true }, 
-            NewUnitPrice: { type: Sequelize.DOUBLE, allowNull: true },         
-            TotalInUSD:{ type: Sequelize.DOUBLE, allowNull: true },
-            AssessableValue:{ type: Sequelize.DOUBLE, allowNull: true },
-            GST:{ type: Sequelize.DOUBLE, allowNull: true },
-            TotalInvoiceAmount:{ type: Sequelize.DOUBLE, allowNull: true },
+            BCDinINR: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+            SWSinINR: { type: Sequelize.DOUBLE(18,2), allowNull: true }, 
+            UnitPrice: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+            AssessableValueINR: { type: Sequelize.DOUBLE(18,2), allowNull: true },
+            TotalTaxableValue: { type: Sequelize.DOUBLE(18,2), allowNull: true }, 
+            NewUnitPrice: { type: Sequelize.DOUBLE(18,2), allowNull: true },         
+            TotalInUSD:{ type: Sequelize.DOUBLE(18,2), allowNull: true },
+            AssessableValue:{ type: Sequelize.DOUBLE(18,2), allowNull: true },
+            GST:{ type: Sequelize.DOUBLE(18,2), allowNull: true },
+            TotalInvoiceAmount:{ type: Sequelize.DOUBLE(18,2), allowNull: true },
             InventoryItemId: { type: Sequelize.BIGINT, allowNull: true },
             DistributionCombination:{ type: Sequelize.TEXT, allowNull: true },
+            NumberOfBox: { type: Sequelize.INTEGER, allowNull: true },   
     
+            RecieptNumber: { type: Sequelize.BIGINT, allowNull: true },
+            isCostUpdatedId: { type: Sequelize.INTEGER, allowNull: true },
+            AdjustmentNumber: { type: Sequelize.BIGINT, allowNull: true },
+
             CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
             CreatedDate: { type: Sequelize.DATE, allowNull: true, defaultValue: Sequelize.NOW },
             ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
@@ -1381,6 +1391,153 @@ module.exports.BankingInmst = function () {
         });
     
         return BoEMap;
+    }
+ 
+    module.exports.M_HeaderMappingMaster = function () {
+        M_HeaderMappingMaster.init({
+            INV_ORG_ID :{ type: Sequelize.BIGINT, primaryKey: true , allowNull: false }, 
+            ORGANIZATION_NAME :{ type:Sequelize.STRING(500), allowNull: true },
+            ORGANIZATION_CODE :{ type:Sequelize.STRING(500), allowNull: true }, 
+            LOCATOR_ID :{ type: Sequelize.BIGINT, primaryKey: true , allowNull: false }, 
+            LOCATOR_SEGMENT1 :{ type:Sequelize.STRING(500), allowNull: true }, 
+            LOCATOR_DESC : { type:Sequelize.STRING(500), allowNull: true }, 
+            SUBINVENTORY_ID :{ type: Sequelize.BIGINT, primaryKey: true , allowNull: false }, 
+            SUBINVENTORY_CODE : { type:Sequelize.STRING(500), allowNull: true }, 
+            LOCATOR_SEGMENT2 : { type:Sequelize.STRING(500), allowNull: true }, 
+            LOCATOR_SEGMENT3 :{ type:Sequelize.STRING(500), allowNull: true }, 
+            LOCATOR_SEGMENT4 :{ type:Sequelize.STRING(500), allowNull: true },
+            
+        }, {
+            sequelize,
+            modelName: 'M_HeaderMappingMaster',
+            tableName: 'M_HeaderMappingMaster',
+        });
+    
+        return M_HeaderMappingMaster;
+    } 
+   
+    module.exports.transferordermasterdetails = function () {
+        transferordermasterdetails.init({ 
+        STNO: { type: Sequelize.INTEGER, primaryKey: true, allowNull: true },
+        INVENTORY:{ type:Sequelize.STRING(500), allowNull: true },
+        ITEM_NUMBER: { type: Sequelize.STRING(500), primaryKey: true , allowNull: false },
+        SUPPLIER_ITEM_CODE:{ type:Sequelize.STRING(500), allowNull: true },
+        DESCRIPTION: { type:Sequelize.STRING(500), allowNull: true },
+        HSN_CODE:{ type: Sequelize.INTEGER, allowNull: true },        
+        UOM:{ type: Sequelize.TEXT, allowNull: true },        
+        BALANACE_QTY:{ type: Sequelize.INTEGER, allowNull: true },        
+        UNIT_PRICE:{type: Sequelize.DOUBLE(18,2), allowNull: true},        
+        AMOUNT:{type: Sequelize.DOUBLE(18,2), allowNull: true},        
+        SUPPLIER_NAME: { type:Sequelize.STRING(500), allowNull: true },        
+        TAX_INVOICE_NUM:{ type: Sequelize.TEXT, allowNull: true },        
+        TAX_INVOICE_DATE:{ type: Sequelize.DATE, allowNull: true },        
+        BOE_NO:{ type: Sequelize.INTEGER, allowNull: true },        
+        HAWB:{ type: Sequelize.STRING(500), allowNull: true },        
+        BOX:{ type: Sequelize.STRING(500), allowNull: true },        
+        RECEIVED_DATE:{ type: Sequelize.DATE, allowNull: true },        
+        LOT_NUMBER:{ type: Sequelize.TEXT, allowNull: true },        
+        SUBINVENTORY:{ type: Sequelize.TEXT, allowNull: true },        
+        LOCATOR:{ type: Sequelize.TEXT, allowNull: true }        
+        }, {        
+        sequelize,        
+        modelName: 'transferordermasterdetails',        
+        tableName: 'transferordermasterdetails',
+        
+        });
+        
+        return transferordermasterdetails;
+        
+    }     
+
+    module.exports.T_TransferOrderItems = function () {
+        T_TransferOrderItems.init({
+        
+            TransferOrderItem_ID: { type: Sequelize.INTEGER, primaryKey: true ,autoIncrement: true },
+            TransferOrder_ID: { type: Sequelize.INTEGER },
+            INVENTORY: { type: Sequelize.STRING(500), allowNull: true },
+            ITEM_NUMBER:{ type: Sequelize.STRING(500), allowNull: true },
+            SUPPLIER_ITEM_CODE: { type:Sequelize.STRING(500), allowNull: true },
+            DESCRIPTION:{ type:Sequelize.STRING(500), allowNull: true },
+            HSN_CODE:{ type: Sequelize.INTEGER, allowNull: true },
+            UOM:{ type: Sequelize.STRING(100), allowNull: true },
+            BALANACE_QTY:{ type: Sequelize.INTEGER, allowNull: true },
+            UNIT_PRICE:{ type: Sequelize.DOUBLE(18,2), allowNull: true },
+            AMOUNT:{ type: Sequelize.DOUBLE(18,2), allowNull: true },
+            SUPPLIER_NAME:{ type:Sequelize.STRING(500), allowNull: true },
+            TAX_INVOICE_NUM:{ type: Sequelize.TEXT, allowNull: true },
+            TAX_INVOICE_DATE:{ type: Sequelize.DATE, allowNull: true },
+            BOE_NO:{ type: Sequelize.INTEGER, allowNull: true },
+            HAWB:{ type: Sequelize.STRING(100), allowNull: true },
+            BOX:{ type: Sequelize.STRING(100), allowNull: true },
+            RECEIVED_DATE:{ type: Sequelize.DATE, allowNull: true },
+            LOT_NUMBER:{ type: Sequelize.TEXT, allowNull: true },
+            From_SUBINVENTORY:{ type: Sequelize.STRING(100), allowNull: true },
+            To_SUBINVENTORY:{ type: Sequelize.STRING(100), allowNull: true },
+            To_LOCATION:{ type: Sequelize.STRING(100), allowNull: true },
+            Locator:{ type: Sequelize.STRING(100), allowNull: true },
+            Transfer_Qty:{ type: Sequelize.INTEGER, allowNull: true },
+            Seq7: { type: Sequelize.BIGINT, allowNull: true },
+            Seq8: { type: Sequelize.BIGINT, allowNull: true },
+            //ApiSeq5: { type: Sequelize.STRING(15), allowNull: true },
+            Seq9: { type: Sequelize.BIGINT, allowNull: true },
+            transferResponseStatus: { type: Sequelize.INTEGER, allowNull: true },
+            CreatedDate: { type: Sequelize.DATE, allowNull: true },
+            CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
+            ModifiedDate: { type: Sequelize.DATE, allowNull: true },
+            ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
+            TransferOrderHeaderId: { type: Sequelize.STRING(100), allowNull: true },
+            TransferOrderHeaderNumber: { type: Sequelize.STRING(100), allowNull: true },
+            TransferOrderLineId: { type: Sequelize.STRING(100), allowNull: true },
+            TransferOrderLineNumber: { type: Sequelize.STRING(100), allowNull: true },
+            transferSupplyUrl: { type: Sequelize.TEXT, allowNull: true },
+            getToDetailsResponse: { type: Sequelize.INTEGER, allowNull: true },
+            ReservationId: { type: Sequelize.STRING(100), allowNull: true }
+            
+        }, {
+            sequelize,
+            modelName: 'T_TransferOrderItems',
+            tableName: 'T_TransferOrderItems',
+        });
+
+        
+    
+        return T_TransferOrderItems;
+    }
+
+    module.exports.M_TransferOrder = function () {
+        M_TransferOrder.init({
+        
+          TransferOrder_ID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
+            TransferOrder_Type: { type: Sequelize.STRING(500), allowNull: true },
+            From_INV_ORG_ID: { type: Sequelize.INTEGER, allowNull: true },
+            To_INV_ORG_ID: { type: Sequelize.INTEGER, allowNull: true },
+            FROM_ORGANIZATION_NAME: { type: Sequelize.TEXT, allowNull: true },
+            TO_ORGANIZATION_NAME: { type: Sequelize.TEXT, allowNull: true },
+            From_Locator: { type: Sequelize.STRING(200), allowNull: true },
+            To_Locator: { type: Sequelize.STRING(200), allowNull: true },
+            StatusId: { type: Sequelize.INTEGER, allowNull: true },
+            TransferCancelStatus:{type: Sequelize.STRING(200), allowNull: true },
+            SupplyOrderReferenceNumber: { type: Sequelize.STRING(500), allowNull: true },
+            COMMENTS:{ type: Sequelize.TEXT, allowNull: true },
+            AckDate: { type: Sequelize.DATE, allowNull: true },
+            CreatedDate: { type: Sequelize.DATE, allowNull: true },
+            CreatedBy: { type: Sequelize.INTEGER, allowNull: true },
+            ModifiedDate: { type: Sequelize.DATE, allowNull: true },
+            ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
+            getToDetailsResponse: { type: Sequelize.INTEGER, allowNull: true },
+            reservationResponse: { type: Sequelize.INTEGER, allowNull: true },
+        }, {
+            sequelize,
+            modelName: 'M_TransferOrder',
+            tableName: 'M_TransferOrder',
+        });
+    
+       
+        exports.T_TransferOrderItems();
+        M_TransferOrder.hasMany( T_TransferOrderItems, { foreignKey: "TransferOrder_ID" });
+
+        return M_TransferOrder;
+
     }
 
 ////#endregion

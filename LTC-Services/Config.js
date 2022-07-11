@@ -38,7 +38,7 @@ var environmentConfig = {
             from_email: 'sachin.pawale@neweltechnologies.com',
         },
         dbConn: {
-            dbServer: 'localhost',
+            dbServer: 'localhost', // '10.3.0.71',
             dbName: 'ltcportal',
             dbUser: 'ltcportal',
             dbPassword: 'Itcportal@2021'
@@ -114,8 +114,10 @@ const transferMoveOrderData = {
     },
     SequenceData: {
         //Seqeuence4 : 10000001,
-        Seqeuence5: 50000001,
-        Seqeuence6: 60000001,
+        Seqeuence5: 50001000,
+        Seqeuence6: 60001000,
+        Seqeuence8: 80000100,
+        Seqeuence9: 90000100,
     }
 }
 
@@ -156,7 +158,7 @@ const EmailSMTPConfig = {
     port: 587,                 //SMTP PORT
     auth: {
         user: "Notification.Centre@Lightstorm.in",   //Username
-        pass: "C@re@123!#"    //Password
+        pass: "Mn675qQ$&%PTnbghftQWUSTnhgtsy!@^$K"   // "C@re@123!#"    //Password
     }
 }
 
@@ -275,13 +277,13 @@ const EmailIds = {
         CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
     
         //ToEmailIds:'rahul.g@neweltechnologies.com;technologiesnewel@gmail.com;',
-        //CcEmailIds: 'sachin.pawale@neweltechnologies.com; rugved.c@neweltechnologies.com;'
+        //CcEmailIds: 'sachin.pawale@neweltechnologies.com;'
         
     },
     Approved:{
         ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
         CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com;'
-        //ToEmailIds:'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;',
+        //ToEmailIds:'rahul.g@neweltechnologies.com;sachin.pawale@neweltechnologies.com;',
         //CcEmailIds: 'technologiesnewel@gmail.com;'
         
     },
