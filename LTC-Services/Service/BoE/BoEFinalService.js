@@ -631,7 +631,7 @@ var routes = function () {
                     maxBodyLength: Infinity
                   };
     
-                  console.log("BoEFinalService - Reciept Data Body - list",list);
+                  //console.log("BoEFinalService - Reciept Data Body - list",list);
                   
                   axios(config)
                   .then(function (response) {
