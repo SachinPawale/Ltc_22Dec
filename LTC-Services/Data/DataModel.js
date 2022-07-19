@@ -62,7 +62,8 @@ class BankAccountMst extends Model { }
 class TDSGST extends Model { }
 
 class BoE extends Model { }
-class BoEMap extends Model { }
+class BoEMap extends Model { } 
+class TransferMappingDetails extends Model{}
 class M_TransferOrder extends Model{}
 
 ////#region Tables
@@ -1420,7 +1421,7 @@ module.exports.BankingInmst = function () {
         transferordermasterdetails.init({ 
         STNO: { type: Sequelize.INTEGER, primaryKey: true, allowNull: true },
         INVENTORY:{ type:Sequelize.STRING(500), allowNull: true },
-        ITEM_NUMBER: { type: Sequelize.STRING(500), primaryKey: true , allowNull: false },
+        ITEM_NUMBER: { type: Sequelize.STRING(500), allowNull: false },
         SUPPLIER_ITEM_CODE:{ type:Sequelize.STRING(500), allowNull: true },
         DESCRIPTION: { type:Sequelize.STRING(500), allowNull: true },
         HSN_CODE:{ type: Sequelize.INTEGER, allowNull: true },        
@@ -1509,6 +1510,7 @@ module.exports.BankingInmst = function () {
         
           TransferOrder_ID: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
             TransferOrder_Type: { type: Sequelize.STRING(500), allowNull: true },
+            InterfaceBatchNumber: { type: Sequelize.STRING(100), allowNull: true },
             From_INV_ORG_ID: { type: Sequelize.INTEGER, allowNull: true },
             To_INV_ORG_ID: { type: Sequelize.INTEGER, allowNull: true },
             FROM_ORGANIZATION_NAME: { type: Sequelize.TEXT, allowNull: true },
@@ -1526,6 +1528,8 @@ module.exports.BankingInmst = function () {
             ModifiedBy: { type: Sequelize.INTEGER, allowNull: true },
             getToDetailsResponse: { type: Sequelize.INTEGER, allowNull: true },
             reservationResponse: { type: Sequelize.INTEGER, allowNull: true },
+            isskip:{type:Sequelize.BOOLEAN,allowNull:true},
+            TransferOrderHeaderNumber: { type: Sequelize.STRING(100), allowNull: true },
         }, {
             sequelize,
             modelName: 'M_TransferOrder',

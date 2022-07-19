@@ -114,10 +114,10 @@ const transferMoveOrderData = {
     },
     SequenceData: {
         //Seqeuence4 : 10000001,
-        Seqeuence5: 50001000,
-        Seqeuence6: 60001000,
-        Seqeuence8: 80000100,
-        Seqeuence9: 90000100,
+        Seqeuence5: 50003000,
+        Seqeuence6: 60003000,
+        Seqeuence8: 80003000,
+        Seqeuence9: 90003000,
     }
 }
 
@@ -158,7 +158,7 @@ const EmailSMTPConfig = {
     port: 587,                 //SMTP PORT
     auth: {
         user: "Notification.Centre@Lightstorm.in",   //Username
-        pass: "Mn675qQ$&%PTnbghftQWUSTnhgtsy!@^$K"   // "C@re@123!#"    //Password
+        pass: "B?>yets@kdi84303wmxos8363ghdkwe92"   // "C@re@123!#"    //Password
     }
 }
 
@@ -273,25 +273,25 @@ const BoEReceiptAPIData = {
 
 const EmailIds = {
     ForApproval:{
-        ToEmailIds:'Sayan.Bhattacharyya@Lightstormtelecom.com',
-        CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
-    
-        //ToEmailIds:'rahul.g@neweltechnologies.com;technologiesnewel@gmail.com;',
-        //CcEmailIds: 'sachin.pawale@neweltechnologies.com;'
+        //ToEmailIds:'Sayan.Bhattacharyya@Lightstormtelecom.com',
+        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
+    //technologiesnewel@gmail.com;
+        ToEmailIds:'ramyashree.c@neweltechnologies.com',
+        CcEmailIds: 'ashwini.k@neweltechnologies.com;sachin.pawale@neweltechnologies.com'
         
     },
     Approved:{
-        ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
-        CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com;'
-        //ToEmailIds:'rahul.g@neweltechnologies.com;sachin.pawale@neweltechnologies.com;',
-        //CcEmailIds: 'technologiesnewel@gmail.com;'
+        //ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
+        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com;'
+        ToEmailIds:'ramyashree.c@neweltechnologies.com',
+        CcEmailIds: 'ashwini.k@neweltechnologies.com;sachin.pawale@neweltechnologies.com;'
         
     },
     Rejected:{
-        ToEmailIds:'',
-        CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
-        //ToEmailIds:'rahul.g@neweltechnologies.com;technologiesnewel@gmail.com',
-        //CcEmailIds: 'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;'
+        //ToEmailIds:'',
+        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
+        ToEmailIds:'rahul.g@neweltechnologies.com;technologiesnewel@gmail.com',
+        CcEmailIds: 'rahul.g@neweltechnologies.com; rugved.c@neweltechnologies.com;'
         
     },
 }
@@ -532,9 +532,45 @@ const PO_Cost_Report_ReportData = {
             'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz'
         }
     }
+   }
+
+
+   const ReservationAPI = {
+    configData: {
+        method: 'Post',
+        url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/inventoryReservations',
+        headers: {
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
+            'Content-Type': 'application/json'
+        },
+    }
+}
+
+const CancelOrderAPI = {
+    configData: {
+        method: 'GET',
+         url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/transferOrders/',
+        headers: {
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
+            'Content-Type': 'application/json'
+        },
+    }
+}
+const SupplyOrderLinesAPI = {
+    configData: {
+        method: 'GET',
+         url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/supplyRequests/',
+        headers: {
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
+            'Content-Type': 'application/json'
+        },
+    }
 }
 
 
+
+
+module.exports.CancelOrderAPI = finalConfig.CancelOrderAPI;
 module.exports.service_port = finalConfig.service_port;
 module.exports.ui_url = finalConfig.ui_url;
 module.exports.group_mail = finalConfig.group_mail;
@@ -547,6 +583,9 @@ module.exports.SubinventoryData = SubinventoryData;
 
 module.exports.miscRecieptData = miscRecieptData;
 module.exports.transferMoveOrderData = transferMoveOrderData;
+
+module.exports.ReservationAPI = ReservationAPI;
+module.exports.SupplyOrderLinesAPI = SupplyOrderLinesAPI;
 
 module.exports.EmailSMTPConfig = EmailSMTPConfig;
 

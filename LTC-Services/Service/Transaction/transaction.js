@@ -1217,7 +1217,7 @@ var routes = function () {
                             ]
                         });
 
-                        // console.log("data", data)
+                        console.log("data", data)
                         var config = {
                             method: configuration.miscRecieptData.configData.method,
                             url: configuration.miscRecieptData.configData.url,

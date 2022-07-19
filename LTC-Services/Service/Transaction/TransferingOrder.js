@@ -102,7 +102,7 @@ var routes = function () {
     .get(async function (req, res) {
       const transferordermasterdetails = datamodel.transferordermasterdetails();
       const T_TransferOrderItems = datamodel.T_TransferOrderItems();
-
+      const M_TransferOrder = datamodel.M_TransferOrder();
       var param = {
         where: {
           INVENTORY: req.params.INVENTORY,
@@ -148,13 +148,27 @@ var routes = function () {
           "INVENTORY",
           "ITEM_NUMBER",
           "SUPPLIER_ITEM_CODE",
+          "TAX_INVOICE_NUM",
+          "SUPPLIER_NAME",
           "LOT_NUMBER",
           "Locator",
           "Transfer_Qty",
+          "TransferOrder_ID",
         ],
       };
+      var param2 = {
+        where: {
+          From_INV_ORG_ID: req.params.INVENTORY,
+          From_Locator: req.params.LOCATOR,
+        },
+        attributes: [
+          "TransferOrder_ID",
+          "StatusId",
+          "isskip",
+          ],
+      };
 
-   
+ 
 
       //  let ordermasterdetails =await dataaccess.FindAll(transferordermasterdetails,param)
       let ordermasterdetails = await sequelize.query(
@@ -176,29 +190,39 @@ var routes = function () {
       let transferdata = await dataaccess.FindAll(T_TransferOrderItems, param1);
       console.log("transferdata", transferdata);
 
+      console.log("param2",param2);
+      let statusdata = await dataaccess.FindAll(M_TransferOrder, param2);
+      console.log("statusdata", statusdata);
+
       let a = [];
       for (let i = 0; i < ordermasterdetails.length; i++) {
         for (let j = 0; j < transferdata.length; j++) {
-          console.log(
-            "locator",
-            ordermasterdetails[i].LOCATOR,
-            transferdata[j].Locator
-          );
+          for(let k=0; k<statusdata.length; k++){
+
+          // console.log(
+          //   "locator",
+          //   ordermasterdetails[i].LOCATOR,
+          //   transferdata[j].Locator
+          // );
 
           if (
             ordermasterdetails[i].INVENTORY == transferdata[j].INVENTORY &&
             ordermasterdetails[i].LOCATOR == transferdata[j].Locator &&
             ordermasterdetails[i].ITEM_NUMBER == transferdata[j].ITEM_NUMBER &&
-            ordermasterdetails[i].LOT_NUMBER == transferdata[j].LOT_NUMBER
+            ordermasterdetails[i].LOT_NUMBER == transferdata[j].LOT_NUMBER&&
+            ordermasterdetails[i].TAX_INVOICE_NUM == transferdata[j].TAX_INVOICE_NUM
           ) {
-            console.log(
-              "ordermasterdetails[i].BALANACE_QTY ",
-              ordermasterdetails[i].BALANACE_QTY
-            );
-            // if(Number(ordermasterdetails[i].BALANACE_QTY) <= Number(transferdata[j].Transfer_Qty))
-            // {
+            // console.log(
+            //   "ordermasterdetails[i].BALANACE_QTY ",
+            //   ordermasterdetails[i].BALANACE_QTY
+            // );
 
-            // }
+          
+            if(((statusdata[k].StatusId==0||statusdata[k].StatusId==3||statusdata[k].StatusId==2|| ((statusdata[k].StatusId==1)&&statusdata[k].isskip==false)))
+             && transferdata[j].TransferOrder_ID==statusdata[k].TransferOrder_ID )
+            {
+
+
             ordermasterdetails[i].BALANACE_QTY =
               Number(ordermasterdetails[i].BALANACE_QTY) -
               Number(transferdata[j].Transfer_Qty);
@@ -208,6 +232,8 @@ var routes = function () {
               ordermasterdetails[i].BALANACE_QTY
             );
           }
+        }
+        }
         }
       }
 
@@ -964,6 +990,7 @@ var routes = function () {
       InvoiceNo: req.body.InvoiceNo,
       QtyTransferred: req.body.QtyTransferred,
       StatusId: req.body.StatusId,
+      InterfaceBatchNumber:req.InterfaceBatchNumber,
     };
     dataaccess.Create(TransferOrder, values).then(
       function (result) {
@@ -1017,6 +1044,7 @@ var routes = function () {
           "TO_ORGANIZATION_NAME",
           "From_Locator",
           "To_Locator",
+          "TransferOrderHeaderNumber",
           "StatusId",
           "CreatedDate",
         ],
@@ -1068,6 +1096,7 @@ var routes = function () {
   function createTransferOrderItemsDetails(request) {
     return new Promise(async (resolve, reject) => {
       let reqBody = request;
+      let date = new Date();
       console.log("reqBody", reqBody);
       connect.sequelize.transaction().then((trans) => {
         const TransferOrderMaster = datamodel.M_TransferOrder();
@@ -1084,6 +1113,7 @@ var routes = function () {
           ModifiedDate: connect.sequelize.fn("NOW"),
           CreatedBy: reqBody.userId,
           CreatedDate: connect.sequelize.fn("NOW"),
+          InterfaceBatchNumber : date.toISOString().slice(0, 10).split("-").join("") + Math.floor(Math.random() * 9000 + 1000)
         };
         console.log("values", values);
         dataaccess
@@ -1111,11 +1141,11 @@ var routes = function () {
                     AMOUNT: mapitem.AMOUNT,
                     SUPPLIER_NAME: mapitem.SUPPLIER_NAME,
                     TAX_INVOICE_NUM: mapitem.TAX_INVOICE_NUM,
-                    TAX_INVOICE_DATE: mapitem.TAX_INVOICE_DATE,
+                    TAX_INVOICE_DATE: mapitem.TAX_INVOICE_DATE== '' ? null :  mapitem.TAX_INVOICE_DATE,
                     BOE_NO: mapitem.BOE_NO,
                     BOX: mapitem.BOX,
                     HAWB: mapitem.HAWB,
-                    RECEIVED_DATE: mapitem.RECEIVED_DATE,
+                    RECEIVED_DATE: mapitem.RECEIVED_DATE== '' ? null :  mapitem.RECEIVED_DATE,
                     LOT_NUMBER: mapitem.LOT_NUMBER,
                     From_SUBINVENTORY: mapitem.From_SUBINVENTORY,
                     To_SUBINVENTORY: mapitem.To_SUBINVENTORY,
@@ -1172,14 +1202,53 @@ var routes = function () {
 
   router.route("/OnSavebuttonAPI").post(function (req, res) {
     let requestBody = req.body;
+    let shipment='';
+    let objTransferOrderHeaderNumber=null;
+    console.log("savereq.body",req.body);
     createTransferOrderItemsDetails(requestBody)
       .then((createResult) => {
         console.log("createResult", createResult);
 
         res
           .status(200)
-          .json({ Success: true, Message: "Success", Data: createResult });
+           .json({ Success: true, Message: "Success", Data: createResult });
+           if(requestBody.StatusId=="0")
+           {
+             console.log("emailservicestart");
+             console.log("emailservicestart", createResult.InterfaceBatchNumber);
+             if((req.body.FROM_ORGANIZATION_NAME).trim() == (req.body.TO_ORGANIZATION_NAME).trim())
+             {
+              shipment="IntraOrg";
+             }
+             else{
+              shipment="InterOrg";
+             }
+           let mailtemplateData = {
+            MRN:createResult.InterfaceBatchNumber,
+             FROM_ORGANIZATION_NAME: req.body.FROM_ORGANIZATION_NAME,
+             From_Locator: req.body.From_Locator,
+             TO_ORGANIZATION_NAME: req.body.TO_ORGANIZATION_NAME,
+             To_Locator: req.body.To_Locator,
+             ui_url : configuration.ui_url,
+             Shipmenttype:shipment
+        };
+        let mailData = {
+            fromEmail: req.body.userEmail,
+            toEmail: configuration.EmailIds.ForApproval.ToEmailIds,
+            ccEmail : configuration.EmailIds.ForApproval.CcEmailIds,
+            subjectEmail: req.body.TransferOrder_Type + ' - ' + createResult.InterfaceBatchNumber + " For Pending"
+        };
+        //const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetPDF.ejs');
+        //const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetResponse.ejs');
+        const emailTemplatePath = path.join(__dirname + '/../../Templates/TransferingOrder/Pending.ejs');
+       
+        console.log("maildata",mailData);
+        console.log("mailtemplateData",mailtemplateData);
+        sentTransferOrderMail(req.body.Id,mailtemplateData,mailData,emailTemplatePath);
+        console.log("end mail");
+      }
       })
+      
       .catch((createError) => {
         console.log("createError", createError);
         dataconn.errorlogger(
@@ -1195,12 +1264,57 @@ var routes = function () {
             Data: createError,
           });
       });
+    
   });
+
+  function sentTransferOrderMail(TransferIdForEmail,mailtemplateData, mailData, emailHTMLPath) {
+    let fromEmail = mailData.fromEmail;
+    let toEmail = mailData.toEmail;
+    let ccEmail = mailData.ccEmail;
+    let subjectEmail = mailData.subjectEmail;
+    let templateLocation = emailHTMLPath;
+    let templateData = mailtemplateData;
+
+    emailService.notifyMail(fromEmail,toEmail,ccEmail,subjectEmail,templateLocation,templateData)
+      .then((results) => {
+        let mailObj = {
+          TransferOrder_ID: TransferIdForEmail,
+          mailTo: results.messageData.to,
+          mailFrom: results.messageData.from,
+          mailCc: results.messageData.cc,
+          mailSubject: results.messageData.subject,
+          mailBody: results.messageData.html,
+          messageId: results.info.messageId,
+          mailStatus: true,
+        };
+        console.log("maillogger",mailObj);
+        dataconn.maillogger(mailObj);
+        
+        console.log("Email Sent");
+      })
+      .catch((err) => {
+        console.log(err);
+        let mailObj = {
+          TransferOrder_ID: TransferIdForEmail,
+          mailTo: err.messageData.to,
+          mailFrom: err.messageData.from,
+          mailCc: err.messageData.cc,
+          mailSubject: err.messageData.subject,
+          mailBody: err.messageData.html,
+          messageId: null,
+          mailStatus: false,
+        };
+        dataconn.maillogger(mailObj);
+        console.log("Email Not Sent");
+      });
+  }
 
   //////////////////////////////////////////
 
   router.route("/UpdateTransferDetails").post(function (req, res) {
     let requestBody = req.body;
+    let M_TransferOrder = datamodel.M_TransferOrder();
+    let shipment="";
 
     // let newUpdateTransferDetails = requestBody.UpdateTransferDetails;
     // let TransferOrder_ID = requestBody.TransferOrder_ID;
@@ -1210,14 +1324,87 @@ var routes = function () {
       .then(async (result) => {
         console.log("Final result", result);
         if (result != null) {
+
           res
             .status(200)
             .json({
               Success: true,
               Message: "Update Transfer Details data successfully",
               Data: result,
+              
             });
-        } else {
+            let masterdata = await dataaccess.FindAll(
+              M_TransferOrder,
+              {
+                where: {
+                  TransferOrder_ID: requestBody.TransferOrder_ID,
+                   },
+              }
+            );
+            console.log("masterdata",masterdata);
+            console.log("masterdata",masterdata[0].InterfaceBatchNumber)
+            if(requestBody.StatusId=="0")
+            {
+              
+              if(req.body.FROM_ORGANIZATION_NAME==req.body.TO_ORGANIZATION_NAME)
+              {
+               shipment="InterOrg";
+              }
+              else{
+               shipment="IntraOrg";
+              }
+             
+            let mailtemplateData = {
+             MRN: masterdata[0].InterfaceBatchNumber,
+              FROM_ORGANIZATION_NAME: req.body.FROM_ORGANIZATION_NAME,
+              From_Locator: req.body.From_Locator,
+              TO_ORGANIZATION_NAME: req.body.TO_ORGANIZATION_NAME,
+              To_Locator: req.body.To_Locator,
+              ui_url : configuration.ui_url,
+              Shipmenttype:shipment
+         };
+         let mailData = {
+             fromEmail: req.body.userEmail,
+             toEmail: configuration.EmailIds.ForApproval.ToEmailIds,
+             ccEmail : configuration.EmailIds.ForApproval.CcEmailIds,
+             subjectEmail: req.body.TransferOrder_Type + ' - ' + masterdata[0].InterfaceBatchNumber + " For Pending"
+         };
+         //const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetPDF.ejs');
+         //const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetResponse.ejs');
+         const emailTemplatePath = path.join(__dirname + '/../../Templates/TransferingOrder/Pending.ejs');
+        
+         console.log("maildata",mailData);
+         sentTransferOrderMail(req.body.Id,mailtemplateData,mailData,emailTemplatePath);
+         console.log("end mail");
+       }
+            
+      //       if(requestBody.StatusId=="0")
+      //       {
+      //         console.log("emailservicestart");
+      //         console.log("emailservicestart", req.body.UpdateDetails);
+      //       let mailtemplateData = {
+      //         MRN: req.body.UpdateDetails[0].Seq7,
+      //         FROM_ORGANIZATION_NAME: req.body.FROM_ORGANIZATION_NAME,
+      //         From_Locator: req.body.From_Locator,
+      //         TO_ORGANIZATION_NAME: req.body.TO_ORGANIZATION_NAME,
+      //         To_Locator: req.body.To_Locator,
+      //         ui_url : configuration.ui_url
+      //    };
+      //    let mailData = {
+      //        fromEmail: req.body.userEmail,
+      //        toEmail: configuration.EmailIds.ForApproval.ToEmailIds,
+      //        ccEmail : configuration.EmailIds.ForApproval.CcEmailIds,
+      //        subjectEmail: req.body.TransferOrder_Type + ' - ' + req.body.UpdateDetails[0].Seq7 + " For Pending"
+      //    };
+      //    //const pdfTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetPDF.ejs');
+      //    //const emailTemplatePath = path.join(__dirname + '/../../Templates/LTC_Response/createAssetResponse.ejs');
+      //    const emailTemplatePath = path.join(__dirname + '/../../Templates/TransferingOrder/Pending.ejs');
+      //    console.log("maildata",mailData);
+      //    sentTransferOrderMail(req.body.Id,mailtemplateData,mailData,emailTemplatePath);
+      //    console.log("end mail");
+      //  }
+        }
+         else {
           res
             .status(200)
             .json({
@@ -1239,9 +1426,11 @@ var routes = function () {
       });
   });
 
+
   async function UpdateTransferDetails(request) {
     return new Promise(async (resolve, reject) => {
       let reqBody = request;
+      let M_TransferOrder = datamodel.M_TransferOrder();
       console.log("reqBody", reqBody);
       connect.sequelize.transaction().then((trans) => {
         const TransferOrderMaster = datamodel.M_TransferOrder();
@@ -1477,8 +1666,9 @@ var routes = function () {
       console.log("req.params", req.params);
       var param = {
         where: { TransferOrder_ID: req.params.TransferOrder_ID },
-        include: { all: true, nested: true },
+         include: { all: true, nested: true },
       };
+      console.log("approve",param);
       dataaccess.FindAll(M_TransferOrder, param).then(
         function (result) {
           if (result != null) {
@@ -1586,9 +1776,11 @@ var routes = function () {
         await dataaccess.Update(
           M_TransferOrder,
           { StatusId: 2 },
-          { TransferOrder_ID: req.body.Id }
+          { TransferOrder_ID: req.body.Id },
+           //{isskip:0}
         );
       }
+      
       // hardcoded SupplyOrderReferenceNumber remove the comment
       let result = await TransferOrderMethodAPI(
         req.body,
@@ -1596,8 +1788,6 @@ var routes = function () {
         new Date(),
         req.body.TransferOrder_Type
       );
- 
-      console.log("Hereeeeeeeeeeeeeeeeeeeeeee", result);
 
       if (result) 
       {
@@ -1610,107 +1800,22 @@ var routes = function () {
             },
           }
         );
+      
         if (transOrderItemData.length) 
         {
-          for (let i = 0; i < transOrderItemData.length; i++) {
-            let lineData = await axios({
-              method: "GET",
-              url: transOrderItemData[i].transferSupplyUrl,
-              headers: {
-                Authorization: "Basic bHRjLmltcGw6RGVwdGhAMTIz",
-                "Content-Type": "application/json",
-              },
-            });
-            if (lineData.status == 200) {
-              console.log("lineData", lineData.data.items[0]);
-              let val = {
-                TransferOrderHeaderId: lineData.data.items[0].TransferOrderHeaderId,
-                TransferOrderHeaderNumber: lineData.data.items[0].TransferOrderHeaderNumber,
-                TransferOrderLineId: lineData.data.items[0].TransferOrderLineId,
-                TransferOrderLineNumber: lineData.data.items[0].TransferOrderLineNumber,
-                transferSupplyUrl: lineData.data.items[0].links.find((f) => { return f.name == "transferSupply";}).href,
-                getToDetailsResponse: lineData.status,
-              };
-              //console.log('SupplyOrderReferenceLineNumber', Number(transferSupplyObj.SupplyOrderReferenceLineNumber))
-              await dataaccess.Update(T_TransferOrderItems, val, {
-                Seq9: Number(transOrderItemData[i].Seq9),
-              });
-            } else {
-              let val = {
-                transferSupplyUrl: transferSupplyObj.href,
-                getToDetailsResponse: lineData.status,
-              };
-              await dataaccess.Update(T_TransferOrderItems, val, {
-                Seq9: Number(transOrderItemData[i].Seq9),
-              });
-            }
-          }
+          await repushFailedLineData(transOrderItemData)
         } 
         else 
         {
-          for (let i = 0; i < result.items.length; i++) 
-          {
-            let e = result.items[i];
-            let transferSupplyObj = e.links.find((f) => {return f.name == "transferSupply";});
-            console.log("transferSupplyObj.href", transferSupplyObj);
-            let lineData = await axios({
-              method: "GET",
-              url: transferSupplyObj.href,
-              headers: {
-                Authorization: "Basic bHRjLmltcGw6RGVwdGhAMTIz",
-                "Content-Type": "application/json",
-              },
-            });
-            if (lineData.status == 200) 
-            {
-              console.log("updating Line Details", lineData.data.items[0]);
-              if (lineData.data.items[0].SupplyTrackingLineStatus == "NOT_STARTED") 
-              {
-                lineData = await axios({
-                  method: "GET",
-                  url: transferSupplyObj.href,
-                  headers: {
-                    Authorization: "Basic bHRjLmltcGw6RGVwdGhAMTIz",
-                    "Content-Type": "application/json",
-                  },
-                });
-                console.log("SupplyTrackingLineStatus not started! ");
-              }
-              console.log("SupplyTrackingLineStatus :", lineData.data.items[0].SupplyTrackingLineStatus);
-              if (lineData.status == 200 && lineData.data.items[0].SupplyTrackingLineStatus == "DOS_COMPLETE") 
-              {
-                console.log("updating Line Details 1");
-                let val1 = {
-                  TransferOrderHeaderId: lineData.data.items[0].TransferOrderHeaderId,
-                  TransferOrderHeaderNumber: lineData.data.items[0].TransferOrderHeaderNumber,
-                  TransferOrderLineId: lineData.data.items[0].TransferOrderLineId,
-                  TransferOrderLineNumber: lineData.data.items[0].TransferOrderLineNumber,
-                  transferSupplyUrl: transferSupplyObj.href,
-                  getToDetailsResponse: lineData.status,
-                 };
-                console.log("SupplyOrderReferenceLineNumber 1", Number(e.SupplyOrderReferenceLineNumber)
-                );
-                await dataaccess.Update(T_TransferOrderItems, val1, {Seq9: Number(e.SupplyOrderReferenceLineNumber),});
-              }
-              else
-              {
-                 return res.status(200).json({ Success: false, Message: 'Transfer Order Pending For Commit', Data: null });
-              }
-            } 
-            else 
-            {
-              let val = {
-                transferSupplyUrl: transferSupplyObj.href,
-                getToDetailsResponse: lineData.status,
-              };
-              await dataaccess.Update(T_TransferOrderItems, val, {
-                Seq9: Number(e.SupplyOrderReferenceLineNumber),
-              });
-            }
-          }
+           //hit line items api for the fist time and update line data in transfer order items 
+           let lineTrackingStatus = await updateLineItemData(result.items)
+           console.log("lineTrackingStatus",lineTrackingStatus);
+           if (!lineTrackingStatus) {
+               return res.status(200).json({ Success: false, Message: 'Transfer Order Pending For Commit', Data: null });
+           }
         }
       }
-      console.log("above transOrderItemStatusData");
+     
       let transOrderItemStatusData = await dataaccess.FindAll(
         T_TransferOrderItems,
         {
@@ -1720,75 +1825,11 @@ var routes = function () {
           },
         }
       );
-
-      console.log(
-        "transOrderItemStatusData.length",
-        transOrderItemStatusData.length
-      );
-      console.log("result.items.length", result.items.length);
+      console.log("lengthhhhhhhh" ,transOrderItemStatusData.length ,  result.items.length)
+      //if all order items are successfully updated then call reservation item apis
       if (transOrderItemStatusData.length == result.items.length) {
-        console.log("below transOrderItemStatusData length");
-        for (let i = 0; i < result.items.length; i++) 
-        {
-          //cons
-          let e = result.items[i];
-          //result.items.map(async e => {
-          let transferSupplyObj = e.links.find((f) => {return f.name == "transferSupply";});
-          let lineData = await axios({
-            method: "GET",
-            url: transferSupplyObj.href,
-            headers: {
-              Authorization: "Basic bHRjLmltcGw6RGVwdGhAMTIz",
-              "Content-Type": "application/json",
-            },
-          });
-          if (lineData.status == 200) {
-            console.log("lineDatasssssssssssssss", lineData.data);
-            //let Data = transOrderItemStatusData.find(e => { return e.Seq9 == Number(result.items[i].SupplyOrderReferenceLineNumber) })
-            let Data = transOrderItemStatusData.find((e) => {
-              return (
-                e.Seq9 == Number(result.items[i].SupplyOrderReferenceLineNumber)
-              );
-            });
-            console.log("transferOrderItemData", Data);
-            let requestBody = {
-              OrganizationCode:
-                lineData.data.items[0].SourceOrganizationCode.trim(),
-              ItemNumber: lineData.data.items[0].ItemNumber,
-              DemandSourceType: "Transfer order",
-              DemandSourceHeaderNumber:
-                lineData.data.items[0].TransferOrderHeaderNumber, // Number(Data.TransferOrderHeaderNumber),
-              DemandSourceLineNumber:
-                lineData.data.items[0].TransferOrderLineNumber, //1,//Number(Data.TransferOrderLineNumber),
-              SupplySourceTypeId: 13,
-              SupplySourceType: "On hand",
-              SubinventoryCode: Data.From_SUBINVENTORY.trim(), //"RM", //lineData.data.items[0].SourceSubinventoryCode,
-              LotNumber: Data.LOT_NUMBER.trim(), //"DL10700001",//e.LOT_NUMBER,// //,
-              Locator: Data.Locator.trim() + "...", //Data.Locator.rep,
-              ReservationQuantity: Data.Transfer_Qty,
-              ReservationUOMCode: result.items[i].UOMCode.trim(),
-              RequirementDate: new Date().toISOString().slice(0, 10),
-            };
+        await createReservationAndUpdateLineItem(result.items,transOrderItemStatusData)
 
-            console.log(`requestBody`, requestBody);
-            let res = await axios({
-              method: "POST",
-              url: "https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/inventoryReservations",
-              data: requestBody,
-              headers: configuration.transferMoveOrderData.configData.headers,
-            });
-            //console.log('rssssssssssssssssssssssssssssssssssssssssssssssssssssssssss', res.status)
-            if (res.status == 201) {
-              await dataaccess.Update(
-                T_TransferOrderItems,
-                { ReservationId: res.data.ReservationId },
-                {
-                  Seq9: result.items[i].SupplyOrderReferenceLineNumber,
-                }
-              );
-            }
-          }
-        }
         let transOrderItemReservationData = await dataaccess.FindAll(
           T_TransferOrderItems,
           {
@@ -1798,23 +1839,83 @@ var routes = function () {
             },
           }
         );
+       let objTransferOrderHeaderNumber=await dataaccess.FindOne(
+        T_TransferOrderItems,
+        {
+          where: {
+            TransferOrder_ID: req.body.Id,
+             },
+        }
+      );
+      console.log("objTransferOrderHeaderNumber",objTransferOrderHeaderNumber);
+
         if (transOrderItemReservationData.length == 0) {
           await dataaccess.Update(
             M_TransferOrder,
-            { reservationResponse: 1, StatusId: 1 },
+            { reservationResponse: 1, StatusId: 1 ,isskip:'false',TransferOrderHeaderNumber : objTransferOrderHeaderNumber.TransferOrderHeaderId},
             { TransferOrder_ID: req.body.Id }
           );
+   
+          let masterdata = await dataaccess.FindAll(
+            M_TransferOrder,
+            {
+              where: {
+                TransferOrder_ID: req.body.Id,
+                 },
+            }
+          );
+          console.log("masterdata",masterdata);
+          console.log("masterdata",masterdata[0].InterfaceBatchNumber)
+          //console.log("masterdata",masterdata.M_TransferOrder[0].InterfaceBatchNumber)
+        let shipment1="";
+           
+            console.log("emailservicestartapporve");
+            console.log("emailservicestartapprove", req.body);
+            if((req.body.SourceOrganizationCode).trim() == (req.body.DestinationOrganizationCode).trim())
+            {
+              shipment1="IntraOrg";
 
-          res
-            .status(200)
-            .json({
+             }
+             else{
+              shipment1="InterOrg";
+             }
+             console.log("shipment1",shipment1);
+
+          let mailtemplateData = {
+            MRN:masterdata[0].InterfaceBatchNumber,
+            FROM_ORGANIZATION_NAME: masterdata[0].FROM_ORGANIZATION_NAME,
+            From_Locator: masterdata[0].From_Locator,
+            TO_ORGANIZATION_NAME: masterdata[0].TO_ORGANIZATION_NAME,
+            To_Locator: masterdata[0].To_Locator,
+            TransferOrderNo:masterdata[0].TransferOrderHeaderNumber,
+            ui_url : configuration.ui_url,
+            Shipmenttype:shipment1
+       };
+       let objTransferType = req.body.TransferOrder_Type == 1 ? "WH To WH" : "WH To Site";
+       let mailData = {
+           fromEmail: req.body.userEmail,
+           toEmail: configuration.EmailIds.ForApproval.ToEmailIds,
+           ccEmail : configuration.EmailIds.ForApproval.CcEmailIds,
+           subjectEmail: objTransferType + ' - '  + masterdata[0].InterfaceBatchNumber + " For Approve"
+       };
+       const emailTemplatePath = path.join(__dirname + '/../../Templates/TransferingOrder/approve.ejs');
+       console.log("maildata",mailData);
+       console.log("mailtemplateData",mailtemplateData)
+       sentTransferOrderMail(req.body.Id,mailtemplateData,mailData,emailTemplatePath);
+       console.log("end mail");
+    
+        res.status(200).json({
               Success: true,
               Message: "Transfer Order Approved successfully",
               Data: null,
             });
+          
+          
           return;
         }
       }
+      
+
       res
         .status(200)
         .json({
@@ -1824,13 +1925,6 @@ var routes = function () {
         });
       return;
 
-      //console.log('arrrrrrrrrrrrrrrrrrrr', ar)
-
-      //let data = await TransferOrderMethodAPI(req.body, sequencedata, moment(Date.now), req.body.TransferOrder_Type)
-      //await dataaccess.BulkCreate(T_TransferOrderItems, TransferOrderItem)
-      // res.status(201).send('done');
-
-      //res.status(201).send(data);
     } catch (error) {
       console.log("error", error);
       dataconn.errorlogger("TransferingOrder", "addWhtoWhOraclePush", error);
@@ -1843,6 +1937,45 @@ var routes = function () {
         });
     }
   });
+
+  async function repushFailedLineData(transOrderItemData) {
+    try {
+
+        let promiseAr = transOrderItemData.map(async e => {
+
+            let lineData = await axiosApiCallHelper("GET", e.transferSupplyUrl, null)
+
+            if (lineData.status == 200) {
+                console.log("lineData", lineData.data.items[0]);
+                let val = {
+                    TransferOrderHeaderId: lineData.data.items[0].TransferOrderHeaderId,
+                    TransferOrderHeaderNumber: lineData.data.items[0].TransferOrderHeaderNumber,
+                    TransferOrderLineId: lineData.data.items[0].TransferOrderLineId,
+                    TransferOrderLineNumber: lineData.data.items[0].TransferOrderLineNumber,
+                    transferSupplyUrl: lineData.data.items[0].links.find((f) => { return f.name == "transferSupply"; }).href,
+                    getToDetailsResponse: lineData.status,
+                };
+                //console.log('SupplyOrderReferenceLineNumber', Number(transferSupplyObj.SupplyOrderReferenceLineNumber))
+                await dataaccess.Update(T_TransferOrderItems, val, {
+                    Seq9: Number(e.Seq9),
+                });
+            } else {
+                let val = {
+                    transferSupplyUrl: e.transferSupplyUrl,
+                    getToDetailsResponse: lineData.status,
+                };
+                await dataaccess.Update(T_TransferOrderItems, val, {
+                    Seq9: Number(e.Seq9),
+                });
+            }
+        })
+
+        await Promise.all(promiseAr)
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
 
   async function getMaxSeqIdTransferOrderItems() {
     const AssetDetails = datamodel.T_TransferOrderItems();
@@ -1866,8 +1999,10 @@ var routes = function () {
   async function TransferOrderMethodAPI(request,sequence,ModifiedDate,transferLocation) 
   {
     return new Promise(async (resolve, reject) => {
+      try {
       console.log("TransferMethodAPI Started");
       let requestBody = request;
+      console.log("requestBodyapprove",requestBody);
       let M_TransferOrder = datamodel.M_TransferOrder();
       let T_TransferOrderItems = datamodel.T_TransferOrderItems();
       let Seqeuence7;
@@ -1878,7 +2013,7 @@ var routes = function () {
       let tData = await dataaccess.FindOne(M_TransferOrder, {
         where: { TransferOrder_ID: requestBody.Id },
       });
-      //console.log('tData', tData)
+      console.log('tData', tData)
       if (tData.getToDetailsResponse == 400 || tData.getToDetailsResponse == null ) 
       {
         if (tData.getToDetailsResponse == 400) 
@@ -1891,21 +2026,20 @@ var routes = function () {
           Seqeuence8 = transferOrderItemsData[0].Seq8;
           Seqeuence9 = transferOrderItemsData[0].Seq9;
         } 
-        else 
-        {
+        else {
           Seqeuence7 = date.toISOString().slice(0, 10).split("-").join("") + Math.floor(Math.random() * 9000 + 1000);
           Seqeuence8 = sequencedata.Seq8 != null ? sequencedata.Seq8 + 1 : configuration.transferMoveOrderData.SequenceData.Seqeuence8;
           Seqeuence9 = sequencedata.Seq9 != null ? sequencedata.Seq9 : configuration.transferMoveOrderData.SequenceData.Seqeuence9;
-        }
+      }
       } 
       else {
-        console.log("Sleep mode");
-        await sleep(60000);
-        console.log("callSupplyLineApi calling!!");
-        let res = await callSupplyLineApi(tData.SupplyOrderReferenceNumber);
-        // console.log('resssssssssss', res)
-        resolve(res);
-        return;
+         // console.log("Sleep mode");
+                    // await sleep(60000);
+                    console.log("callSupplyLineApi calling!!");
+                    let res = await callSupplyLineApi(tData.SupplyOrderReferenceNumber);
+                    // console.log('resssssssssss', res)
+                    resolve(res);
+                    return;
       }
 
       let InterfaceSourceCode = configuration.transferMoveOrderData.HardCodedData.InterfaceSourceCode;
@@ -1977,15 +2111,15 @@ var routes = function () {
         supplyRequestLines: list,
       });
 
-      var config = {
-        method: configuration.transferMoveOrderData.configData.method,
-        url: configuration.transferMoveOrderData.configData.url,
-        headers: configuration.transferMoveOrderData.configData.headers,
-        data: data,
-      };
+      // var config = {
+      //   method: configuration.transferMoveOrderData.configData.method,
+      //   url: configuration.transferMoveOrderData.configData.url,
+      //   headers: configuration.transferMoveOrderData.configData.headers,
+      //   data: data,
+      // };
       try {
-        let response = await axios(config);
-        
+        let response = await axiosApiCallHelper("post", configuration.transferMoveOrderData.configData.url, data);
+
         if (response.status == 201) 
         { 
           var values = {
@@ -1999,8 +2133,8 @@ var routes = function () {
             TransferOrder_ID: requestBody.Id,
           });
 
-          console.log("Sleep mode");
-          await sleep(60000);
+          // console.log("Sleep mode");
+          // await sleep(60000);
           console.log("1st Get API calling!!");
           let res = await callSupplyLineApi(response.data.SupplyOrderReferenceNumber);
           resolve(res);
@@ -2035,12 +2169,133 @@ var routes = function () {
         }
         reject(0);
       }
+    } catch (err) {
+      throw new Error(err)
+  }
     });
   }
+  async function updateLineItemData(lineItemsData) {
+     
+    try {
+      let M_TransferOrder = datamodel.M_TransferOrder();
+      let T_TransferOrderItems = datamodel.T_TransferOrderItems();
+        console.log("$$$$$$$$$$$$$ Updating Line Itemsss $$$$$$$$$$$$$$",lineItemsData);
+       
+        let lineTrackingStatus = 1;
+        
+        let promiseAr = lineItemsData.map(async e => {
+          console.log("Mapppppppppppppppppppp");
+            let transferSupplyObj = e.links.find((f) => { return f.name == "transferSupply"; });
+            console.log("transferSupplyObjjjjjj",transferSupplyObj.href)
+            let lineData = await axiosApiCallHelper("GET", transferSupplyObj.href, null)
+            console.log("linedataaaaaa",lineData.status);
+            if (lineData.status == 200) {
+                console.log("updating Line Details", lineData.data.items[0]);
+                if (lineData.data.items[0].SupplyTrackingLineStatus == "NOT_STARTED") 
+                {
+
+                    lineData = await axiosApiCallHelper("GET", transferSupplyObj.href, null)
+                }
+                console.log("SupplyTrackingLineStatus :", lineData.data.items[0].SupplyTrackingLineStatus);
+                if (lineData.status == 200 && lineData.data.items[0].SupplyTrackingLineStatus == "DOS_COMPLETE") {
+
+                    let val1 = {
+                        TransferOrderHeaderId: lineData.data.items[0].TransferOrderHeaderId,
+                        TransferOrderHeaderNumber: lineData.data.items[0].TransferOrderHeaderNumber,
+                        TransferOrderLineId: lineData.data.items[0].TransferOrderLineId,
+                        TransferOrderLineNumber: lineData.data.items[0].TransferOrderLineNumber,
+                        transferSupplyUrl: transferSupplyObj.href,
+                        getToDetailsResponse: lineData.status,
+                    };
+                    console.log("SupplyOrderReferenceLineNumber 1", Number(e.SupplyOrderReferenceLineNumber)
+                    );
+                    await dataaccess.Update(T_TransferOrderItems, val1, { Seq9: Number(e.SupplyOrderReferenceLineNumber), });
+                }
+                else {
+                    lineTrackingStatus = 0;
+                }
+            }
+            else {
+                let val = {
+                    transferSupplyUrl: transferSupplyObj.href,
+                    getToDetailsResponse: lineData.status,
+                };
+                await dataaccess.Update(T_TransferOrderItems, val, {
+                    Seq9: Number(e.SupplyOrderReferenceLineNumber),
+                });
+            }
+        })
+
+        await Promise.all(promiseAr)
+        return lineTrackingStatus;
+    }
+    catch (error) {
+      console.log("promiseAr-err", error);
+        throw new Error(error)
+
+    }
+}
+
+  async function createReservationAndUpdateLineItem(itemsData,transOrderItemStatusData) {
+    try {
+        console.log("$$$$$$$$$$$$$ Calling reservation items Apis $$$$$$$$$$$$$$$$$$$")
+        let T_TransferOrderItems = datamodel.T_TransferOrderItems();
+     
+        let promiseAr = itemsData.map(async e => {
+            let transferSupplyObj = e.links.find((f) => { return f.name == "transferSupply"; });
+            let lineData = await axiosApiCallHelper("GET", transferSupplyObj.href, null)
+            console.log("e-Data:",e.Seq9);
+            console.log("e.SupplyOrderReferenceLineNumber:",e.SupplyOrderReferenceLineNumber);
+            if (lineData.status == 200) {
+                //let Data = transOrderItemStatusData.find(e => { return e.Seq9 == Number(result.items[i].SupplyOrderReferenceLineNumber) })
+                let Data = transOrderItemStatusData.find((g) => {
+            
+                    return (
+                        g.Seq9 == Number(e.SupplyOrderReferenceLineNumber)
+                    );
+                });
+                let requestBody = {
+                    OrganizationCode:
+                        lineData.data.items[0].SourceOrganizationCode.trim(),
+                    ItemNumber: lineData.data.items[0].ItemNumber,
+                    DemandSourceType: "Transfer order",
+                    DemandSourceHeaderNumber:
+                        lineData.data.items[0].TransferOrderHeaderNumber, // Number(Data.TransferOrderHeaderNumber),
+                    DemandSourceLineNumber:
+                        lineData.data.items[0].TransferOrderLineNumber, //1,//Number(Data.TransferOrderLineNumber),
+                    SupplySourceTypeId: 13,
+                    SupplySourceType: "On hand",
+                    SubinventoryCode: Data.From_SUBINVENTORY.trim(), //"RM", //lineData.data.items[0].SourceSubinventoryCode,
+                    LotNumber: Data.LOT_NUMBER.trim(), //"DL10700001",//e.LOT_NUMBER,// //,
+                    Locator: Data.Locator.trim() + "...", //Data.Locator.rep,
+                    ReservationQuantity: Data.Transfer_Qty,
+                    ReservationUOMCode: e.UOMCode.trim(),
+                    RequirementDate: new Date().toISOString().slice(0, 10),
+                };
+
+                console.log(`requestBody`, requestBody);
+                let res = await axiosApiCallHelper("POST", "https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/inventoryReservations", requestBody)
+
+                if (res.status == 201) {
+                    await dataaccess.Update(
+                        T_TransferOrderItems,
+                        { ReservationId: res.data.ReservationId },
+                        {
+                            Seq9: e.SupplyOrderReferenceLineNumber,
+                        }
+                    );
+                }
+            }
+        })
+        await Promise.all(promiseAr)
+    } catch (error) {
+      console.log("Promise-err", error);
+        throw new Error(error)
+    }
+}
 
   async function callSupplyLineApi(supplyOrderReferenceNumber) {
-    let supplyLineUrl =
-      "https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com:443/fscmRestApi/resources/11.13.18.05/supplyRequests/";
+    let supplyLineUrl =   configuration.SupplyOrderLinesAPI.configData.url;
     let appendurl = supplyOrderReferenceNumber + "/child/supplyOrderLines";
     supplyLineUrl += appendurl;
     console.log(
@@ -2050,12 +2305,9 @@ var routes = function () {
     console.log("supplyLineUrl :", supplyLineUrl);
 
     let responseSupplyLine = await axios({
-      method: "GET",
-      url: supplyLineUrl, //'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/supplyRequests/80000030/child/supplyOrderLines',
-      headers: {
-        Authorization: "Basic bHRjLmltcGw6RGVwdGhAMTIz",
-        "Content-Type": "application/json",
-      },
+      method: configuration.SupplyOrderLinesAPI.configData.method,
+      url: supplyLineUrl ,//'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/supplyRequests/80000030/child/supplyOrderLines',
+      headers: configuration.SupplyOrderLinesAPI.configData.headers
     });
     //  await sleep(20000);
     console.log("supplyurl res", responseSupplyLine.data.count);
@@ -2100,23 +2352,37 @@ var routes = function () {
             "transferOrderLines": list 
         });
 
+        // var config = {
+        //     method: configuration.CancelOrderAPI.configData.method,
+        //     //'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/transferOrders/'+ requestBody.transferOrderLines.TransferOrderHeaderNumber,'
+        //     url: configuration.CancelOrderAPI.configData.url+ requestBody.transferOrderLines.TransferOrderHeaderNumber,
+        //     headers: configuration.CancelOrderAPI.configData.headers,
+        //       data: data
+        // };
         var config = {
-            method: 'get',
-            url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/transferOrders/174001',
-            headers: { 
-              'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz', 
-              'Content-Type': 'application/json'
-            },
-            // method: configuration.transferMoveOrderData.configData.method,
-            // url: configuration.transferMoveOrderData.configData.url,
-            // headers: configuration.transferMoveOrderData.configData.headers,
-            data: data
-        };
+
+          method: 'get',
+
+          url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/transferOrders/'+ requestBody.transferOrderLines[0].TransferOrderHeaderNumber,
+
+          headers: {
+
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
+
+            'Content-Type': 'application/json'
+
+          },
+
+        
+          data: data
+
+      };
 
         console.log("Transfer Cancel Done - ", data)
 
         axios(config)
-            .then(async function (response) {             
+            .then(async function (response) {   
+              console.log("response.status",response.status)
 
                 if (response.status == 200 || response.status == 201 ) {
                    const M_TransferOrder = datamodel.M_TransferOrder();
@@ -2125,7 +2391,7 @@ var routes = function () {
                         TransferCancelStatus :response.status,
                     };                   
                     var param = {
-                        TransferOrder_ID: requestBody.transferOrderLines[0].TransferOrder_ID,                       
+                      TransferOrderHeaderNumber: requestBody.transferOrderLines.TransferOrderHeaderNumber, 
                     };
                     await dataaccess.Update(M_TransferOrder, values, param)
 
@@ -2138,7 +2404,7 @@ var routes = function () {
                       TransferCancelStatus :response.status,
                   };                   
                   var param = {
-                      TransferOrder_ID: requestBody.transferOrderLines[0].TransferOrder_ID,                       
+                    TransferOrderHeaderNumber: requestBody.transferOrderLines.TransferOrderHeaderNumber,                       
                   };
                   await dataaccess.Update(M_TransferOrder, values, param)
                   dataconn.apiResponselogger('Transfer Cancel Order', 0, 0, error.response.status, error.response.data, 1);              
@@ -2151,14 +2417,42 @@ var routes = function () {
 
               if (error.response) {
              
-                      dataconn.apiResponselogger('TransferingOrderService',  requestBody.transferOrderLines[0].TransferOrder_ID, 0, error.response.status, error.response.data, 1);
+                dataconn.apiResponselogger('TransferingOrderService',  requestBody.transferOrderLines.TransferOrderHeaderNumber, 0, error.response.status, error.response.data, 1);
                  
               }
               reject();
           });          
     });
 }
+async function axiosApiCallHelper(method, url, data) {
 
+  try {
+
+      let res = await axios({
+
+          method: method,
+
+          url: url,
+
+          data: data,
+
+          headers: configuration.transferMoveOrderData.configData.headers
+
+      })
+      console.log("urlllllllllllllllllllllllllllllllllll",url,res.status);
+     
+      return res
+    
+
+  } catch (error) {
+
+      throw new Error(error);
+
+  }
+
+
+
+}
 
 
 

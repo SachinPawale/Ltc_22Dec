@@ -219,7 +219,7 @@ module.exports.GetFiles_API = async function(Filename){
                         })
                       }
                       else{
-                        await sleep(100000);
+                        await sleep(400000);
                         const response2 = await axios(config_status)
 
                         if(response1.status == 200 || response1.status == 201){
