@@ -273,18 +273,17 @@ const BoEReceiptAPIData = {
 
 const EmailIds = {
     ForApproval:{
-        //ToEmailIds:'Sayan.Bhattacharyya@Lightstormtelecom.com',
-        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com; Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com'
-    //technologiesnewel@gmail.com;
-        ToEmailIds:'ramyashree.c@neweltechnologies.com',
-        CcEmailIds: 'ashwini.k@neweltechnologies.com;sachin.pawale@neweltechnologies.com'
-        
-    },
-    Approved:{
-        //ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
-        // CcEmailIds: 'Jayawant.Gilbile@Lightstormtelecom.com;'
-        ToEmailIds:'ramyashree.c@neweltechnologies.com',
-        CcEmailIds: 'ashwini.k@neweltechnologies.com;sachin.pawale@neweltechnologies.com;'
+        ToEmailIds:'maneesh.chaudhary@lightstormtelecom.com',
+        CcEmailIds: 'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com' 
+       //ToEmailIds:'ramyashree.c@neweltechnologies.com',
+       //CcEmailIds: 'ashwini.k@neweltechnologies.com;sachin.pawale@neweltechnologies.com'
+       
+   },
+   Approved:{
+        ToEmailIds:'Dibya.Prakash@Lightstormtelecom.com; Harish.Bajirao@Lightstormtelecom.com;',
+        CcEmailIds: 'maneesh.chaudhary@lightstormtelecom.com'
+       //ToEmailIds:'ramyashree.c@neweltechnologies.com',
+       //CcEmailIds: 'ashwini.k@neweltechnologies.com;sachin.pawale@neweltechnologies.com;'
         
     },
     Rejected:{
@@ -498,6 +497,16 @@ const TDSGSTAdjustmentAPIData = {
         "InclusiveTaxFlag": false,
     },
 }
+const cancelOrderAPI = {
+    configData:{
+        method: 'get',
+         url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/transferOrders/',
+        headers: {
+            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
+            'Content-Type': 'application/json'
+        },
+    }
+}
 
 const PO_Cost_Report_ReportData = {
     configData : {
@@ -546,16 +555,7 @@ const PO_Cost_Report_ReportData = {
     }
 }
 
-const CancelOrderAPI = {
-    configData: {
-        method: 'GET',
-         url: 'https://fa-etcj-test-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/transferOrders/',
-        headers: {
-            'Authorization': 'Basic bHRjLmltcGw6RGVwdGhAMTIz',
-            'Content-Type': 'application/json'
-        },
-    }
-}
+
 const SupplyOrderLinesAPI = {
     configData: {
         method: 'GET',
@@ -570,7 +570,7 @@ const SupplyOrderLinesAPI = {
 
 
 
-module.exports.CancelOrderAPI = finalConfig.CancelOrderAPI;
+
 module.exports.service_port = finalConfig.service_port;
 module.exports.ui_url = finalConfig.ui_url;
 module.exports.group_mail = finalConfig.group_mail;
@@ -580,6 +580,7 @@ module.exports.dbConn = finalConfig.dbConn;
 module.exports.OrganizationData = OrganizationData;
 module.exports.LocationData = LocationData;
 module.exports.SubinventoryData = SubinventoryData;
+module.exports.cancelAPI = finalConfig.cancelAPI;
 
 module.exports.miscRecieptData = miscRecieptData;
 module.exports.transferMoveOrderData = transferMoveOrderData;
@@ -609,3 +610,4 @@ module.exports.SchedulerEmailConfig = SchedulerEmailConfig;
 module.exports.BankingIntegrationAPIData = BankingIntegrationAPIData;
 module.exports.TDSGSTAdjustmentAPIData = TDSGSTAdjustmentAPIData;
 module.exports.PO_Cost_Report_ReportData = PO_Cost_Report_ReportData;
+module.exports.cancelOrderAPI=cancelOrderAPI;
