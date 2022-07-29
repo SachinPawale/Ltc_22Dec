@@ -457,8 +457,8 @@ const BankingIntegrationAPIData = {
         // JobPackageName: "/Custom/Financials/A_LTC/LTC HSBC Payment File - Text/",
         // JobDefName: "LTC_HSBC_Payment_DM_TXT",
         OperationName:"submitESSJobRequest",
-        JobPackageName:"/oracle/apps/ess/custom/Financials/A_LTC/LTC HSBC Payment File - Text/",
-        JobDefName:"LTC_HSBC_Payment_DM_TXT", 
+        JobPackageName:"/oracle/apps/ess/custom/Financials/A_LTC/LTC HSBC Payment File Revise/",
+        JobDefName:"LTC_HSBC_Payment_DM_1", 
     },
     API2configDetails:{
         method: 'get',

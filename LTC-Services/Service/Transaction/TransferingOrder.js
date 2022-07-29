@@ -957,7 +957,7 @@ var routes = function () {
           From_INV_ORG_ID: 0,
           To_INV_ORG_ID: 0,
           From_Locator: reqBody.From_Locator,
-          To_Locator: reqBody.To_Locator,
+          To_Locator: reqBody.To_Locator = null ? '' : reqBody.To_Locator,
           StatusId: reqBody.StatusId,
           TO_ORGANIZATION_NAME: reqBody.TO_ORGANIZATION_NAME,
           FROM_ORGANIZATION_NAME: reqBody.FROM_ORGANIZATION_NAME,
